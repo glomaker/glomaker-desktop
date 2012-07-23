@@ -1,0 +1,16 @@
+/* CSS file used by the guidance panel */
+
+body {
+	font-size: 11;
+	color: #000000;
+	font-family: Verdana, sans-serif;
+	background-color: #bbbbbb;
+	padding: 5;
+	line-height: 1.2;
+}
+
+a {
+}
+
+a:hover {
+}

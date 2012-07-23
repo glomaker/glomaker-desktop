@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+/////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2007-09 LTRI, London Metropolitan Uni. All rights reserved.
+// An Open Source Release under the GPL v3 licence  (see http://www.gnu.org/licenses/).
+// Authors: Tom Boyle, Nils Millahn, Musbah Sagar, Martin Agombar.
+// See http://www.glomaker.org for full details
+/////////////////////////////////////////////////////////////////////////
+-->
+
+<BaseComponent
+	xmlns="org.glomaker.shared.component.*"
+	xmlns:mx="http://www.adobe.com/2006/mxml">
+	
+	<mx:Script>
+		<![CDATA[
+			import org.glomaker.plugin.accessviews.Mp3Player;
+			import org.glomaker.shared.properties.BooleanProperty;
+			import org.glomaker.shared.properties.IComponentProperty;
+	
+			import org.glomaker.shared.properties.FilePathProperty;
+			import org.glomaker.shared.component.BaseComponent;
+			
+			protected var sourceField:FilePathProperty;
+			
+			[Bindable]
+			[Embed(source="files/control_pause.png")]
+			protected var pause:Class;
+			
+			[Bindable]
+			[Embed(source="files/control_pause_blue.png")]
+			protected var pauseb:Class;
+			
+			[Bindable]
+			[Embed(source="files/control_pause_grey.png")]
+			protected var pauseg:Class;
+			
+			[Bindable]
+			[Embed(source="files/control_play.png")]
+			protected var play:Class;
+			
+			[Bindable]
+			[Embed(source="files/control_play_blue.png")]
+			protected var playb:Class;
+			
+			[Bindable]
+			[Embed(source="files/control_play_grey.png")]
+			protected var playg:Class;
+			
+			[Bindable]
+			[Embed(source="files/control_stop.png")]
+			protected var stop:Class;
+			
+			[Bindable]
+			[Embed(source="files/control_stop_blue.png")]
+			protected var stopb:Class;
+			
+			[Bindable]
+			[Embed(source="files/control_stop_grey.png")]
+			protected var stopg:Class;
+			
+			protected var playPause:Boolean = true;
+			
+			protected var mp3Player:Mp3Player = new Mp3Player();
+
+
+
+			/**
+			 * Define components custom properties.
+			 */
+			override protected function defineProperties():void
+			{
+				super.defineProperties();
+				
+				sourceField = new FilePathProperty("source", "Sound path", "");
+				addProperty(sourceField);
+				
+				enabledPlay(false);
+				
+				playPause = true;
+			   
+			    setPlayPausebuttonStyle(); 
+				
+			}
+			
+			  // Remove all events
+            override public function destroy():void{
+                
+            	// Stop Mp3Player
+            	mp3Player.stop();
+            } 
+			
+			override public function propertyValuesInitialised():void
+			{
+				applyFilePath();
+			}
+			
+			override public function editablePropertyUpdated(prop:IComponentProperty):void
+			{
+				if(prop == sourceField)
+					applyFilePath();
+			}
+			
+			override public function hasEditMode():Boolean
+			{
+				return false;
+			}
+			
+			
+			// --------------------------------------------
+			// PROTECTED METHODS
+			// --------------------------------------------
+			
+			protected function applyFilePath():void
+			{
+				if(sourceField && sourceField.propValue != "FilePathProperty::NoUrlSet" && sourceField.propValue != ""){
+				   // Stop the music
+            	   mp3Player.stop();
+				   mp3Player.loadSound(sourceField.propValue);
+ 				   enabledPlay(true);
+				}
+			}
+			
+			   private function stopPlayHandler(event:MouseEvent):void   {
+            	
+            	playPause = true;
+            	
+            	mp3Player.stop();
+
+            	setPlayPausebuttonStyle();
+            }
+            
+            private function playPauseHandler(event:MouseEvent):void
+            {
+                playPause = !playPause;
+                
+               	mp3Player.playPause();
+
+                setPlayPausebuttonStyle();
+            }
+            
+               private function setPlayPausebuttonStyle():void{
+            	
+               if(playPause){
+                    pausePlayBtn.setStyle("icon",play);
+                    pausePlayBtn.setStyle("overIcon",playb);
+                    pausePlayBtn.toolTip="Play";
+                } else {
+                    pausePlayBtn.setStyle("icon",pause);
+                    pausePlayBtn.setStyle("overIcon",pauseb);
+                    pausePlayBtn.toolTip="Pause";
+                }
+            }
+            
+               public function enabledPlay(b:Boolean):void{
+            		pausePlayBtn.enabled = b;
+            		stopPlayBtn.enabled = b;
+					// Set tooltip
+            		if(b){
+            		    pausePlayBtn.toolTip="Play";
+            		}else{
+            		    pausePlayBtn.toolTip="Play (No Sound!)";
+            		}
+            }
+
+			
+		]]>
+	</mx:Script>
+	
+
+	<mx:HBox>
+	<mx:Button id="pausePlayBtn"  click="playPauseHandler(event)" disabledIcon="{playg}" overIcon="{playb}" icon="{play}" width="16" height="16" toolTip="Play"/>     			
+    <mx:Button id="stopPlayBtn"  click="stopPlayHandler(event)" disabledIcon="{stopg}" overIcon="{stopb}" icon="{stop}" width="16" height="16" toolTip="Stop"/>
+	</mx:HBox>
+        
+</BaseComponent>

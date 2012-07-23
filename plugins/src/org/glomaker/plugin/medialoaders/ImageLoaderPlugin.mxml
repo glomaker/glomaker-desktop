@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+/////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2007-09 LTRI, London Metropolitan Uni. All rights reserved.
+// An Open Source Release under the GPL v3 licence  (see http://www.gnu.org/licenses/).
+// Authors: Tom Boyle, Nils Millahn, Musbah Sagar, Martin Agombar.
+// See http://www.glomaker.org for full details
+/////////////////////////////////////////////////////////////////////////
+-->
+
+<BaseComponent
+	xmlns="org.glomaker.shared.component.*"
+	xmlns:mx="http://www.adobe.com/2006/mxml">
+	
+	<mx:Script>
+		<![CDATA[
+			import org.glomaker.shared.properties.BooleanProperty;
+			import org.glomaker.shared.properties.IComponentProperty;
+	
+			import org.glomaker.shared.properties.FilePathProperty;
+			import org.glomaker.shared.component.BaseComponent;
+			
+			protected var sourceField:FilePathProperty;
+			protected var maintainRatioField:BooleanProperty;
+
+			/**
+			 * Define components custom properties.
+			 */
+			override protected function defineProperties():void
+			{
+				super.defineProperties();
+				
+				sourceField = new FilePathProperty("source", "Image path", "");
+				addProperty(sourceField);
+				
+				maintainRatioField = new BooleanProperty("maintainRatio", "Maintain aspect ratio:", false);
+				addProperty(maintainRatioField);
+			}
+			
+			override public function propertyValuesInitialised():void
+			{
+				applyMaintainRatio();
+				applyFilePath();
+			}
+			
+			override public function editablePropertyUpdated(prop:IComponentProperty):void
+			{
+				if(prop == sourceField)
+					applyFilePath();
+				else if(prop == maintainRatioField)
+					applyMaintainRatio();
+			}
+			
+			override public function hasEditMode():Boolean
+			{
+				return false;
+			}
+			
+			
+			// --------------------------------------------
+			// PROTECTED METHODS
+			// --------------------------------------------
+			
+			protected function applyFilePath():void
+			{
+				if(sourceField)
+					image.source = sourceField.propValue;
+			}
+			
+			protected function applyMaintainRatio():void
+			{
+				// need to force an image reload, otherwise this change doesn't have any effect
+				if(maintainRatioField && maintainRatioField.propValue != image.maintainAspectRatio)
+				{
+					image.source = null;
+					image.maintainAspectRatio = maintainRatioField.propValue;
+					image.source = sourceField.propValue;
+				}
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:Style>
+		.missingImageStyle {
+			broken-image-skin: ClassReference("org.glomaker.shared.component.utils.MissingImageSkin");
+			broken-image-border-skin: ClassReference(null);
+		}
+	</mx:Style>
+	
+	<mx:Image id="image" source="none" styleName="missingImageStyle" width="100%" height="100%" scaleContent="true"/>
+	
+</BaseComponent>

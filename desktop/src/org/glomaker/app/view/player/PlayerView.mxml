@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+/////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2007-09 LTRI, London Metropolitan Uni. All rights reserved.
+// An Open Source Release under the GPL v3 licence  (see http://www.gnu.org/licenses/).
+// Authors: Tom Boyle, Nils Millahn, Musbah Sagar, Martin Agombar.
+// See http://www.glomaker.org for full details
+/////////////////////////////////////////////////////////////////////////
+-->
+
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" backgroundColor="#d6e2e9">
+
+	<mx:Canvas backgroundColor="#89a0ab" width="100%" top="0">
+		<mx:Label
+			selectable="false"
+			horizontalCenter="0"
+			fontSize="14"
+			fontWeight="bold"
+			paddingBottom="3"
+			paddingLeft="3"
+			paddingRight="3"
+			paddingTop="3"
+			color="#ffffff"
+			text="Preview Mode"/>
+	</mx:Canvas>
+
+	<mx:ModuleLoader id="playerModuleLoader" verticalCenter="0" horizontalCenter="0" clipContent="true"/>
+
+</mx:Canvas>

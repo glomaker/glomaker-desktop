@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<plugin>
+	<id>textarea</id>
+	<author>Martin</author>
+	<version>1.0</version>
+	<glomaker>2.0</glomaker>	
+	<name>Text Area</name>
+	<description>Text area component</description>
+	<swf>TextAreaPlugin.swf</swf>
+</plugin>

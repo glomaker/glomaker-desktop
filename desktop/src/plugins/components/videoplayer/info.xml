@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<plugin>
+	<id>videoplayer</id>
+	<author>Nils Millahn</author>
+	<version>1.0</version>
+	<glomaker>2.0</glomaker>	
+	<name>Video Player</name>
+	<description>Provides video playback for FLV/F4V files.</description>
+	<swf>VideoPlayerPlugin.swf</swf>
+</plugin>

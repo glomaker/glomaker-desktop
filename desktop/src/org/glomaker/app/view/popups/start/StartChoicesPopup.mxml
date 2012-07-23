@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+/////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2007-09 LTRI, London Metropolitan Uni. All rights reserved.
+// An Open Source Release under the GPL v3 licence  (see http://www.gnu.org/licenses/).
+// Authors: Tom Boyle, Nils Millahn, Musbah Sagar, Martin Agombar.
+// See http://www.glomaker.org for full details
+/////////////////////////////////////////////////////////////////////////
+-->
+
+<mx:TitleWindow
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	layout="vertical"
+	styleName="modalPopup"
+	title="Welcome to GLOMaker v2"
+	width="400" height="300">
+	
+	
+	<mx:Label text="What would you like to do?" width="100%"/>
+	<mx:Spacer height="10"/>
+	
+	<mx:LinkButton label="Open an existing project..." id="openButton" width="100%"/>
+	<mx:LinkButton label="Create a new project..." id="createButton" width="100%"/>
+	
+	<mx:Spacer height="10"/>
+	<mx:LinkButton label="Online Help for first-time users" id="firstTimeButton" width="100%"/>
+	
+</mx:TitleWindow>

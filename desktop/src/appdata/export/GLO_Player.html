@@ -1,0 +1,49 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<HTML>
+	<HEAD>
+		<TITLE>GLOMaker Player HTML File</TITLE>
+		
+		<META http-equiv="keywords" content="LTRIGM2+" />
+		<META http-equiv="description" content="LTRIGM2+" />
+		<META http-equiv="author" content="GLOMaker 2 / LTRIGM2+" />
+		
+		<script src="js/swfobject.js" type="text/javascript"></script>
+		<script type="text/javascript">
+			var flashvars = {"project": "project.glo"};
+			var params = {
+				menu: "false",
+				scale: "noScale"
+			};
+			swfobject.embedSWF("GloWebPlayer.swf", "glomakerwebplayer", "100%", "100%", "9.0.115", "", flashvars, params);
+		</script>
+		
+		<style>
+			html {
+			  height: 100%;
+			  overflow: hidden; /* Hides scrollbar in IE */
+			}
+			
+			body {
+			  height: 100%;
+			  margin: 0;
+			  padding: 0;
+			  background: #ededed;
+			}
+			
+			#glomakerwebplayer {
+			  height: 100%;
+			}
+		</style>
+	
+	</HEAD>
+	
+	<BODY>
+		<div id="glomakerwebplayer">
+			<p>This website requires the Macromedia Flash plugin and must have Javascript enabled.<br />
+			It seems that this isn't the case on your computer.<br /><br />
+			Please <a href="http://get.adobe.com/flashplayer/">download the free Flash plugin</a>.</p>
+			<p> This object was created by Glo Maker 2 (LTRIGM2+).</p>
+		</div>
+	
+	</BODY>
+</HTML>

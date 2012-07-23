@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<plugin>
+
+	<id>wordpuzzle</id>
+	<author></author>
+	<version>1.0</version>
+	<glomaker>2.0</glomaker>
+	<name>Word Puzzle</name>
+	<description>Display a word puzzle with commentary.</description>
+
+	<component id="textarea" x="0.044" y="0.058" width="0.916" height="0.1">
+  		<text>"WORD PUZZLE TITLE TEXT"</text>
+	</component>
+	
+	<component id="wordassembly" x="0.125" y="0.258" width="0.748" height="0.565">
+	  <textList>["Phrase 1","Phrase 2","Phrase 3"]</textList>
+	  <submit>"Test my answer"</submit>
+	  <reset>"Reset"</reset>
+	  <correct>"That is correct - well done!"</correct>
+	  <wrong>"Not quite - try again!"</wrong>
+	</component>
+
+</plugin>

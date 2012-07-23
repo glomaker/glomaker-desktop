@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+/////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2007-09 LTRI, London Metropolitan Uni. All rights reserved.
+// An Open Source Release under the GPL v3 licence  (see http://www.gnu.org/licenses/).
+// Authors: Tom Boyle, Nils Millahn, Musbah Sagar, Martin Agombar.
+// See http://www.glomaker.org for full details
+/////////////////////////////////////////////////////////////////////////
+-->
+
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+	layout="vertical" width="400"
+	title="Export Failed"
+	styleName="modalPopup"
+	>
+
+
+	<mx:Script>
+		<![CDATA[
+			
+			[Bindable]
+			[Embed(source="../assets/skins/icons/cross.png")]
+			protected var crossImage:Class;
+
+			[Bindable]
+			public var errorMessage:String = "";
+			
+		]]>
+	</mx:Script>
+
+
+	<mx:HBox width="100%">
+		<mx:Image source="{crossImage}"/>
+		<mx:Label text="Project export FAILED" fontWeight="bold"/>
+	</mx:HBox>
+	
+	<mx:Text width="100%" text="{errorMessage}" fontWeight="bold"/>
+		
+	<mx:Text width="100%" condenseWhite="true">
+		<mx:htmlText>
+			<![CDATA[
+			<p>Please make sure you that:</p>
+			<ul>
+				<li>The export directory you selected exists.</li>
+				<li>You have sufficient write-permission to the export directory.</li>
+				<li>You have enough disk space available.</li>
+				<li>You haven't opened any existing files in the export directory.</li>
+			</ul>
+			<p>If the problem persists, please let us know (full contact details online at http://glomaker.org).</p>				
+			]]>
+		</mx:htmlText>
+	</mx:Text>
+		
+	<mx:ControlBar horizontalAlign="center">
+		<mx:Button label="Close" click="dispatchEvent( new Event(Event.CLOSE, true) )"/>
+	</mx:ControlBar>
+	
+</mx:TitleWindow>

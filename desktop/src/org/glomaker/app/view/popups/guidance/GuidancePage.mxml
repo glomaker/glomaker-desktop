@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+/////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2007-09 LTRI, London Metropolitan Uni. All rights reserved.
+// An Open Source Release under the GPL v3 licence  (see http://www.gnu.org/licenses/).
+// Authors: Tom Boyle, Nils Millahn, Musbah Sagar, Martin Agombar.
+// See http://www.glomaker.org for full details
+/////////////////////////////////////////////////////////////////////////
+-->
+
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml">
+
+	<mx:Script>
+		<![CDATA[
+			
+			public function set htmlContent(value:String):void
+			{
+				// required for css / image loading
+				htmlControl.htmlLoader.placeLoadStringContentInApplicationSandbox = true;
+				
+				// links should open in normal system browser
+				htmlControl.htmlLoader.navigateInSystemBrowser = true;
+				
+				// assign the text
+				// htmlControl.htmlText can't be null
+				if(value)
+				{
+					htmlControl.htmlText = value;
+					htmlControl.visible = true;
+				}else{
+					htmlControl.visible = false;
+				}
+			}
+
+		]]>
+	</mx:Script>
+
+	<mx:HTML id="htmlControl" width="285" left="5" backgroundColor="#bbbbbb" />
+
+</mx:Canvas>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<plugin>
+	<id>youtube</id>
+	<author>Martin</author>
+	<version>1.0</version>
+	<glomaker>2.0</glomaker>	
+	<name>YouTube</name>
+	<description>Adds YouTube video using embed code.</description>
+	<swf>YouTubePlugin.swf</swf>
+</plugin>

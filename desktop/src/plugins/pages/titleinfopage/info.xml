@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<plugin>
+	<id>titleinfopage</id>
+	<author>Nils Millahn</author>
+	<version>1.0</version>
+	<glomaker>2.0</glomaker>	
+	<name>Title/Info Page</name>
+	<description>Displays a page with a title and a larger information textfield.</description>
+
+	<component id="textarea" x="0.014" y="0.019" width="0.959" height="0.208">
+	  <text>"Enter text"</text>
+	</component>
+	<component id="textarea" x="0.13" y="0.269" width="0.739" height="0.6">
+	  <text>"Enter text"</text>
+	</component>
+</plugin>

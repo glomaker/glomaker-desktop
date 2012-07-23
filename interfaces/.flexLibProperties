@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flexLibProperties version="1">
+<includeClasses>
+<classEntry path="org.glomaker.shared.component.BaseComponent"/>
+<classEntry path="org.glomaker.shared.component.interfaces.IComponentPlugin"/>
+<classEntry path="org.glomaker.shared.component.interfaces.ISlideshowNavigationController"/>
+<classEntry path="org.glomaker.shared.component.interfaces.ISlideshowNavigator"/>
+<classEntry path="org.glomaker.shared.component.interfaces.ISlideshowStatusObject"/>
+<classEntry path="org.glomaker.shared.component.interfaces.ISlideshowStatusReceiver"/>
+<classEntry path="org.glomaker.shared.component.optimisation.PluginOptimiser"/>
+<classEntry path="org.glomaker.shared.component.utils.MissingImageSkin"/>
+<classEntry path="org.glomaker.shared.player.IPlayerBridge"/>
+<classEntry path="org.glomaker.shared.properties.AbstractCustomProperty"/>
+<classEntry path="org.glomaker.shared.properties.AbstractSimpleProperty"/>
+<classEntry path="org.glomaker.shared.properties.ArrayProperty"/>
+<classEntry path="org.glomaker.shared.properties.BooleanProperty"/>
+<classEntry path="org.glomaker.shared.properties.ColourProperty"/>
+<classEntry path="org.glomaker.shared.properties.FilePathArrayProperty"/>
+<classEntry path="org.glomaker.shared.properties.FilePathProperty"/>
+<classEntry path="org.glomaker.shared.properties.IComponentProperty"/>
+<classEntry path="org.glomaker.shared.properties.IntegerProperty"/>
+<classEntry path="org.glomaker.shared.properties.NumberProperty"/>
+<classEntry path="org.glomaker.shared.properties.NumericStepperProperty"/>
+<classEntry path="org.glomaker.shared.properties.RichTextProperty"/>
+<classEntry path="org.glomaker.shared.properties.StringProperty"/>
+<classEntry path="org.glomaker.shared.ui.DynamicTextArea"/>
+<classEntry path="org.glomaker.shared.ui.editbutton.EditableButton"/>
+<classEntry path="org.glomaker.shared.utils.MutableArray"/>
+</includeClasses>
+<includeResources/>
+<namespaceManifests/>
+</flexLibProperties>

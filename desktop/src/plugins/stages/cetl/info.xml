@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<plugin>
+
+	<id>cetlStage</id>
+	<author>Nils Millahn</author>
+	<version>1.0</version>
+	<glomaker>2.0</glomaker>
+	<name>CETL Stage</name>
+	<description>CETL-branded GLOMaker Stage Plugin</description>
+	
+	<swf>CETLNavBar.swf</swf>
+</plugin>

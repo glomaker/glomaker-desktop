@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<plugin>
+	<id>wordassembly</id>
+	<author>Nils Millahn</author>
+	<version>1.0</version>
+	<glomaker>2.0</glomaker>	
+	<name>Word Assembly Quiz</name>
+	<description>Displays a word assembly quiz unit.</description>
+	<swf>WordAssemblyPlugin.swf</swf>
+</plugin>

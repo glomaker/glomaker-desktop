@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+/////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2007-09 LTRI, London Metropolitan Uni. All rights reserved.
+// An Open Source Release under the GPL v3 licence  (see http://www.gnu.org/licenses/).
+// Authors: Tom Boyle, Nils Millahn, Musbah Sagar, Martin Agombar.
+// See http://www.glomaker.org for full details
+/////////////////////////////////////////////////////////////////////////
+-->
+
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml">
+
+	<mx:Label text="GUIDANCE" styleName="guidanceRadioLabel"/>
+	<mx:Spacer width="40"/>
+	<mx:RadioButtonGroup id="guidanceRBGroup"/>
+	<mx:RadioButton label="ON" value="ON" groupName="guidanceRBGroup" labelPlacement="top" styleName="guidanceRadios"/>
+	<mx:Spacer width="12"/>
+	<mx:RadioButton label="OFF" value="OFF" groupName="guidanceRBGroup" labelPlacement="top" styleName="guidanceRadios"/>
+
+</mx:HBox>

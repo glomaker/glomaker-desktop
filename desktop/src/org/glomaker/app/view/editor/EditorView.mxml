@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+/////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2007-09 LTRI, London Metropolitan Uni. All rights reserved.
+// An Open Source Release under the GPL v3 licence  (see http://www.gnu.org/licenses/).
+// Authors: Tom Boyle, Nils Millahn, Musbah Sagar, Martin Agombar.
+// See http://www.glomaker.org for full details
+/////////////////////////////////////////////////////////////////////////
+-->
+
+<mx:HBox
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:help="org.glomaker.app.view.help.*"
+	xmlns:accordion="org.glomaker.app.view.accordion.*"
+	xmlns:library="org.glomaker.app.view.library.*"
+	xmlns:properties="org.glomaker.app.view.properties.*"
+	xmlns:view="org.glomaker.app.view.*"
+	xmlns:stagesetting="org.glomaker.app.view.stagesetting.*"
+	xmlns:richtexteditor="org.glomaker.app.view.richtexteditor.*"
+	xmlns:components="org.glomaker.app.view.components.*"
+	xmlns:page="org.glomaker.app.view.popups.page.*"
+	xmlns:list="org.glomaker.app.view.components.list.*"
+	xmlns:editor="org.glomaker.app.view.editor.*"
+	
+	horizontalGap="1"
+	>
+
+
+	<mx:Script>
+		<![CDATA[
+			import mx.managers.ISystemManager;
+			import mx.managers.SystemManager;
+			import org.glomaker.hotdraw.HotDrawApplication;
+		
+		public var hotDrawApplication:HotDrawApplication = null;
+
+
+		public function setup(sm:ISystemManager):void
+		{
+			// Start the main class of HotDraw, DrawApplication!
+	        // toolsCanvas is a Canvas to display the tools
+	        hotDrawApplication = new HotDrawApplication(sm,pageDisplay);
+		}
+		
+		
+
+		]]>
+	</mx:Script>
+
+    			<!--vertical strip 1: contains project pages-->
+    			<mx:VBox width="190" height="100%" backgroundColor="#fefefe">
+    				
+    				<mx:VBox id="guidancePanel" width="100%" styleName="guidancePanel" verticalGap="0">
+	    				<mx:Label text="" id="patternLabel" styleName="patternLabel"/>
+		    			<mx:Label text="PEDAGOGICAL SEQUENCE" 
+		    				styleName="sequenceTitle"
+		    				selectable="false"/>
+
+						<editor:GuidanceControls id="guidanceControls" width="100%" verticalAlign="bottom" horizontalGap="0"/>					
+    				</mx:VBox>
+				
+					<list:PedagogicalSequenceList
+						width="100%"
+						height="100%"
+						id="pageList"
+						styleName="pageList"
+						itemRenderer="org.glomaker.app.view.components.list.SequenceListItemRenderer"/>
+				</mx:VBox>
+				
+				<!--vertical strip 1: contains project pages-->
+				
+				<!--****************************-->
+				<!--vertical strip 2: contains stage area-->
+				
+				<mx:VBox width="100%" height="100%" verticalGap="0">
+
+					<mx:HBox width="100%" verticalAlign="middle">
+						<richtexteditor:GloRichTextEditor id="rte" width="100%" height="30" enabled="false" showToolTips="true" />
+						<mx:HSlider id="zoomSlider" value="1" minimum="0.1" maximum="3" width="100"/>
+					</mx:HBox>
+
+					<components:ScrollRectBox width="100%" height="100%"
+						minHeight="0"
+						minWidth="0"
+						styleName="contentArea"
+						mouseEnabled="false"
+						horizontalScrollPolicy="auto"
+						verticalScrollPolicy="auto">
+						
+						<!-- this container canvas is used to scale the content - it has now specific width/height -->
+	                   <mx:Canvas id="pageContainer" 
+								scaleX="{zoomSlider.value}"
+								scaleY="{zoomSlider.value}"
+								clipContent="false">
+
+							<!-- this canvas draws the background colour - its width/height is set to that of the stage -->								
+							<mx:Canvas id="backgroundCanvas" styleName="backgroundCanvas"
+								width="800" height="600"
+								backgroundColor="#ffffff"/>
+
+						<!-- this canvas has no width/height, it will adjust to fit its contents --> 
+						<mx:Canvas id="pageDisplay" clipContent="false" minWidth="800" minHeight="600"/>
+												
+						<!-- this canvas displays the stage controls - its width/height is set to that of the stage -->
+							<mx:Canvas id="stageUIDisplay"
+								backgroundAlpha="0"
+								mouseEnabled="false"
+								mouseChildren="true"
+								clipContent="true"
+								width="800" height="600"/>
+
+						</mx:Canvas>	
+							
+					</components:ScrollRectBox>			
+
+					<mx:HBox width="100%" height="61" horizontalGap="0">
+						
+						<editor:PopupMenuView id="popupMenu" styleName="popupMenu"
+							width="200" height="100%"/>
+						
+						<properties:HorzPropertiesPanelView
+							width="100%" height="100%"
+							styleName="propertiesPanel"
+							id="properties"/>
+						
+					</mx:HBox>
+
+					
+				</mx:VBox>
+				
+</mx:HBox>

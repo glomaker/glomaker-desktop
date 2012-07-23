@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+/////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2007-09 LTRI, London Metropolitan Uni. All rights reserved.
+// An Open Source Release under the GPL v3 licence  (see http://www.gnu.org/licenses/).
+// Authors: Tom Boyle, Nils Millahn, Musbah Sagar, Martin Agombar.
+// See http://www.glomaker.org for full details
+/////////////////////////////////////////////////////////////////////////
+-->
+
+<plugin:BaseComponent
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:plugin="org.glomaker.shared.component.*"
+	implements="org.glomaker.shared.component.interfaces.ISlideshowNavigator"
+	layout="absolute"
+>
+	
+	
+	<mx:Script>
+		<![CDATA[
+			import org.glomaker.shared.component.interfaces.ISlideshowNavigationController;
+			
+			// ****************************************
+			// ISlideshowNavigator IMPLEMENTATION
+			// ****************************************
+			
+			protected var slideshowController:ISlideshowNavigationController;
+			
+			public function attachSlideshowController(controller:ISlideshowNavigationController):void
+			{
+				slideshowController = controller;
+			}
+			
+			public function detachSlideshowController():void
+			{
+				slideshowController = null;
+			}
+			
+			
+			// ****************************************
+			// Component IMPLEMENTATION
+			// ****************************************
+			
+			protected function restart():void
+			{
+				if(slideshowController)
+					slideshowController.goto(0);
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:Button width="100%" height="100%" label="Restart Slideshow" click="restart()"/>
+	
+</plugin:BaseComponent>

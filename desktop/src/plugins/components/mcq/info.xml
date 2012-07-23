@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+ 
+<plugin>
+	<id>MCQ</id>
+	<author>Martin</author>
+	<version>1.0</version>
+	<glomaker>2.0</glomaker>	
+	<name>Multiple Choice Quiz</name>
+	<description>Displays a Multiple Choice Quiz</description>
+	<swf>MultipleChoiceQuestionPlugin.swf</swf>
+</plugin>

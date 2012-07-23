@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<plugin>
+	<id>mediacommentary</id>
+	<author>musbah</author>
+	<version>1.0</version>
+	<glomaker>2.0</glomaker>	
+	<name>Media and Commentary</name>
+	<description>Displays a page with a title, an image and accompanying text.</description>
+
+	<component id="rectangle" x="0.697" y="0.002" width="0.303" height="1">
+	  <cornerRadius>0</cornerRadius>
+	  <bgcolour>15658734</bgcolour>
+	</component>
+	<component id="textarea" x="0.723" y="0.048" width="0.253" height="0.829">
+	  <text>"Enter text"</text>
+	</component>
+	<component id="imageloader" x="0.022" y="0.035" width="0.647" height="0.848">
+     <source isPath="true">"FilePathProperty::NoUrlSet"</source>
+     <maintainRatio>false</maintainRatio>
+</component>
+    
+</plugin>

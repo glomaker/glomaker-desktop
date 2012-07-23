@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+/////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2007-09 LTRI, London Metropolitan Uni. All rights reserved.
+// An Open Source Release under the GPL v3 licence  (see http://www.gnu.org/licenses/).
+// Authors: Tom Boyle, Nils Millahn, Musbah Sagar, Martin Agombar.
+// See http://www.glomaker.org for full details
+/////////////////////////////////////////////////////////////////////////
+-->
+
+<mx:TitleWindow
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	layout="vertical"
+	width="376"
+	height="458"
+	
+	verticalScrollPolicy="off"
+	horizontalScrollPolicy="off"
+	
+	title="Components"
+	
+	styleName="clearPopup"
+	>
+	
+	<mx:Script>
+		<![CDATA[
+			
+			[Bindable]
+			public var listData:Array;
+			
+		]]>
+	</mx:Script>
+	
+	<mx:Style>
+		/* component list item */
+		.componentList {
+			background-color: #f3f3f3;
+			padding-top: 0;
+			padding-bottom: 0;
+			roll-over-color: #999999;
+			selection-color: #999999; 
+		}
+		
+	</mx:Style>
+	
+	<mx:Text width="100%" id="instructionText"/>
+	
+	<mx:List dataProvider="{listData}" styleName="componentList" id="componentList" width="100%" height="100%" doubleClickEnabled="true">
+	
+		<mx:itemRenderer>
+			<mx:Component>
+			
+				<mx:HBox
+					width="100%"
+					
+					verticalAlign="middle"
+					paddingLeft="5"
+					paddingRight="5"
+					paddingTop="5"
+					paddingBottom="5"
+					borderStyle="solid"
+					borderColor="#999999"
+					borderSides="bottom"
+					
+					toolTip="{data.description}" mouseChildren="false">
+					
+					<mx:Canvas width="30" height="30" backgroundColor="#ffffff" borderStyle="solid" borderColor="#5e5e5e">
+						<mx:Image source="{data.iconURL}" />
+					</mx:Canvas>
+						
+					<mx:Label
+						text="{data.name}"
+						fontWeight="bold"
+						color="#333333"/>
+				</mx:HBox>
+				
+			</mx:Component>
+		</mx:itemRenderer>
+					
+	</mx:List>
+	
+	
+	<mx:HBox width="100%" horizontalAlign="center">
+		<mx:Button label="OK" id="okButton" enabled="{componentList.selectedItem != null}"/>
+		<mx:Button label="Cancel" id="cancelButton"/>
+	</mx:HBox>
+	
+</mx:TitleWindow>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<plugin>
+	<id>mcquiztext</id>
+	<author>musbah</author>
+	<version>1.0</version>
+	<glomaker>2.0</glomaker>	
+	<name>Multiple-Choice Quiz and Text</name>
+	<description>Displays a multiple choice quiz with text alongside it.</description>
+
+	<component id="MCQ" x="0.063" y="0.271" width="0.503" height="0.408">
+	  <question>"Type your question here..."</question>
+	  <fontSize>15</fontSize>
+	  <submit>"Submit"</submit>
+	  <correct>-1</correct>
+	  <answers>["Answer 1","Answer 2","Answer 3"]</answers>
+	  <feedbacks>["Feedback 1","Feedback 2","Feedback 3]</feedbacks>
+	</component>
+	<component id="rectangle" x="0.652" y="0.004" width="0.348" height="0.915">
+	  <cornerRadius>0</cornerRadius>
+	  <bgcolour>15658734</bgcolour>
+	</component>
+	<component id="textarea" x="0.689" y="0.046" width="0.28" height="0.827">
+	  <text>"Enter a description here"</text>
+	</component>
+	<component id="textarea" x="0.058" y="0.056" width="0.538" height="0.121">
+	  <text>"Enter a title here"</text>
+	</component>	
+</plugin>

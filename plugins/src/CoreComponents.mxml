@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" 
+	xmlns:mediaLoader="org.glomaker.plugin.mediaLoader.*" 
+	xmlns:plugin="org.glomaker.plugin.*" 
+	xmlns:medialoaders="org.glomaker.plugin.medialoaders.*" 
+	xmlns:textloaders="org.glomaker.plugin.textloaders.*"
+	xmlns:buttonclicker="org.glomaker.plugin.buttonclicker.*" 
+	xmlns:swirl="org.glomaker.stage.swirl.*"
+	xmlns:swfloader="org.glomaker.plugin.swfloader.*" 
+	xmlns:textarea="org.glomaker.plugin.textarea.*" 
+	xmlns:mcq="org.glomaker.plugin.mcq.*" 
+	xmlns:videoplayer="org.glomaker.plugin.videoplayer.*" 
+	xmlns:rectangle="org.glomaker.plugin.rectangle.*" 
+	xmlns:londonmet="org.glomaker.stage.londonmet.*" 
+	xmlns:wordassembly="org.glomaker.plugin.wordassembly.*" xmlns:stepthrough="org.glomaker.plugin.stepthrough.*" xmlns:accessviews="org.glomaker.plugin.accessviews.*" xmlns:imagemagnifier="org.glomaker.plugin.imagemagnifier.*" xmlns:mp3player="org.glomaker.plugin.mp3player.*">
+	 
+	<mx:Script>
+		<![CDATA[
+			
+			import org.glomaker.shared.component.optimisation.PluginOptimiser;
+			import org.glomaker.plugin.imagemagnifier.ImageMagnifierPlugin;
+			import org.glomaker.plugin.mcq.MultipleChoiceQuestionPlugin;
+			import org.glomaker.shared.component.interfaces.IComponentPlugin;
+
+			private var _optimization:Object = PluginOptimiser;
+			private var _isEditState:Boolean = false;
+			
+			protected function init():void
+			{
+			}
+			
+			
+			protected function onToggleViewState(evt:MouseEvent):void
+			{
+				//_dummyApp = new DummyApplication(rte.child as IComponentPlugin, this);
+				//(quiz.child as MultipleChoiceQuestionPlugin).toggleState();
+				_isEditState = !_isEditState;
+				plugin.setEditMode(_isEditState);
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:Style source="GLO_styles.css" />
+	
+	<mx:VBox width="100%" height="100%">
+	
+		<mx:Button label="Toggle" click="onToggleViewState(event)"/>
+		
+		
+		<textarea:TextAreaPlugin id="plugin" width="100%" height="50%"/>
+
+
+<!--		
+		<mp3player:Mp3PlayerPlugin id="plugin" width="100%" height="100%"/>
+<mx:Button label="Init" click="plugin.propertyValuesInitialised()"/>
+		<medialoaders:ImageLoaderPlugin id="plugin" width="100" height="100"/>
+-->	
+<!--<accessviews:AccessViewsPlugin id="plugin" width="100%" height="100%"/>
+-->
+<!--<stepthrough:StepThroughPlugin id="plugin" width="100%" height="100%"/>
+-->
+<!--<imagemagnifier:ImageMagnifierPlugin id="plugin" width="100%" height="100%"/>
+
+<mx:SWFLoader id="plugin" width="100%" height="100%"/>
+-->
+</mx:VBox>
+
+
+<londonmet:LondonMetNavBar/>
+
+</mx:Application>

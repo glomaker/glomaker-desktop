@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<plugin>
+	<id>titleoverimage</id>
+	<author>musbah</author>
+	<version>1.0</version>
+	<glomaker>2.0</glomaker>	
+	<name>Title Over Image</name>
+	<description>Displays a page with a title and an image</description>
+
+    <component id="textarea" x="0.078" y="0.062" height="0.135" width="0.820">
+    	<text>"Title"</text>
+    </component>
+    <component id="imageloader" x="0.046" y="0.270" height="0.583" width="0.890">
+      <source isPath="true">"FilePathProperty::NoUrlSet"</source>
+	  <maintainRatio>false</maintainRatio>
+	</component>
+
+</plugin>

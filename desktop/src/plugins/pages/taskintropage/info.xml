@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<plugin>
+	<id>taskintropage</id>
+	<author>musbah</author>
+	<version>1.0</version>
+	<glomaker>2.0</glomaker>	
+	<name>Text over Image</name>
+	<description>Displays a page with a text and image</description>
+
+    <component id="textarea" x="0.039" y="0.045" height="0.347" width="0.906">
+       	<text>"Title"</text>
+    </component>
+    <component id="imageloader" x="0.300" y="0.439" height="0.447" width="0.418">
+ 	 <source isPath="true">"FilePathProperty::NoUrlSet"</source>
+  	 <maintainRatio>false</maintainRatio>
+	</component>
+</plugin>

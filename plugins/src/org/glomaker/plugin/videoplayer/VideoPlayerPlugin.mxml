@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+/////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2007-09 LTRI, London Metropolitan Uni. All rights reserved.
+// An Open Source Release under the GPL v3 licence  (see http://www.gnu.org/licenses/).
+// Authors: Tom Boyle, Nils Millahn, Musbah Sagar, Martin Agombar.
+// See http://www.glomaker.org for full details
+/////////////////////////////////////////////////////////////////////////
+-->
+
+<BaseComponent
+	xmlns="org.glomaker.shared.component.*"
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+xmlns:controls="com.fxcomponents.controls.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import org.glomaker.shared.properties.IComponentProperty;
+			import org.glomaker.shared.properties.FilePathProperty;
+			
+			protected var videoSource:FilePathProperty;
+			
+
+			/**
+			 * Define components custom properties.
+			 */
+			override protected function defineProperties():void
+			{
+				super.defineProperties();
+			
+			 	videoSource = new FilePathProperty("source", "Video File:", "");
+			 	videoSource.fileTypeLabel = "Flash Videos (*.flv, *.f4v, *.mp4)";
+			 	videoSource.fileExtensions = "*.flv;*.f4v;*.mp4";
+			 	
+				addProperty(videoSource);
+			}
+			
+			
+			override public function propertyValuesInitialised():void
+			{
+				vidPlayer.source = videoSource.propValue;
+			}
+		
+		
+			/**
+			 * Update when user has selected a different file in the properties panel.
+			**/
+			override public function editablePropertyUpdated(prop:IComponentProperty):void
+			{
+				if(prop == videoSource)
+					vidPlayer.source = videoSource.propValue;
+			}
+			
+			override public function hasEditMode():Boolean
+			{
+				return false;
+			}
+			
+			override public function destroy():void
+			{
+				// some of these might throw exceptions
+				try{
+					vidPlayer.stop();
+				}catch(e:Error){}
+				
+				try{
+					vidPlayer.source = null;
+				}catch(e:Error){}
+
+				try{
+					vidPlayer.close();
+				}catch(e:Error){}
+				
+			}
+
+		]]>
+	</mx:Script>
+	
+	<controls:FXVideo id="vidPlayer" width="100%" height="100%" autoPlay="false" bufferTime="10" />
+	 
+</BaseComponent>

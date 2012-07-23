@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<pattern>
+
+	<id>easa</id>
+	<author>musbah</author>
+	<version>1.0</version>
+	<glomaker>2.0</glomaker>	
+	<name>EASA</name>
+	<description>EASA: Explain and Show Amplified...</description>
+
+	<allowNodeEditing>yes</allowNodeEditing>
+	<htmlLongDescription><![CDATA[<h1>EASA – Explain and Show Amplified</h1>
+<p><b>Learning challenge:</b> this design was developed originally to help learners tackle skills or processes that they find abstract and often threatening, e.g.  mathmatics or programming. The pattern, however, has proved to be very flexible, and has been used to develop a wide range of learning objects.</p>
+<p><b>Key features:</b> the initial orientation to the task is often followed by an optional ‘Apprehend’ screen. This provides a global overview before the explanation goes into details. This is followed by several ‘Comprehend’ screens which deal directly with the main details of the process to be learned. Concrete illustration and animations are used to explain concepts that might otherwise be abstract and ‘alien’. The learning experience usually culminates with a ‘construction exercise’ where the learner demonstrates the new skill/knowledge under supportive conditions.</p>
+<p><b>First use:</b> this pattern is based on a set of learning objects for learning introductory programming that won a European Academic Software Award in 2004.</p>
+<p>Further information see: <a href="http://www.glomaker.org/guides/EASA_pattern_description.pdf">The EASA Pattern</a></p>]]></htmlLongDescription>	
+	
+	<library>
+	     <heading id="Orient" title="Orient" colour="0xff0000">
+	      <func>
+	      	<id>easa_f1</id>
+	        <title>What Topic</title>
+			<description>Introduce the topic – to orient the learner to what is to come.</description>
+			<defaultLayoutId>titleinfopage</defaultLayoutId>
+			<guidance>
+				<page title="How"><![CDATA[<p>Just give a title and a short introductory paragraph that says fairly informally what the learning is about.</p>]]></page>
+				<page title="Example"><![CDATA[<p>Just give a title and a short introductory paragraph that says fairly informally what the learning object is about.</p><img src="assets/whileloop.jpg" /><p>Just give a title and a short introductory paragraph that says fairly informally what the learning object is about.</p>]]></page>
+			</guidance>
+	      </func>
+	      <func>
+	      	<id>easa_f2</id>
+	        <colour>0xFF0000</colour>
+	        <title>Grab Attention</title>
+			<description>Attract interest to create engagement in the topic.</description>
+			<defaultLayoutId>mediacommentary</defaultLayoutId>
+			<guidance>
+				<page title="How"><![CDATA[<p>The aim is to attract the interest of the learner so that they become engaged with the learning object, e.g. provide a colourful ‘splash’ screen to attract the learner’s interest.</p>]]></page>
+				<page title="Example"><![CDATA[<img src="assets/attention.jpg" />]]></page>
+			</guidance>
+	      </func>
+	      <func>
+	      	<id>easa_f3</id>
+	        <title>Why Learn</title>
+			<description>Reasons for why it is important to study the topic.</description>
+			<defaultLayoutId>mediacommentary</defaultLayoutId>
+			<guidance>
+				<page title="How"><![CDATA[<p>Give reasons for why it is important to learn this topic, e.g. provide a list which the learner can access selectivity rather than reading from the top.</p>]]></page>
+				<page title="Example"><![CDATA[<img src="assets/whylearn.jpg" />]]></page>
+			</guidance>
+	      </func>
+	    </heading>
+	    <heading id="Apprehend" title="Understand" colour="0x009966">
+	      <func>
+	      	<id>easa_f4</id>
+	        <title>Apprehend</title>
+			<description>Help the learner to gain an overall apprehension of the topic without worrying about details at this stage.</description>
+			<defaultLayoutId>mediacommentary</defaultLayoutId>
+			<guidance>
+				<page title="How"><![CDATA[<p>A holistic representation of the concept is given together with brief explanatory commentary. This representation will often be based on a familiar example. If this is not available, then just provide a strong visual representation.</p>]]></page>
+				<page title="Example"><![CDATA[<img src="assets/apprehend.jpg" />]]></page>
+			</guidance>
+	      </func>
+	      <func>
+	      	<id>easa_f5</id>
+	        <title>Comprehend</title>
+			<description>Enable the learner to examine and understand the key aspects of the topic.</description>
+			<defaultLayoutId>stepthrough</defaultLayoutId>
+			<guidance>
+				<page title="How"><![CDATA[<p>Step through each of the key parts of the concept or construct, and show how they work together. This learner should be allowed to move through the learning sequence at their own pace.</p>]]></page>
+				<page title="Example"><![CDATA[<img src="assets/comprehend.jpg" />]]></page>
+			</guidance>
+	      </func>
+	    </heading>
+	    <heading id="Use" title="Use" colour="0x0000FF">
+	      <func>
+	      	<id>easa_f6</id>
+	        <title>Construct</title>
+			<description>The learner needs to constructively apply the newly acquired knowledge.</description>
+			<defaultLayoutId>wordpuzzle</defaultLayoutId>
+			<guidance>
+				<page title="What"><![CDATA[<p>The learner needs to constructively apply the newly acquired knowledge. To move straight to use in the normal environment may be too big a jump. The learner needs to constructively apply their knowledge and test their understanding under supportive conditions.</p>]]></page>
+				<page title="How"><![CDATA[<p>The learner does a ‘scaffolded’ construction task. The learner selects components and assembles them in the right order. Feedback is provided at appropriate points in this construction exercise.</p>]]></page>
+				<page title="Example"><![CDATA[<img src="assets/construct.jpg" />]]></page>
+			</guidance>
+	      </func>
+	      <func>
+	      	<id>easa_f7</id>
+	        <title>Quiz</title>
+			<description>Test for knowledge about individual components or aspects of the topic.</description>
+			<defaultLayoutId>mcquiztext</defaultLayoutId>
+			<guidance>
+				<page title="How"><![CDATA[<p>The key part is to provide feedback that provokes reflection rather than just confirming a correct/incorrect answer.</p>]]></page>
+				<page title="Example"><![CDATA[<img src="assets/quiz.jpg" />]]></page>
+			</guidance>
+	      </func>
+	    </heading>
+	    <heading id="self" title="Self defined" colour="0xCCCCCC">
+	    	<func>
+	      	<id>easa_f8</id>
+	        <title>My function</title>
+			<description>Define as you please.</description>
+			<defaultLayoutId>blankpage</defaultLayoutId>
+			<guidance>
+				<page title="How"><![CDATA[<p>You can use this node for any purpose you want. Add some text to define what the function is doing.</p>]]></page>
+			</guidance>
+	      </func>
+	    </heading>
+	</library>
+	
+    <instance>
+      <node>
+        <id>n1</id>
+        <funcid>easa_f1</funcid>
+        <locx>310</locx>
+        <locy>160</locy>
+        <title>What Topic</title>
+        <description>Introduce the topic – to orient the learner to what is to come.</description>
+        <parentid>null</parentid>
+        <childid>n3</childid>
+        <isroot>true</isroot>
+		<layoutid>titleinfopage</layoutid>
+      </node>
+      <node>
+        <id>n3</id>
+        <funcid>easa_f4</funcid>
+        <locx>315</locx>
+        <locy>227</locy>
+        <title>Apprehend</title>
+        <description>Help the learner to gain an overall apprehension of the topic without worrying about details at this stage.</description>
+        <parentid>n1</parentid>
+        <childid>n4</childid>
+        <isroot>false</isroot>
+		<layoutid>mediacommentary</layoutid>
+      </node>
+      <node>
+        <id>n4</id>
+        <funcid>easa_f5</funcid>
+        <locx>314</locx>
+        <locy>305</locy>
+        <title>Comprehend</title>
+        <description>Enable the learner to examine and understand the key aspects of the topic.</description>
+        <parentid>n3</parentid>
+        <childid>n5</childid>
+        <isroot>false</isroot>
+		<layoutid>stepthrough</layoutid>
+      </node>
+      <node>
+        <id>n5</id>
+        <funcid>easa_f6</funcid>
+        <locx>314</locx>
+        <locy>426</locy>
+        <title>Construct</title>
+        <description>The learner needs to constructively apply the newly acquired knowledge.</description>
+        <parentid>n4</parentid>
+        <childid>null</childid>
+        <isroot>false</isroot>
+		<layoutid>wordpuzzle</layoutid>
+      </node>
+      
+    </instance>
+</pattern>

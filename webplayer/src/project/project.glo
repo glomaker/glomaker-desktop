@@ -1,0 +1,143 @@
+<glo>
+  <props>
+    <w>640</w>
+    <h>480</h>
+    <rgb>16777215</rgb>
+    <pattern>EASA</pattern>
+    <stageid>swirlstage</stageid>
+  </props>
+  <nodes>
+    <page>
+      <node>
+        <locx>316</locx>
+        <locy>153</locy>
+        <root>true</root>
+        <hfunc>Orient</hfunc>
+        <ntitle>What Topic</ntitle>
+        <active>false</active>
+        <id>n1</id>
+        <originalid>null</originalid>
+        <parent>null</parent>
+        <ntext>WHAT the topic is about</ntext>
+        <name>What Topic</name>
+        <colour>16711680</colour>
+        <nfunc>What Topic</nfunc>
+        <drag>false</drag>
+        <hname>Orient</hname>
+        <receiver>false</receiver>
+        <child>n3</child>
+        <gloref>p35</gloref>
+        <page>
+          <page layoutType="undefined" realisationType="What" type="Orient" id="p35" nTitle="What Topic" nText="WHAT the topic is about"/>
+        </page>
+      </node>
+      <layout id="whatpage"/>
+      <component id="textarea" x="49" y="29" width="524" height="64">
+        <text>This is a carrot!</text>
+      </component>
+      <component id="imageloader" x="30" y="129" width="568" height="279">
+        <source isPath="true">C:\Documents and Settings\sagarm\Desktop\carrot.jpg</source>
+      </component>
+    </page>
+    <page>
+      <node>
+        <locx>315</locx>
+        <locy>227</locy>
+        <root>false</root>
+        <hfunc>Understand</hfunc>
+        <ntitle>Apprehend</ntitle>
+        <active>false</active>
+        <id>n3</id>
+        <originalid>null</originalid>
+        <parent>n1</parent>
+        <ntext>Give the learner a GLOBAL GRASP of the concept</ntext>
+        <name>Apprehend</name>
+        <colour>39270</colour>
+        <nfunc>Apprehend</nfunc>
+        <drag>false</drag>
+        <hname>Understand</hname>
+        <receiver>false</receiver>
+        <child>n4</child>
+        <gloref>p9</gloref>
+        <page>
+          <page realisationType="undefined" type="Apprehend" id="p9" nTitle="Apprehend" nText="Give the learner a GLOBAL GRASP of the concept"/>
+        </page>
+      </node>
+      <layout id="apprehendpage"/>
+      <component id="imageloader" x="108" y="106" width="282" height="244">
+        <source isPath="true">C:\Documents and Settings\sagarm\Desktop\happy-birthday.jpg</source>
+      </component>
+      <component id="textarea" x="484" y="34" width="129" height="374">
+        <text>Happy Birthday!</text>
+      </component>
+    </page>
+    <page>
+      <node>
+        <locx>314</locx>
+        <locy>305</locy>
+        <root>false</root>
+        <hfunc>Understand</hfunc>
+        <ntitle>Comprehend</ntitle>
+        <active>false</active>
+        <id>n4</id>
+        <originalid>null</originalid>
+        <parent>n3</parent>
+        <ntext>Work through an illustrated example with a STEP BY STEP EXPLANATION</ntext>
+        <name>Comprehend</name>
+        <colour>39270</colour>
+        <nfunc>Comprehend</nfunc>
+        <drag>false</drag>
+        <hname>Understand</hname>
+        <receiver>false</receiver>
+        <child>n5</child>
+        <gloref>p12</gloref>
+        <page>
+          <page realisationType="undefined" parentStage="Understand" type="ComprehendDefault" id="p12" nTitle="Comprehend" nText="Work through an illustrated example with a STEP BY STEP EXPLANATION"/>
+        </page>
+      </node>
+      <layout id="comprehendpage"/>
+      <component id="imageloader" x="29" y="34" width="414" height="374">
+        <source isPath="true">C:\Documents and Settings\sagarm\Desktop\air.JPG</source>
+      </component>
+      <component id="textarea" x="484" y="34" width="129" height="104">
+        <text>It</text>
+      </component>
+      <component id="textarea" x="484" y="159" width="129" height="104">
+        <text>Is</text>
+      </component>
+      <component id="textarea" x="484" y="300" width="129" height="104">
+        <text>A Problem</text>
+      </component>
+    </page>
+    <page>
+      <node>
+        <locx>315</locx>
+        <locy>426</locy>
+        <root>false</root>
+        <hfunc>Use</hfunc>
+        <ntitle>Construct</ntitle>
+        <active>false</active>
+        <id>n5</id>
+        <originalid>null</originalid>
+        <parent>n4</parent>
+        <ntext>CONSTRUCT AN EXAMPLE under supportive conditions</ntext>
+        <name>Construct</name>
+        <colour>255</colour>
+        <nfunc>Construct</nfunc>
+        <drag>false</drag>
+        <hname>Use</hname>
+        <receiver>false</receiver>
+        <child>null</child>
+        <gloref>p15</gloref>
+        <page>
+          <page type="Construct 2" id="p15" nTitle="Construct" nText="CONSTRUCT AN EXAMPLE under supportive conditions"/>
+        </page>
+      </node>
+      <layout id="constructpage"/>
+      <component id="textarea" x="24" y="34" width="584" height="389">
+        <text>THE END</text>
+      </component>
+    </page>
+  </nodes>
+  <filehash>249d2046ee5501734f89ca354aed998c</filehash>
+</glo>

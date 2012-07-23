@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+/////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2007-09 LTRI, London Metropolitan Uni. All rights reserved.
+// An Open Source Release under the GPL v3 licence  (see http://www.gnu.org/licenses/).
+// Authors: Tom Boyle, Nils Millahn, Musbah Sagar, Martin Agombar.
+// See http://www.glomaker.org for full details
+/////////////////////////////////////////////////////////////////////////
+-->
+
+<plugin:BaseComponent
+	xmlns:plugin="org.glomaker.shared.component.*"
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	
+	implements="org.glomaker.shared.component.interfaces.ISlideshowStatusReceiver,org.glomaker.shared.component.interfaces.ISlideshowNavigator"
+	
+	layout="absolute"
+	
+	width="100%"
+	height="40"
+	bottom="0"
+	backgroundColor="#a5bac8"
+	verticalAlign="middle"
+	
+	borderStyle="solid"
+	borderThickness="3"
+	borderColor="#8ea0ac"
+	
+	themeColor="haloSilver"
+> 
+	  
+	<mx:Script>
+		<![CDATA[
+			import org.glomaker.shared.component.interfaces.ISlideshowStatusObject;
+			import org.glomaker.shared.component.interfaces.ISlideshowNavigationController;
+			
+			override protected function defineProperties():void
+			{
+				// do nothing and don't call super-class
+				// stage has NO editable properties!	
+			}
+			
+			
+			// ****************************************
+			// ISlideshowNavigator IMPLEMENTATION
+			// ****************************************
+			
+			protected var slideshowController:ISlideshowNavigationController;
+			
+			public function attachSlideshowController(controller:ISlideshowNavigationController):void
+			{
+				slideshowController = controller;	
+			}
+			
+			public function detachSlideshowController():void
+			{
+				slideshowController = null;
+			}
+			 
+			 
+			// ****************************************
+			// ISlideshowStatusReceiver IMPLEMENTATION
+			// ****************************************
+			
+			public function receiveUpdate(status:ISlideshowStatusObject):void
+			{
+				statusField.text = "Slide " + (status.currentPage + 1) + " of " + status.pageCount;
+				previous.enabled = !status.isFirst;
+				next.enabled = !status.isLast;
+			}
+			
+			 
+			// ****************************************
+			// Navigation methods
+			// ****************************************
+			
+			protected function goPrevious():void
+			{
+				if(slideshowController)
+					slideshowController.previous();
+			}
+			
+			protected function goNext():void
+			{
+				if(slideshowController)
+					slideshowController.next();
+			}
+			
+			
+		]]>
+	</mx:Script>
+	
+    <mx:Text id="statusField"  text="Page 1 of 2" fontSize="11" top="8"  fontWeight="bold" textAlign="center" selectable="false" width="100%"/>
+	<mx:Button id="previous" label="Previous" top="6" width="90" left="20" click="goPrevious()"/>
+	<mx:Button id="next" label="Next" width="90" top="6" right="20" click="goNext()"/>
+
+</plugin:BaseComponent>

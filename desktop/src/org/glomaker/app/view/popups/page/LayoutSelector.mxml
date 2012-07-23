@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+/////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2007-09 LTRI, London Metropolitan Uni. All rights reserved.
+// An Open Source Release under the GPL v3 licence  (see http://www.gnu.org/licenses/).
+// Authors: Tom Boyle, Nils Millahn, Musbah Sagar, Martin Agombar.
+// See http://www.glomaker.org for full details
+/////////////////////////////////////////////////////////////////////////
+-->
+
+<mx:TitleWindow
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	layout="vertical"
+	width="596"
+	height="520"
+	
+	verticalScrollPolicy="off"
+	horizontalScrollPolicy="off"
+	
+	title="Layouts"
+	styleName="clearPopup"
+	>
+	
+	<mx:Script>
+		<![CDATA[
+			
+			[Bindable]
+			public var listData:Array;
+			
+		]]>
+	</mx:Script>
+	
+	<mx:Label id="currentInfo"/>
+	
+	<mx:TileList
+		dataProvider="{listData}"
+		id="layoutList"
+		columnCount="2"
+		width="100%" height="100%"
+		doubleClickEnabled="true"
+		
+		paddingTop="0"
+		paddingBottom="0"
+		
+		backgroundColor="#f3f3f3"
+		rollOverColor="#999999"
+		selectionColor="#999999">
+	
+		<mx:itemRenderer>
+			<mx:Component>
+			
+				<mx:VBox
+					
+					width="100%" height="180"
+					
+					verticalGap="7"
+					paddingBottom="10"
+					paddingTop="10"
+					paddingLeft="10"
+					paddingRight="10"
+					
+					borderStyle="solid"
+					borderThickness="1"
+					borderColor="#d5d5d5"
+					
+					horizontalAlign="center"
+					horizontalScrollPolicy="off"
+					verticalScrollPolicy="off">
+					
+					<mx:Canvas width="112" height="82" borderStyle="solid" borderColor="#5e5e5e">
+						<mx:Image source="{data.iconURL}" />
+					</mx:Canvas>
+					
+					<mx:Spacer height="1"/>
+					
+					<mx:Label text="{data.name}" textAlign="left" fontWeight="bold" color="#333333" width="80%"/>
+					<mx:Text width="80%"
+						selectable="false"
+						textAlign="left"
+						text="{data.description}"
+						color="#333333"
+						/>
+				</mx:VBox>
+				
+			</mx:Component>
+		</mx:itemRenderer>
+					
+	</mx:TileList>
+	
+	
+	<mx:HBox width="100%" horizontalAlign="center">
+		<mx:Button label="OK" id="okButton" enabled="{layoutList.selectedItem != null}"/>
+		<mx:Button label="Cancel" id="cancelButton"/>
+	</mx:HBox>
+	
+</mx:TitleWindow>

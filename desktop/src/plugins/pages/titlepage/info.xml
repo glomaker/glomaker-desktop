@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<plugin>
+	<id>titlepage</id>
+	<author></author>
+	<version>1.0</version>
+	<glomaker>2.0</glomaker>	
+	<name>Title Page</name>
+	<description>Displays a page with just a title</description>
+
+    <component id="textarea" x="0.015" y="0.020" height="0.208" width="0.960"/>
+</plugin>

@@ -1,0 +1,417 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+/////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2010, the WOW agency All rights reserved.
+// Author: Matteo Corazzin and Martin Agombar.
+// See http://www.thewowagency.com/ for full details
+/////////////////////////////////////////////////////////////////////////
+-->
+
+<BaseComponent xmlns="org.glomaker.shared.component.*" 
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:inputoutput="org.glomaker.plugin.inputoutput.*"
+	layout="absolute"
+	horizontalScrollPolicy="off" verticalScrollPolicy="off">
+
+<mx:Script>
+	<![CDATA[
+		import mx.core.UIComponent;
+		import mx.containers.ViewStack;
+		import mx.controls.Text;
+		import mx.containers.VBox;
+		import mx.core.Application;
+		import org.glomaker.shared.utils.MutableArray;
+		import mx.states.SetStyle;
+		import org.glomaker.shared.properties.NumericStepperProperty;
+		import mx.controls.TextInput;
+		import org.glomaker.shared.properties.ColourProperty;
+		import org.glomaker.shared.properties.ArrayProperty;
+		import org.glomaker.shared.properties.StringProperty;
+		import org.glomaker.shared.properties.IntegerProperty;
+		import org.glomaker.shared.properties.IComponentProperty;
+		import org.glomaker.shared.properties.BooleanProperty;
+		
+		import mx.core.mx_internal;
+	
+		protected static var textBg:Class;
+		
+		protected var setOutput:BooleanProperty;
+		
+		protected var setBorder:BooleanProperty;
+		
+		protected var setLines:BooleanProperty;
+			
+		protected var outputElementsProperty:ArrayProperty;
+		
+		protected var outputElementsArray:Array = [];
+		
+		protected var fontColour:ColourProperty;
+		
+		protected var fontSize:NumericStepperProperty;
+		
+		protected var editMode:Boolean;
+		
+		protected var inputEditScreen:InputEditingScreen;
+		
+		protected var outputEditScreen:OutputEditingScreen;
+		
+		protected var outputScreen:OutputScreen;
+		
+		protected var memoryObject:Object;
+		
+		protected var inputID:StringProperty;
+		
+		protected var sessionName:String ="inputElement_" ;
+
+		protected var outputInfo:String;
+		
+		[Bindable]
+		protected var inputInfo:String;
+		
+		[Bindable]
+		private var _fc:uint;
+		
+		[Bindable]
+		private var _fs:uint;
+		
+		[Bindable]
+		private var _border:Boolean;
+		
+		[Bindable]
+		private var _lines:Boolean;
+		
+		
+		override protected function defineProperties():void
+		{
+			
+			super.defineProperties();
+			
+			setOutput = new BooleanProperty("inputOutput", "Set to OUTPUT mode", false);
+			addProperty(setOutput);
+			
+			fontColour = new ColourProperty("fontColour", "Font Colour", 0);
+			addProperty(fontColour);
+			
+			fontSize = new NumericStepperProperty("fontSize", "Font Size", 12);
+			addProperty(fontSize);
+			
+			setBorder = new BooleanProperty("border", "Border?", true);
+			addProperty(setBorder);
+			
+			setLines = new BooleanProperty("lines", "Lines?", true);
+			addProperty(setLines);
+			
+			outputElementsProperty = new ArrayProperty("outputElements", "Elements", outputElementsArray);
+			addSaveableProperty(outputElementsProperty);
+			
+			inputID = new StringProperty("input", "ID", "");
+			addSaveableProperty(inputID);
+		}
+		
+		override public function editablePropertyUpdated(prop:IComponentProperty):void
+		{
+			if(prop == fontColour)
+			{
+				_fc = prop.propValue;
+				
+				if(outputScreen)
+				{
+					outputScreen.color = prop.propValue;
+				}
+			}
+			
+			if(prop == fontSize)
+			{
+				_fs = prop.propValue;
+				
+				lines.setLineHeight = 1.34 * prop.propValue;
+				
+				if(outputScreen)
+				{
+					outputScreen.fontSize = prop.propValue;
+				}
+			}
+			
+			if(prop == setBorder)
+			{
+				_border = prop.propValue;
+				
+				if(outputScreen)
+				{
+					if(_border)
+					{
+						outputScreen.setStyle("borderThickness", 1);
+					}else
+					{
+						outputScreen.setStyle("borderThickness", 0);
+					}
+				}
+			}
+			
+			if(prop == setLines)
+			{
+				_lines = prop.propValue;
+			}
+			
+			setMode();
+		}
+		
+		override public function propertyValuesInitialised():void
+		{	
+		
+			inputInfo = "<b>INPUT component</b>" + "\n" + "This component allows the user to input text." + "\n" + "To set up: click pencil icon to go into editing mode and enter a unique ID.";
+			outputInfo = "<b>OUTPUT component</b>" + "\n" + "To set up: click pencil icon to go into editing mode and enter unique IDs. Match with IDs you have set for INPUT components.";	
+			
+			setMode();
+			
+			_fc = fontColour.propValue;
+			_fs = fontSize.propValue;
+			_border = setBorder.propValue;
+			_lines = setLines.propValue;
+				
+			lines.setLineHeight = 1.34 * fontSize.propValue;
+			
+			
+			var thisElement:String = sessionName + (inputID.propValue as String).toLowerCase();
+			var readFromText:String;
+			
+			try
+			{
+				readFromText = readFromMemory(thisElement);
+				
+			}catch(e:Error)
+			{
+				trace(e.message);
+				return;
+			}
+			
+			if(readFromMemory(thisElement) != undefined)
+			{
+				inputArea.htmlText = readFromMemory(thisElement);
+			}
+			
+			if(setOutput.propValue && !editMode)
+			{
+	
+				if(outputScreen)
+				{
+					for(var i:uint=0; i<outputElementsProperty.propValue.length; i++)
+					{
+						if(outputElementsProperty.propValue[i] != "")
+						{
+							thisElement = sessionName + (outputElementsProperty.propValue[i] as String).toLowerCase();
+							try
+							{
+								readFromText = readFromMemory(thisElement);
+								
+							}catch(e:Error)
+							{
+								trace(e.message);
+								return;
+							}
+							
+							if(readFromMemory(thisElement) != undefined)
+							{
+								outputScreen.text +=  "- " + readFromMemory(thisElement) + "\n\n";
+							}
+						}
+						
+					}
+					
+					outputScreen.color = fontColour.propValue;
+					outputScreen.fontSize = fontSize.propValue;
+				}
+			}			
+		}
+		
+		override public function prepareValuesForSave():void
+		{		
+			if(inputEditScreen)
+			{
+				inputEditScreen.inputID = inputID.propValue;
+			}
+			
+			if(outputEditScreen)
+			{
+				populateInputFields();
+			}
+	
+		}
+		
+		override protected function componentInitComplete():void
+		{
+			trace("COMPLETE");
+		}
+		
+		override public function setEditMode(f:Boolean):void
+		{
+			editMode = f;
+			setMode();
+		}
+			
+		protected function setMode():void
+		{
+			this.removeAllChildren();
+					
+			if(setOutput.propValue)
+				{
+					//we must be in output mode
+					//addNumericStepper();
+					if(editMode)
+					{
+						//we are editing the output screen
+						if(!outputEditScreen)
+						{
+							outputEditScreen = new OutputEditingScreen();
+							outputEditScreen.addEventListener(Event.CHANGE, onInputIDChange);
+						}
+						info.htmlText = outputInfo;
+						populateInputFields();
+						this.addChild(outputEditScreen);
+						
+					}else
+					{
+						//we are seeing the output screen
+						if(!outputScreen)
+						{
+							outputScreen = new OutputScreen();
+						}
+						this.addChild(lines);
+						this.addChild(outputScreen);
+						addInfo();
+					}
+				}else
+				{
+					//we must be in input mode
+					if(editMode)
+					{
+						//we are editing the input screen
+						if(!inputEditScreen)
+						{
+							inputEditScreen = new InputEditingScreen();
+							inputEditScreen.addEventListener(Event.CHANGE, onInputIDChange);
+						}
+						info.htmlText = inputInfo;
+						inputEditScreen.inputID = inputID.propValue;
+						this.addChild(inputEditScreen);
+					}else
+					{
+						//we are seeing the input screen
+						this.addChild(lines);
+						this.addChild(inputArea);
+						addInfo();
+						
+					}
+				}
+		}
+		
+		protected function onInputIDChange(evt:Event):void
+		{
+			if(evt.target is InputEditingScreen)
+			{
+				inputID.propValue = (evt.target as InputEditingScreen).inputID;
+				
+				if(inputEditScreen)
+				{
+					storeText();
+				}
+			}
+	
+			if(evt.target is OutputEditingScreen)
+			{
+				var fieldsArray:Array = (evt.target as OutputEditingScreen).inputFields;
+				
+				outputElementsProperty.propValue = fieldsArray;
+			}
+			
+		}
+		protected function onUserInput(evt:Event):void
+		{
+			storeText();
+		}
+		
+		
+		protected function storeText():void
+		{
+			var thisElement:String = sessionName + (inputID.propValue as String).toLowerCase();
+			
+			try
+			{
+				writeToMemory(thisElement, inputArea.text.toLowerCase(), true);
+			}catch(error:Error)
+			{
+				trace(error);
+				return;
+			}
+	
+		}
+		
+		protected function populateInputFields():void
+		{
+			for(var i:uint=0; i<outputElementsProperty.propValue.length; i++)
+			{
+				outputEditScreen.setInputID(i, outputElementsProperty.propValue[i]);
+			}
+		}
+		
+		protected function addInfo():void
+		{
+			// add info if needed
+			if(Security.sandboxType == "application" && isEditor())
+			{
+				addChild(info);
+			}
+			
+			if(setOutput.propValue)
+			{
+				info.htmlText = outputInfo;
+			}else
+			{
+				info.htmlText = inputInfo;
+			}
+		}
+		
+		protected function isEditor():Boolean
+		{
+			var mainApp:VBox = Application.application["mainAppComponent"] as VBox;
+			var isEditor:Boolean = false;
+			
+			if(mainApp)
+			{
+				for(var i:uint=0; i<mainApp.numChildren; i++)
+				{
+					if(mainApp.getChildAt(i) is ViewStack)
+					{
+						if(((mainApp.getChildAt(i) as ViewStack).selectedChild as UIComponent).id == "editor")
+						{
+							isEditor = true;
+						}else
+						{
+							isEditor = false;
+						}
+						break;
+					}
+				}
+			}
+			return isEditor;
+		}
+		
+	]]>
+</mx:Script>
+	<inputoutput:Lines setLineHeight="12" id="lines" visible="{_lines}"/>
+    <mx:TextArea id="inputArea" color="{_fc}" fontSize="{_fs}" editable="true" 
+    	width="100%" height="100%" 
+    	change="onUserInput(event)"
+    	horizontalScrollPolicy="off" verticalScrollPolicy="off"
+    	backgroundAlpha="0"
+    	borderStyle="solid" borderThickness="{_border ? 1:0}" borderColor="0"/>
+    <mx:TextArea id="info" htmlText="{inputInfo}"
+    	width="175" height="150" 
+    	horizontalCenter="0" verticalCenter="0"	
+    	horizontalScrollPolicy="off" verticalScrollPolicy="off"
+    	paddingLeft="5" paddingTop="5" paddingRight="5" paddingBottom="5"
+    	textAlign="center" fontSize="12"/>
+
+
+</BaseComponent>

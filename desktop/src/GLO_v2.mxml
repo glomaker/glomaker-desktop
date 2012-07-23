@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+/////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2007-09 LTRI, London Metropolitan Uni. All rights reserved.
+// An Open Source Release under the GPL v3 licence  (see http://www.gnu.org/licenses/).
+// Authors: Tom Boyle, Nils Millahn, Musbah Sagar, Martin Agombar.
+// See http://www.glomaker.org for full details
+/////////////////////////////////////////////////////////////////////////
+-->
+
+<mx:WindowedApplication xmlns:mx="http://www.adobe.com/2006/mxml"
+	layout="absolute"
+	
+	themeColor="haloSilver"
+	showStatusBar="false"
+	
+	creationComplete="maximize()"
+	applicationComplete="initialiseApplication()"
+	
+	xmlns:patternmaker="org.glomaker.app.view.patternmaker.*"
+	xmlns:s="library://ns.adobe.com/flex/spark" 
+
+	xmlns:editor="org.glomaker.app.view.editor.*"
+	xmlns:player="org.glomaker.app.view.player.*" xmlns:components="org.glomaker.app.view.components.*"
+	resize="onResize()">
+	
+	<mx:Style source="../assets/css/GLOStyle.css"/>
+	<mx:Style source="../assets/css/editor.css"/>
+	 
+	<mx:Script>
+	
+		<![CDATA[
+			import mx.events.FlexNativeMenuEvent;
+			import mx.core.IFlexDisplayObject;
+			import mx.core.IChildList;
+			import mx.managers.PopUpManager;
+			import mx.controls.Alert;
+			import org.glomaker.shared.component.utils.MissingImageSkin;
+			
+			/* SVN CHANGE */
+			
+			import org.glomaker.app.core.GLOMakerFacade;
+			import org.glomaker.shared.component.optimisation.PluginOptimiser;
+			import org.glomaker.app.core.GLOMakerFacade;
+			
+			import flash.system.Capabilities; 
+            import flash.ui.Keyboard; 
+             
+            private var isWin:Boolean; 
+            private var isMac:Boolean; 
+             
+			/**
+			 * Multiton application key for PureMVC Multicore.
+			**/
+			private static const APP_KEY:String = "GLOv2AppKey";
+
+
+			/**
+			 * Include plugin optimisation classes.
+			**/
+			private static var FORCE_COMPILE:Object = [PluginOptimiser];
+
+			/**
+			 * Initialise application.
+			**/
+			private function initialiseApplication():void
+			{	
+				// Using custom logic for multi-platform key equivalent menu commands
+				isWin = (Capabilities.os.indexOf("Windows") >= 0); 
+                isMac = (Capabilities.os.indexOf("Mac OS") >= 0); 
+                
+				// open the window in full-screen mode
+				// maximize();	
+				
+				//
+				editor.setup(systemManager);
+				
+				// start the PureMVC facade
+				GLOMakerFacade.start(APP_KEY, this);
+			}
+			
+			
+			private function onResize():void
+			{
+				// try to re-centre any popups
+				// easier to do here than in Mediator since we've got easy access to systemManager
+				
+				// note: if there are popups that don't centre, they probably weren't added in the appropriate way
+				// use: PopUpManager.addPopUp( popup, Application.application as DisplayObject, true, PopUpManagerChildList.POPUP);
+
+				if(systemManager)
+				{
+					var list:IChildList = systemManager.popUpChildren;
+					var child:DisplayObject;
+					
+					if(list)
+					{
+						for(var i:uint = 0;i<list.numChildren;i++)
+						{
+							child = list.getChildAt(i);
+							
+							// not all children are popups!
+							if(child is IFlexDisplayObject)
+								PopUpManager.centerPopUp( IFlexDisplayObject( child ) );
+						}
+					}
+				}
+			}
+			
+			
+			// Code to support: custom logic for multi-platform key equivalent menu commands
+			// From: http://livedocs.adobe.com/flex/gumbo/html/WSacd9bdd0c5c09f4a-690d4877120e8b878b0-7fde.html
+			
+			   private function keyEquivalentModifiers(item:Object):Array { 
+                var result:Array = new Array(); 
+                 
+                var keyEquivField:String = menu.keyEquivalentField; 
+                var altKeyField:String; 
+                var controlKeyField:String; 
+                var shiftKeyField:String; 
+                if (item is XML) 
+                { 
+                    altKeyField = "@altKey"; 
+                    controlKeyField = "@controlKey"; 
+                    shiftKeyField = "@shiftKey"; 
+                } 
+                else if (item is Object) 
+                { 
+                    altKeyField = "altKey"; 
+                    controlKeyField = "controlKey"; 
+                    shiftKeyField = "shiftKey"; 
+                } 
+                 
+                if (item[keyEquivField] == null || item[keyEquivField].length == 0) 
+                { 
+                    return result; 
+                } 
+                 
+                if (item[altKeyField] != null && item[altKeyField] == true) 
+                { 
+                    if (isWin) 
+                    { 
+                        result.push(Keyboard.ALTERNATE); 
+                    } 
+                } 
+                 
+                if (item[controlKeyField] != null && item[controlKeyField] == true) 
+                { 
+                    if (isWin) 
+                    { 
+                        result.push(Keyboard.CONTROL); 
+                    } 
+                    else if (isMac) 
+                    { 
+                        result.push(Keyboard.COMMAND); 
+                    } 
+                } 
+                 
+                if (item[shiftKeyField] != null && item[shiftKeyField] == true) 
+                { 
+                    result.push(Keyboard.SHIFT); 
+                } 
+                 
+                return result; 
+            } 
+            
+            public function handleItemClick(event:FlexNativeMenuEvent):void{
+             switch(event.label){
+             	case "Copy":
+             	nativeApplication.copy();
+             	break;
+             	case "Cut":
+             	nativeApplication.cut();
+             	break;
+             	case "Paste":
+             	nativeApplication.paste();
+             	break;
+             }
+            }
+            
+			
+		]]>
+	</mx:Script>
+	
+	<mx:menu>
+		<mx:FlexNativeMenu
+			id="appMenu"
+			showRoot="false"
+			labelField="@label"
+			keyEquivalentField="@keyEquivalent"  
+            keyEquivalentModifiersFunction="keyEquivalentModifiers"  
+            itemClick="handleItemClick(event)"/> 
+	</mx:menu>
+		
+    <!--main container-->
+    <mx:VBox width="100%" height="100%" id="mainAppComponent" verticalGap="0">
+    
+    	<components:AppNavBar
+    		id="appNavBar"
+    		width="100%"
+    		height="42"
+    		horizontalGap="9"
+    		currentState="PlannerState"
+    		styleName="appNavStyle"
+  		/>
+    
+    	<!-- view stack - contains main application views -->
+    	<mx:ViewStack id="appViewStack" width="100%" height="100%" creationPolicy="all">
+    		
+			<patternmaker:PatternMakerView id="patternMaker" label="Planner" width="100%" height="100%" styleName="patternMakerStyle"/>
+			<editor:EditorView id="editor" label="Designer" width="100%" height="100%"/>
+			<player:PlayerView id="player" label="Preview" width="100%" height="100%"/>
+
+    	</mx:ViewStack>
+    
+    </mx:VBox>
+    
+
+	<mx:Canvas id="startupStatusPanel" width="570" height="270"
+		backgroundColor="#ffffff" x="100" y="100" top="100" horizontalCenter="0">
+		<mx:Image source="@Embed('../assets/skins/bg/glomaker_splash.png')"/>
+		<mx:Label id="statusField" text="" color="#ffffff" left="96" top="180"/>	
+	</mx:Canvas>
+
+</mx:WindowedApplication>

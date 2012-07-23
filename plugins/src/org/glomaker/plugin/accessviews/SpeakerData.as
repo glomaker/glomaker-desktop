@@ -1,0 +1,36 @@
+/////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2007-09 LTRI, London Metropolitan Uni. All rights reserved.
+// An Open Source Release under the GPL v3 licence  (see http://www.gnu.org/licenses/).
+// Authors: Tom Boyle, Nils Millahn, Musbah Sagar, Martin Agombar.
+// See http://www.glomaker.org for full details
+/////////////////////////////////////////////////////////////////////////
+
+package org.glomaker.plugin.accessviews
+{
+	import flash.utils.Dictionary;
+	
+	public class SpeakerData
+	{
+		[Bindable]
+		[Embed(source="files/noface.png")]
+		protected var noface:Class;
+			
+		[Bindable]
+		public var title:String;
+		
+		[Bindable]
+		public var imageSource:String;
+		
+		public var sounds:Dictionary;
+		
+		public var scripts:Dictionary;
+		
+		public function SpeakerData(t:String)
+		{
+			title = t;
+			sounds = new Dictionary();
+			scripts = new Dictionary();
+		}
+
+	}
+}

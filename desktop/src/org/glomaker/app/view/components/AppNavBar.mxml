@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+/////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2007-09 LTRI, London Metropolitan Uni. All rights reserved.
+// An Open Source Release under the GPL v3 licence  (see http://www.gnu.org/licenses/).
+// Authors: Tom Boyle, Nils Millahn, Musbah Sagar, Martin Agombar.
+// See http://www.glomaker.org for full details
+/////////////////////////////////////////////////////////////////////////
+-->
+
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml">
+
+	<mx:Script>
+		<![CDATA[
+			
+			public static const PLANNER_STATE:String = "PlannerState";
+			public static const DESIGNER_STATE:String = "DesignerState";
+			public static const PREVIEW_STATE:String = "PreviewState";
+			
+		]]>
+	</mx:Script>
+
+
+	<mx:states>
+		<mx:State name="PlannerState">
+			<mx:RemoveChild target="{plannerButton}"/>
+			<mx:RemoveChild target="{leftDesignerButton}"/>
+			<mx:RemoveChild target="{previewButton}"/>
+		</mx:State>
+		<mx:State name="DesignerState">
+			<mx:RemoveChild target="{leftDesignerButton}"/>
+			<mx:RemoveChild target="{rightDesignerButton}"/>
+		</mx:State>
+		<mx:State name="PreviewState">
+			<mx:RemoveChild target="{previewButton}"/>
+			<mx:RemoveChild target="{rightDesignerButton}"/>
+			<mx:RemoveChild target="{plannerButton}"/>
+		</mx:State>
+	</mx:states>
+	
+	<mx:Button label="Planner" id="plannerButton" styleName="navButtonLight"/>
+	<mx:Button label="Designer" id="leftDesignerButton" styleName="navButtonLight"/>
+	<mx:Spacer width="100%"/>
+	<mx:Button label="Designer" id="rightDesignerButton" styleName="navButtonLight"/>
+	<mx:Button label="Preview" id="previewButton" styleName="navButtonDark"/>
+</mx:HBox>

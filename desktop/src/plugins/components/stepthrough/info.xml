@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<plugin>
+	<id>stepthrough</id>
+	<author>Musbah</author>
+	<version>1.0</version>
+	<glomaker>2.0</glomaker>	
+	<name>Step-Through Component</name>
+	<description>Loads a SWF file and allows user to step through it with accompanying text</description>
+	<swf>StepThroughPlugin.swf</swf>
+</plugin>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<plugin>
+	<id>imagemagnifier</id>
+	<author>Musbah</author>
+	<version>1.0</version>
+	<glomaker>2.0</glomaker>	
+	<name>Image Magnifier</name>
+	<description>Imports an image and provides zoom and pan controls</description>
+	<swf>ImageMagnifierPlugin.swf</swf>
+</plugin>

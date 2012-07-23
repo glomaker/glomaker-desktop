@@ -1,0 +1,416 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+/////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2007-09 LTRI, London Metropolitan Uni. All rights reserved.
+// An Open Source Release under the GPL v3 licence  (see http://www.gnu.org/licenses/).
+// Authors: Tom Boyle, Nils Millahn, Musbah Sagar, Martin Agombar.
+// See http://www.glomaker.org for full details
+/////////////////////////////////////////////////////////////////////////
+-->
+
+<BaseComponent xmlns="org.glomaker.shared.component.*" 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	layout="absolute"
+	creationComplete="init()"
+	horizontalScrollPolicy="off" verticalScrollPolicy="off"
+ 	themeColor="haloSilver" xmlns:utils="org.glomaker.plugin.utils.*" xmlns:editbutton="org.glomaker.shared.ui.editbutton.*">
+	
+	
+	<mx:Script>
+		<![CDATA[
+			import org.glomaker.shared.properties.IComponentProperty;
+			import org.glomaker.shared.properties.ArrayProperty;
+			import org.glomaker.shared.properties.StringProperty;
+			import mx.controls.Button;
+			import mx.managers.PopUpManager;
+			
+			
+			[Embed(source="assets/cross.png")]
+			protected static const INCORRECT_IMAGE:Class;
+
+			[Embed(source="assets/tick.png")]
+			protected static const CORRECT_IMAGE:Class;
+			
+			
+			// ------------------
+			// INSTANCE PROPERTIES
+			// ------------------
+
+			[Bindable]
+			protected var _textList:ArrayProperty;
+			
+			[Bindable]
+			protected var _submitButtonText:StringProperty;
+			
+			[Bindable]
+			protected var _resetButtonText:StringProperty;
+			
+			[Bindable]
+			protected var _correctFeedback:StringProperty;
+			
+			[Bindable]
+			protected var _wrongFeedback:StringProperty;
+			
+			
+			[Bindable]
+			protected var _isInEditState:Boolean = false;
+			
+			protected var _repeaterIsShuffled:Boolean = false;
+			
+			private var temp:PopUpManager;
+			
+            private var result:Result = null;
+            private var feedback:Feedback = null;
+            // Initilize
+            
+			public function init():void
+			{
+				result = new Result();
+				feedback = new Feedback();
+			}
+			
+			override protected function defineProperties():void
+			{
+				super.defineProperties();
+			
+				// list of answers
+				_textList = new ArrayProperty("textList", "", []);
+				addSaveableProperty(_textList);
+				
+				// submit button text
+				_submitButtonText = new StringProperty("submit", "", "Submit");
+				addSaveableProperty(_submitButtonText);
+
+				// reset button text
+				_resetButtonText = new StringProperty("reset", "", "Reset");
+				addSaveableProperty(_resetButtonText);
+				
+				// correct feedback text
+				_correctFeedback = new StringProperty("correct", "", "That is correct - well done!");
+				addSaveableProperty(_correctFeedback);
+				
+				// wrong feedback text
+				_wrongFeedback = new StringProperty("wrong", "", "Not quite - try again!");
+				addSaveableProperty(_wrongFeedback);
+				
+				//
+				updateRepeaterData();
+			}
+			
+			override public function propertyValuesInitialised():void
+			{
+				submitButton.label = _submitButtonText.propValue;
+				resetButton.label = _resetButtonText.propValue;
+
+				// default to 3 buttons				
+				if(_textList.valueArray.length == 0)
+				{
+					addElement();
+					addElement();
+					addElement();
+				}
+				
+				updateRepeaterData();
+			}
+			
+			override public function prepareValuesForSave():void
+			{
+				saveLabelsToCollection();
+				_submitButtonText.propValue = submitButton.label;
+				_resetButtonText.propValue = resetButton.label;
+			}
+			
+			override public function destroy():void
+			{
+				result = null;
+			}
+			
+			override public function setEditMode(f:Boolean):void
+			{
+				_isInEditState = f;
+				f ? toEditState() : toDisplayState();
+			}
+			
+			
+			// Set currentState to Display state
+			protected function toDisplayState():void
+			{
+				saveLabelsToCollection();
+				updateRepeaterData();
+				currentState = "";
+			}
+		 	
+			// Set currentState to Edit state
+			protected function toEditState():void
+			{
+				sentenceTextField.text = "";
+				updateRepeaterData();
+				currentState = "editState";
+			}
+			
+			protected function addElement():void
+			{
+				saveLabelsToCollection();
+				_textList.valueArray.push("Phrase " + (_textList.valueArray.length + 1));
+				updateRepeaterData();
+			}
+			
+			protected function removeElement():void
+			{
+				saveLabelsToCollection();
+				_textList.valueArray.pop();
+				updateRepeaterData();
+			}
+			
+			protected function addPhraseToSentence(event:MouseEvent):void
+			{
+				if(_isInEditState)
+					return;
+					
+				var bt:Button = event.target as Button;
+				bt.enabled = false;
+				
+				if(sentenceTextField.text != "")
+					sentenceTextField.text += " ";
+
+				sentenceTextField.text += bt.label;
+			}
+			
+			protected function saveLabelsToCollection():void
+			{
+				// only allow saves if the current repeater data hasn't been shuffled
+				if(_repeaterIsShuffled)
+					return;
+				
+				// loop through each button and save its values to the actual GLOMaker property field
+				var btn:EditableButton;
+				var list:Array = [];
+				
+				for each(btn in editButtonArray)
+				{
+					list.push(btn.label);
+				}
+			
+				// there is always at least one button by design
+				// so if coll.length == 0, then the repeater can't have had a dataProvider assigned yet
+				if(list.length > 0)	
+					_textList.propValue = list;
+			}
+
+			protected function showCorrectFeedbackEditor():void
+			{
+				showFeedback(_correctFeedback, "Correct Solution Feedback");
+			}
+			
+			protected function showWrongFeedbackEditor():void
+			{
+				showFeedback( _wrongFeedback, "Wrong Solution Feedback");
+			}
+
+			protected function showCorrectResult():void
+			{
+				showResult( _correctFeedback.propValue, CORRECT_IMAGE);
+			}
+			
+			protected function showWrongResult():void
+			{
+				showResult( _wrongFeedback.propValue, INCORRECT_IMAGE);
+			}
+			 
+			protected function showResult(resultText:String, answerImageSource:Object):void
+ 		{
+ 			if(!result)
+				  result = new Result();
+					  
+			
+			PopUpManager.addPopUp(result, this, true);
+     		PopUpManager.centerPopUp(result); 
+
+	 		result.resultText.text = resultText;
+	 		result.answerImage.source = answerImageSource;
+ 		}
+ 		
+ 			protected  function showFeedback(property:StringProperty, title:String = "Enter Feedback"):void
+	 	{
+			if(!feedback)
+				  feedback = new Feedback();
+					  
+     		
+			PopUpManager.addPopUp(feedback, this, true);
+	 		PopUpManager.centerPopUp(feedback); 
+
+	 		feedback.relatedProp = property;
+	 		feedback.title = title;
+
+		}
+			
+
+			protected function updateRepeaterData():void
+			{
+				if(_isInEditState)
+				{
+					buttonRp.dataProvider = getPhraseArray();
+					_repeaterIsShuffled = false;
+				}else{
+					buttonRp.dataProvider = getShuffledPhrases();
+					_repeaterIsShuffled = true;
+				}
+			}
+			
+			protected function getPhraseArray():Array
+			{
+				return _textList.valueArray;
+			}
+			
+			protected function getShuffledPhrases():Array
+			{
+				var list:Array = [];
+				var source:Array = getPhraseArray().concat();
+				var r:uint;
+				
+				while(source.length > 0)
+				{
+					r = Math.floor(Math.random() * source.length);
+					list.push(source.splice(r, 1)[0]);
+				}
+				
+				return list;
+			}
+			
+			protected function onSubmitClick():void
+			{
+				if(_isInEditState)
+					return;
+					
+				var merged:String = _textList.valueArray.join(" ");
+				var isCorrect:Boolean = (sentenceTextField.text == merged);
+				
+				isCorrect ? showCorrectResult() : showWrongResult();
+			}
+			
+			protected function onResetClick():void
+			{
+				if(_isInEditState)
+					return;
+
+				sentenceTextField.text = "";
+				
+				for(var i:uint = 0;i<buttonContainer.numChildren;i++)
+				{
+					EditableButton(buttonContainer.getChildAt(i)).enabled = true;
+				}
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:Style>
+		
+		.sentenceText {
+			border-style: solid;
+			border-color: #333333;
+			border-thickness: 1;
+			background-alpha: 0;
+			theme-color: #333333;
+			focus-thickness: 1;
+			text-align: center;
+			
+			padding-top: 10;
+			padding-bottom: 10;
+			padding-left: 10;
+			padding-right: 10;
+		}
+
+		.snippetButton {
+			font-size: 9;
+			font-weight: normal;
+		}
+
+		.goodFeedbackButton {
+			font-size: 9;
+			font-weight: normal;
+			icon: Embed("assets/tick.png");
+		}
+
+		.wrongFeedbackButton {
+			font-size: 9;
+			font-weight: normal;
+			icon: Embed("assets/cross.png");
+		}
+		
+		.addButton {
+			font-size: 9;
+			font-weight: normal;
+			icon: Embed("assets/add.png");
+		}
+		
+		.deleteButton {
+			font-size: 9;
+			font-weight: normal;
+			icon: Embed("assets/delete.png");
+		}
+
+		
+	</mx:Style>
+
+	<mx:Fade id="fadeIn" alphaFrom="0" alphaTo="1" duration="300"/>
+
+	<states>
+		<mx:State name="editState">
+			<mx:AddChild relativeTo="{buttonBar}">
+				<mx:Button styleName="deleteButton" addedEffect="{fadeIn}" enabled="{_textList.valueArray.length > 1}" click="removeElement()"/>
+			</mx:AddChild>
+			<mx:AddChild relativeTo="{buttonBar}">
+				<mx:Button click="addElement()" styleName="addButton" addedEffect="{fadeIn}"/>
+			</mx:AddChild>
+			<mx:AddChild relativeTo="{buttonBar}">
+				<mx:Button styleName="goodFeedbackButton" label="Feedback" addedEffect="{fadeIn}" click="showCorrectFeedbackEditor()"/>
+			</mx:AddChild>
+			<mx:AddChild relativeTo="{buttonBar}">
+				<mx:Button styleName="wrongFeedbackButton" label="Feedback" addedEffect="{fadeIn}" click="showWrongFeedbackEditor()"/>
+			</mx:AddChild>
+		</mx:State>
+	</states>
+	
+	<mx:VBox width="100%" height="100%" id="mainContainer" verticalGap="20">
+	
+		<mx:Canvas backgroundColor="#f1f1f1" borderColor="#c5c5c5" borderStyle="solid" clipContent="false" width="100%">
+			<mx:Text
+				width="100%"
+				minHeight="40"
+				styleName="sentenceText"
+				id="sentenceTextField"
+				selectable="false"
+				text=""
+			/>
+		</mx:Canvas>
+		
+		<utils:GLOToolBar id="buttonContainer" width="80%">
+			<mx:Repeater id="buttonRp">
+				<editbutton:EditableButton
+					id="editButtonArray"
+					label="{buttonRp.currentItem}"
+					styleName="snippetButton"
+					isEditable="{_isInEditState}"
+					click="addPhraseToSentence(event)"
+				/>
+			</mx:Repeater>
+		</utils:GLOToolBar>
+		
+		<mx:HBox id="buttonBar">
+			<editbutton:EditableButton
+				id="submitButton"
+				click="onSubmitClick()"
+				isEditable="{_isInEditState}"
+			/>
+			<editbutton:EditableButton
+				id="resetButton"
+				click="onResetClick()"
+				isEditable="{_isInEditState}"
+			/>
+		</mx:HBox>
+		
+	</mx:VBox>
+	
+</BaseComponent>

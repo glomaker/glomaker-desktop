@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:UIComponent xmlns="*" xmlns:mx="http://www.adobe.com/2006/mxml"
+	width="100%" height="100%">
+	
+	<mx:Script>
+		<![CDATA[
+			protected var lineHeight:Number;
+			protected var lineAlpha:Number = 0.3;
+			
+			
+			public function set setLineHeight(val:uint):void
+			{
+				lineHeight = val;
+				doLineHeight();
+				
+			}
+			
+			override public function set visible(value:Boolean):void
+			{
+				
+				if(value)
+				{
+					lineAlpha = 0.3;
+				}else
+				{
+					lineAlpha = 0;
+				}
+			}
+			
+			protected function doLineHeight():void
+			{
+				graphics.clear();
+
+				var h:uint = this.height;
+				var w:uint = this.width;
+				
+				graphics.beginFill(0xffffff);
+				graphics.drawRect(0, 0, w, h);
+				graphics.endFill();
+				
+				var numLines:uint = h / lineHeight;
+				
+				for(var i:uint=0; i<numLines; i++)
+				{	
+					graphics.lineStyle(1, 0, lineAlpha);
+					graphics.moveTo(0, i*lineHeight);
+					graphics.lineTo(w, i*lineHeight);
+					
+				}
+			}
+			
+			override public function invalidateDisplayList():void
+			{
+				super.invalidateDisplayList();
+				
+				doLineHeight();
+				
+			}
+		]]> 
+	</mx:Script>
+	
+</mx:UIComponent>

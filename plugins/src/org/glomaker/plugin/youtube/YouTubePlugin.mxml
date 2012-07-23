@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+/////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2007-09 LTRI, London Metropolitan Uni. All rights reserved.
+// An Open Source Release under the GPL v3 licence  (see http://www.gnu.org/licenses/).
+// See http://www.glomaker.org for full details
+/////////////////////////////////////////////////////////////////////////
+-->
+
+<BaseComponent xmlns="org.glomaker.shared.component.*" xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:accessviews="org.glomaker.plugin.accessviews.*"
+    horizontalScrollPolicy="off" verticalScrollPolicy="off">
+       
+    <mx:Script>
+    	<![CDATA[
+    		import mx.events.SandboxMouseEvent;
+    		import mx.states.RemoveChild;
+    		import org.glomaker.shared.component.interfaces.IComponentPlugin;
+    		import flash.net.navigateToURL;
+    		import mx.controls.SWFLoader;
+    		import mx.utils.SecurityUtil;
+    		import mx.controls.TextInput;
+    		import org.glomaker.shared.properties.StringProperty;
+    		import org.glomaker.shared.properties.IComponentProperty;
+    		// This will hold the API player instance once it is initialized.
+			protected var player:Object;
+            protected var filePath:StringProperty;
+            protected var YTPlayer:SWFLoader;
+            protected var YTWidth:String;
+            protected var YTHeight:String;
+            
+            /**
+		 	* Embed play button up skin.
+		 	*/
+			[Bindable]
+			[Embed(source="org/glomaker/plugin/youtube/assets/icon_tick.gif")]	
+			public var tick:Class;
+            
+            // ***************************************
+			// BaseComponent overrides
+			// ***************************************
+			
+            override protected function defineProperties():void
+            {
+                super.defineProperties();
+                
+				filePath = new StringProperty("fp", "YouTube Embed Code: ", "");
+				addSaveableProperty(filePath);
+            }
+            
+            override public function propertyValuesInitialised():void
+			{
+				init();
+				updateInfo(filePath);
+				YTEmbedInput.text = filePath.propValue;
+				
+				//debug.text = Security.sandboxType;
+			}
+			
+            override public function editablePropertyUpdated(prop:IComponentProperty):void
+            {
+            	trace(prop.propName, prop.propValue);//
+
+            } 
+            override public function destroy():void
+            {
+            	super.destroy();
+            	
+            	if(YTPlayer)
+            	{
+            		YTPlayer.removeEventListener(Event.INIT, onLoaderInit);
+            		YTPlayer.content.removeEventListener("onReady", onPlayerReady);
+					YTPlayer.content.removeEventListener("onError", onPlayerError);
+					YTPlayer.content.removeEventListener("onStateChange", onPlayerStateChange);
+					YTPlayer.content.removeEventListener("onPlaybackQualityChange", onVideoPlaybackQualityChange);
+					YTPlayer.source = null;
+            	}
+            	
+            	if(player)
+            	{
+            		player.stopVideo();
+            	}
+            }
+			protected function init():void
+			{
+				// The player SWF file on www.youtube.com needs to communicate with your host
+				// SWF file. Your code must call Security.allowDomain() to allow this
+				// communication.
+				var fp:String = "http://www.youtube.com/v/" + parseEmbedCode(filePath) + "?version=3";
+				if(Security.sandboxType == Security.REMOTE || Security.sandboxType == Security.LOCAL_TRUSTED)
+				{
+					addSWFLoader();
+					Security.allowDomain("www.youtube.com");
+					
+					YTPlayer.addEventListener(Event.INIT, onLoaderInit);
+					YTPlayer.source = fp;
+				}else if(Security.sandboxType == Security.LOCAL_WITH_FILE)
+				{
+					//gotoBtn.enabled = false;
+					container.removeChild(inputSection);
+					container.removeChild(w);
+					container.removeChild(h);
+					container.removeChild(url);
+					container.removeChild(gotoBtn);
+					
+					info.text="YouTube video will appear only in GLOs accessed from Internet or a 'trusted' folder.";
+					info.text += " See documentation for more help.";
+				}else{
+					if(parseEmbedCode(filePath))
+					{
+						gotoBtn.enabled = true;
+					}else
+					{
+						gotoBtn.enabled = false;
+					}
+					
+					info.text="YouTube video will appear only in GLOs accessed from Internet. Add YouTube embed code below.";
+					
+				}
+		
+			}
+			protected function onLoaderInit(evt:Event):void {
+				
+				YTPlayer.content.addEventListener("onReady", onPlayerReady);
+				YTPlayer.content.addEventListener("onError", onPlayerError);
+				YTPlayer.content.addEventListener("onStateChange", onPlayerStateChange);
+				YTPlayer.content.addEventListener("onPlaybackQualityChange", onVideoPlaybackQualityChange);
+				
+			} 
+			protected function onPlayerReady(evt:Event):void {
+			    // Event.data contains the event parameter, which is the Player API ID
+			    player = YTPlayer.content;
+			   	player.setSize(width, height);
+			    // Once this event has been dispatched by the player, we can use
+			    // cueVideoById, loadVideoById, cueVideoByUrl and loadVideoByUrl
+			    // to load a particular YouTube video.
+			    // Set appropriate player dimensions for your application
+			    // player.setSize(480, 360);
+			}
+			
+			protected function onPlayerError(event:Event):void {
+			    // Event.data contains the event parameter, which is the error code
+			    trace("player error:", Object(event).data);
+			}
+			
+			protected function onPlayerStateChange(event:Event):void {
+			    // Event.data contains the event parameter, which is the new player state
+			    trace("player state:", Object(event).data);
+			}
+			
+			protected function onVideoPlaybackQualityChange(event:Event):void {
+			    // Event.data contains the event parameter, which is the new video quality
+			    trace("video quality:", Object(event).data);
+			}
+			
+			protected function parseEmbedCode(prop:IComponentProperty):String
+			{	
+				var path:String = null;
+				
+				if(prop == filePath)
+            	{
+            		if((filePath.propValue as String).split("value=\"http://www.youtube.com/v/").length > 1)
+            		{
+            			path = (filePath.propValue as String).split("value=\"http://www.youtube.com/v/")[1];
+            			
+            		}else if((filePath.propValue as String).split("src=\"http://www.youtube.com/embed/").length > 1)
+            		{
+            			path = (filePath.propValue as String).split("src=\"http://www.youtube.com/embed/")[1];
+            		
+            		}else if((filePath.propValue as String).split("http://youtu.be/").length > 1)
+            		{
+            			path = (filePath.propValue as String).split("http://youtu.be/")[1];
+            		}else
+            		{
+            			return null;
+            		}
+            	}
+
+				if((filePath.propValue as String).split("http://youtu.be/").length > 1)
+				{
+					// path is ok.
+					// add default values for w & h
+					YTWidth = String(560);
+					YTHeight = String(349);
+					
+					return path;
+				}
+				
+				if(path.split("?").length > 1)
+				{
+					path = path.split("?")[0];
+
+				}else if(path.split("\"").length > 1)
+				{
+					path = path.split("\"")[0];
+					
+				}else
+				{
+					return null;
+				}
+				
+				YTWidth = (filePath.propValue as String).split("width=\"")[1];
+				YTWidth = YTWidth.split("\"")[0];
+				
+				YTHeight = (filePath.propValue as String).split("height=\"")[1];
+				YTHeight = YTHeight.split("\"")[0];
+
+				return path;
+			}
+			
+			protected function addSWFLoader():void
+			{
+				this.removeAllChildren();
+				
+				YTPlayer = new SWFLoader();
+				YTPlayer.percentWidth = 100;
+				YTPlayer.percentHeight= 100;
+				YTPlayer.scaleContent = false;
+				this.addChild(YTPlayer);
+			}
+			protected function updateInfo(prop:IComponentProperty):void
+			{
+				if(parseEmbedCode(prop))
+            	{
+            		url.text = "URL: " + "http://www.youtube.com/v/" + parseEmbedCode(filePath) + "?version=3";
+            		w.text = "Width: " + YTWidth;
+            		h.text = "Height: " + YTHeight;
+            		//gotoBtn.enabled = true;
+            	}else
+            	{
+            		url.text = "URL: Not set";
+            		w.text = "Width: ";
+            		h.text = "Height: ";
+            		//gotoBtn.enabled = false;
+            	}
+			}
+			
+			protected function onYT(evt:MouseEvent):void
+			{
+				var fp:String = "http://www.youtube.com/v/" + parseEmbedCode(filePath) + "?version=3";
+				navigateToURL(new URLRequest(fp), "_blank");
+			}
+
+			protected function onEmbedChange(evt:Event):void
+			{
+				filePath.propValue = (evt.currentTarget as TextInput).text;
+				
+				updateInfo(filePath);
+            	if(parseEmbedCode(filePath))
+            	{
+            		gotoBtn.enabled = true;
+            		tickIcon.visible = true;
+            	}else
+            	{
+            		gotoBtn.enabled = false;
+            		tickIcon.visible = false;
+            	}
+			}
+		
+    	]]>
+    </mx:Script>
+    
+    <mx:VBox id="container" width="100%" height="100%" minWidth="165" minHeight="210"
+    	backgroundColor="0xCCCCCC" 
+    	paddingLeft="15" paddingTop="15" paddingRight="15" paddingBottom="15"
+    	label="YouTube control"
+    	verticalScrollPolicy="off" horizontalScrollPolicy="off">
+    	<!--<mx:Text id="debug"/>-->
+    	<mx:TextArea id="info" width="100%" minWidth="120" minHeight="50" backgroundColor="0xCCCCCC" 
+    		verticalScrollPolicy="off" horizontalScrollPolicy="off"
+    		editable="false" selectable="false"/>
+    	<mx:HBox id="inputSection" width="100%">
+	    	<mx:TextInput id="YTEmbedInput" minWidth="120" width="100%" change="onEmbedChange(event)"/>
+	    	<mx:Image id="tickIcon" source="{new tick()}" width="16" height="16" visible="false"/>
+    	</mx:HBox>
+    	<mx:Text id="w" minWidth="150"/>
+    	<mx:Text id="h" minWidth="150"/>
+    	<mx:Label id="url" minWidth="150" width="100%"/>
+    	<mx:Button id="gotoBtn" label="Go to YouTube page" click="onYT(event)"/>
+	    <!--<mx:SWFLoader id="YTPlayer" width="100%" height="100%"/>-->
+	    
+ 		
+    </mx:VBox>
+
+    
+</BaseComponent>

@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+/////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2007-09 LTRI, London Metropolitan Uni. All rights reserved.
+// An Open Source Release under the GPL v3 licence  (see http://www.gnu.org/licenses/).
+// Authors: Tom Boyle, Nils Millahn, Musbah Sagar, Martin Agombar.
+// See http://www.glomaker.org for full details
+/////////////////////////////////////////////////////////////////////////
+-->
+
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	width="400" height="300" xmlns:accessviews="org.glomaker.plugin.accessviews.*"
+	horizontalScrollPolicy="off" verticalScrollPolicy="off"
+	currentState="DisplayState"
+	 backgroundColor="#bbbbbb"
+	 borderStyle="none"
+	 borderColor="#87ceeb"
+	 backgroundAlpha="0" 
+	 horizontalAlign="center"
+>
+<mx:Script>
+        <![CDATA[
+        	import org.glomaker.shared.properties.FilePathProperty;
+        	import mx.containers.VBox;
+            // Code from Flex 3 Cookbook
+            import mx.collections.ArrayCollection;
+			
+			[Bindable]
+			[Embed(source="files/noface.png")]
+			protected var noFace:Class;
+			
+			[Bindable]
+			[Embed(source="files/control_pause.png")]
+			protected var pause:Class;
+			
+			[Bindable]
+			[Embed(source="files/control_pause_blue.png")]
+			protected var pauseb:Class;
+			
+			[Bindable]
+			[Embed(source="files/control_pause_grey.png")]
+			protected var pauseg:Class;
+			
+			[Bindable]
+			[Embed(source="files/control_play.png")]
+			protected var play:Class;
+			
+			[Bindable]
+			[Embed(source="files/control_play_blue.png")]
+			protected var playb:Class;
+			
+			[Bindable]
+			[Embed(source="files/control_play_grey.png")]
+			protected var playg:Class;
+			
+			[Bindable]
+			[Embed(source="files/control_stop.png")]
+			protected var stop:Class;
+			
+			[Bindable]
+			[Embed(source="files/control_stop_blue.png")]
+			protected var stopb:Class;
+			
+			[Bindable]
+			[Embed(source="files/control_stop_grey.png")]
+			protected var stopg:Class;
+			
+			[Bindable]
+			[Embed(source="files/control_script.png")]
+			protected var script:Class;
+			
+			[Bindable]
+			[Embed(source="files/control_script_blue.png")]
+			protected var scriptb:Class;
+			
+			[Bindable]
+			[Embed(source="files/control_script_grey.png")]
+			protected var scriptg:Class;
+			
+			public static const PLAY_PAUSE_EVENT:String = "SpeakerBox.PlayPause";
+			public static const STOP_EVENT:String = "SpeakerBox.Stop";
+			public static const SCRIPT_EVENT:String = "SpeakerBox.Script";
+			public static const DELETE_EVENT:String = "SpeakerBox.Delete";
+
+			protected var playPause:Boolean = true;
+
+			// is this object selected
+			[Bindable]
+			protected var _selected:Boolean = false;
+			
+			[Bindable]
+			private var _speakerData:SpeakerData;
+			
+			// Index of this object inside a repeater
+            public var index:int;
+            
+            // If false, hide delete button
+            [Bindable]
+            public var deletable:Boolean; 
+			
+			public function saveData():void{
+			     _speakerData.title = titleTextArea.text;
+                _speakerData.imageSource = imageSource;		
+			}
+			
+			public function set speakerData(sd:SpeakerData):void
+			{
+				_speakerData = sd;
+				imageSource = sd.imageSource;
+			}
+			
+			public function get speakerData():SpeakerData
+			{
+				return _speakerData
+			}
+			
+			public function set imageSource(value:String):void
+			{
+				if(!value || value == FilePathProperty.NO_URL_VALUE)
+				{
+					speakerImage.source = noFace;
+				}else{
+					speakerImage.source = value;
+				}
+			}
+			
+			public function get imageSource():String
+			{
+				if(speakerImage.source is String)
+					return speakerImage.source as String;
+				else
+					return "";
+			}
+			
+			// Change the mode of the component between edit (true) and display (false) modes 
+			public function setEditMode(f:Boolean):void{
+			 
+			 if(f){
+		 		currentState = "EditState";
+			 } else {
+			 	currentState = "DisplayState";
+			 	titleTextArea.selectionBeginIndex = titleTextArea.selectionEndIndex = 0;
+			 }
+			 
+			 titleTextArea.editable = titleTextArea.selectable = titleTextArea.focusEnabled = f;
+				
+			}
+			
+			// used as a property on the XML element
+			public function set editMode(f:Boolean):void{
+				setEditMode(f);
+			}
+			
+		    // Set this to selected, topic index as parameter!
+			// Set to unselected if topicIndex == -1
+			 public function set selected(ti:Boolean):void{
+			 	_selected = ti;
+			 	
+			 	if(_selected){
+			        	this.setStyle("backgroundAlpha","1");
+			  }else {
+			        	this.setStyle("backgroundAlpha","0");
+			        	
+			   playPause = true;
+			   
+			   setPlayPausebuttonStyle(); 
+			   
+			  }
+            }
+            
+            private function onDelete(event:MouseEvent):void   {
+            	event.stopImmediatePropagation();
+            	event.stopPropagation();
+            	
+            	dispatchEvent(new Event(DELETE_EVENT, true));
+            }
+            
+            private function onScript(event:MouseEvent):void   {
+            	event.stopImmediatePropagation();
+            	event.stopPropagation();
+            	
+            	dispatchEvent(new Event(SCRIPT_EVENT, true));
+            }
+            
+            private function stopPlayHandler(event:MouseEvent):void   {
+            	event.stopImmediatePropagation();
+            	event.stopPropagation();
+            	
+            	playPause = true;
+            	
+            	dispatchEvent(new Event(STOP_EVENT, true));
+
+            	setPlayPausebuttonStyle();
+            }
+            
+            private function playPauseHandler(event:MouseEvent):void
+            {
+            	event.stopImmediatePropagation();
+            	event.stopPropagation();
+
+                playPause = !playPause;
+                
+                dispatchEvent(new Event(PLAY_PAUSE_EVENT, true));
+
+                setPlayPausebuttonStyle();
+            }
+            
+               private function setPlayPausebuttonStyle():void{
+            	
+            	if(currentState != "DisplayState") 
+            		return;
+            	
+            	 if(playPause){
+                    pausePlayBtn.setStyle("icon",play);
+                    pausePlayBtn.setStyle("overIcon",playb);
+                    pausePlayBtn.toolTip="Play";
+                } else {
+                    pausePlayBtn.setStyle("icon",pause);
+                    pausePlayBtn.setStyle("overIcon",pauseb);
+                    pausePlayBtn.toolTip="Pause";
+                }
+            }
+            
+               public function enabledPlay(b:Boolean):void{
+            	if(currentState == "DisplayState"){
+            		pausePlayBtn.enabled = b;
+            		stopPlayBtn.enabled = b;
+					// Set tooltip
+            		if(b){
+            		    pausePlayBtn.toolTip="Play";
+            		}else{
+            		    pausePlayBtn.toolTip="Play (No Sound!)";
+            		}
+            	}
+            }
+               public function enabledScript(b:Boolean):void{
+            	if(currentState == "DisplayState"){
+            		scriptBtn.enabled = b;
+            		// Set tooltip
+            		if(b){
+            		    scriptBtn.toolTip="Show Script";
+            		}else{
+            		    scriptBtn.toolTip="No Script!";
+            		}
+
+            	}
+            }
+            
+        ]]>
+    </mx:Script>	
+    
+<mx:TextArea id="titleTextArea"  text="{_speakerData.title}" width="100%" backgroundAlpha="0" textAlign="center" fontSize="14" fontWeight="bold" borderStyle="none"  disabledColor="black"/>
+<mx:states>
+      <mx:State name="DisplayState">
+  		<mx:AddChild relativeTo="{controlsContainer}">
+ 			<mx:Button id="pausePlayBtn"  click="playPauseHandler(event)" disabledIcon="{playg}" overIcon="{playb}" icon="{play}" width="16" height="16" toolTip="Play"/>     			
+  		</mx:AddChild>
+      		
+  		<mx:AddChild relativeTo="{controlsContainer}">
+            <mx:Button id="stopPlayBtn"  click="stopPlayHandler(event)" disabledIcon="{stopg}" overIcon="{stopb}" icon="{stop}" width="16" height="16" toolTip="Stop"/>
+   		</mx:AddChild>
+      		
+		<mx:AddChild relativeTo="{controlsContainer}">
+			<mx:Button id="scriptBtn" disabledIcon="{scriptg}" click="onScript(event)" overIcon="{scriptb}"  icon="{script}" width="16" height="16" enabled="false" toolTip="Show Script"/>
+  		</mx:AddChild>
+      </mx:State>
+      
+      <mx:State name="EditState">
+ 		<mx:AddChild relativeTo="{controlsContainer}">
+          <mx:Button label=" Delete " height="16" visible="{deletable}" click="onDelete(event)" toolTip="Remove speaker!"/>
+        </mx:AddChild>
+      </mx:State>
+</mx:states>
+
+    <mx:HBox backgroundColor="red">
+          <mx:Image id="speakerImage" width="64" height="70" maintainAspectRatio="false" source="{noFace}"/>
+    </mx:HBox>
+    <mx:HBox id="controlsContainer" horizontalGap="8" visible="{_selected}">
+    </mx:HBox>
+
+
+</mx:VBox>
+

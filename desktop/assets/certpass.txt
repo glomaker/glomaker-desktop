@@ -1,0 +1,2 @@
+The digitalcert.p12 certificate can be used to sign test releases - but shouldn't be used for production level deployment.
+The certificate password is: glomaker

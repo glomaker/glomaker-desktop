@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<pattern>
+
+	<id>emi</id>
+	<author>musbah</author>
+	<version>1.0</version>
+	<glomaker>2.0</glomaker>	
+	<name>eMI</name>
+	<description>eMI: Evaluate Multiple Interpretations...</description>
+
+	<allowNodeEditing>yes</allowNodeEditing>
+
+	<htmlLongDescription><![CDATA[<h1>eMI – Evaluating Multiple Interpretations</h1>
+<p><b>Learning challenge:</b> This design is suitable for a situation where you want learners to have access to different perspectives on a common theme, in order to foster critical thinking and deeper understanding. This is a core challenge in many humanities and arts subjects.</p>
+<p><b>Key features:</b> At the core of the learning experience is a specially designed task that allows learners to interrogate multiple commentators on the same artefact or situation. The learner can chose a topic and ‘ask’ a commentator on his/her views. The learner can then compare and contrast the views of the different commentators. The steps that precede this central screen prepare the learners for the task. The succeeding screens use questions and feedback to encourage the learner to think critically, and reflect on what they have learned.</p>
+<p><b>First use:</b> This design was developed in conjunction with the UK National Subject Centre for History, Classics and Archaeology to introduce learners to different perspectives on how to interpret an artefact from Ancient Greece. It has been used subsequently with a wide range of topics.</p>
+<p>Further information see: <a href="http://www.glomaker.org/guides/eMi_pattern_description.pdf">The eMI Pattern</a></p>]]></htmlLongDescription>
+
+
+	<library>
+	    <heading id="orient" title="Orient" colour="0xFF0000">
+	      <func>
+	      	<id>emi_f1</id>
+	        <title>What Topic</title>
+			<description>Introduce the topic – briefly orient the learner to what is to come.</description>
+			<defaultLayoutId>titleinfopage</defaultLayoutId>
+			<guidance>
+				<page title="How"><![CDATA[<p>Provide a title and introductory paragraph introducing the theme of appreciating different interpretations of a common topic.</p>]]></page>
+				<page title="Example"><![CDATA[<img src="assets/whattopic.jpg" />]]></page>
+			</guidance>
+	      </func>
+	      <func>
+	      	<id>emi_f2</id>
+	        <title>Why Learn</title>
+	        <description>This learning experience concerns appreciating multiple perspectives – and hence a view on the nature of ‘knowledge’ that this evokes.</description>
+			<defaultLayoutId>mediacommentary</defaultLayoutId>
+			<guidance>
+				<page title="How"><![CDATA[<p>Explicitly introduce that this learning experience concerns a central intellectual skill – appreciating multiple perspectives – that student needs to grasp to fully appreciate the subject domain.</p>]]></page>
+				<page title="Example"><![CDATA[<img src="assets/whylearn.jpg" />]]></page>
+			</guidance>
+	      </func>
+	      <func>
+	      	<id>emi_f3</id>
+	        <title>Preview Outcome</title>
+			<description>Preview the learning outcomes for the learning task.</description>
+			<defaultLayoutId>mediacommentary</defaultLayoutId>
+			<guidance>
+				<page title="How"><![CDATA[<p>Preview the outcomes form the learning task – set out explicitly these intended outcomes.</p>]]></page>
+				<page title="Example"><![CDATA[<img src="assets/previewoutcome.jpg" />]]></page>
+			</guidance>			
+	      </func>
+	    </heading>
+	    <heading id="DoTask" title="Do Task" colour="0x009966">
+	      <func>
+	      	<id>emi_f10</id>
+	        <title>Do Preparatory Task</title>
+			<description>Do a preparatory task, before tackling the main task.</description>
+			<defaultLayoutId>mediacommentary</defaultLayoutId>
+			<guidance>
+				<page title="How"><![CDATA[<p>Set a task that will initially engage the learner with the task of appreciating multiple perspectives. The feedback on the task should prepare the learner to tackle the main task more effectively.</p>]]></page>
+				<page title="Example"><![CDATA[<img src="assets/dopreptask.jpg" />]]></page>
+			</guidance>			
+	      </func>
+	      <func>
+	      	<id>emi_f11</id>
+	        <title>Feedback on Preparatory Task</title>
+			<description>Receive feedback on the preparatory task that provides orientation for tackling the main task.</description>
+			<defaultLayoutId>mediacommentary</defaultLayoutId>
+			<guidance>
+				<page title="How"><![CDATA[<p>Receive feedback on the task that enables the learner to appreciate key aspects of the intended learning experience.</p>]]></page>
+				<page title="Example"><![CDATA[<img src="assets/prepfeedback.jpg" />]]></page>
+			</guidance>			
+	      </func>
+	      <func>
+	      	<id>emi_f12</id>
+	        <title>Main Task</title>
+			<description>Set task to access different views and reflect on the lessons learned.</description>
+			<defaultLayoutId>titleoverimage</defaultLayoutId>
+			<guidance>
+				<page title="How"><![CDATA[<p>Set out in words the task for the learner. This is normally followed by a screen dealing with accessing multiple interpretations.</p>]]></page>
+				<page title="Example"><![CDATA[<img src="assets/maintask.jpg" />]]></page>
+			</guidance>
+	      </func>
+	      <func>
+	      	<id>emi_f13</id>
+	        <title>Access Views</title>
+			<description>Access the views of different commentators on a common theme.</description>
+			<defaultLayoutId>accessviews</defaultLayoutId>
+			<guidance>
+				<page title="How"><![CDATA[<p>Use the special 'Access Views' screen layout to load a picture (or text) to indicate the topic of discussion. Enter the issues to be discussed. Then add pictures and appropriate text and/or audio files for each commentator on these issues.</p>]]></page>
+				<page title="Example"><![CDATA[<img src="assets/accessviews.jpg" />]]></page>
+			</guidance>
+	      </func>
+	    </heading>
+	    <heading id="Reflect" title="Reflect" colour="0x0000FF">
+	      <func>
+	      	<id>emi_f14</id>
+	        <title>Multiple Choice</title>
+			<description>Answer questions with feedback designed to improve sensitivity to interpretation.</description>
+			<defaultLayoutId>titleoverimage</defaultLayoutId>
+			<guidance>
+				<page title="How"><![CDATA[<p>The key part is to provide feedback that provokes reflection rather than just confirming a correct/incorrect answer.</p>]]></page>
+				<page title="Example"><![CDATA[<img src="assets/multiplechoice.jpg" />]]></page>
+			</guidance>
+	      </func>
+	      <func>
+	      	<id>emi_f15</id>
+	        <title>Reflect</title>
+			<description>Reflect on what you have learner about evaluating the views of others.</description>
+			<defaultLayoutId>titleoverimage</defaultLayoutId>
+			<guidance>
+				<page title="How"><![CDATA[<p>Provide a simple text message urging the learner to explore more widely the significance of appreciating multiple perspectives and its implications for the nature of knowledge.</p>]]></page>
+				<page title="Example"><![CDATA[<img src="assets/reflect.jpg" />]]></page>
+			</guidance>
+	      </func>
+	    </heading>
+	    <heading id="self" title="Self defined" colour="0xCCCCCC">
+	    	<func>
+	      	<id>easa_f16</id>
+	        <title>My function</title>
+			<description>Define as you please.</description>
+			<defaultLayoutId>blankpage</defaultLayoutId>
+			<guidance>
+				<page title="How"><![CDATA[<p>You can use this node for any purpose you want. Add some text to define what the function is doing.</p>]]></page>
+			</guidance>
+	      </func>
+	    </heading>
+	</library>
+	
+	
+	
+    <instance>
+       <node>
+		<id>n1</id>
+		<funcid>emi_f1</funcid>
+        <locx>310</locx>
+        <locy>160</locy>
+        <title>What Topic</title>
+        <description>Introduce the topic – briefly orient the learner to what is to come.</description>
+        <parentid>null</parentid>
+        <childid>n2</childid>
+        <isroot>true</isroot>
+		<layoutid>titleinfopage</layoutid>
+       </node>
+      <node>
+		<id>n2</id>
+        <funcid>emi_f12</funcid>
+        <locx>310</locx>
+		<locy>267</locy>
+        <title>Main Task</title>
+        <description>Set task to access different views and reflect on the lessons learned.</description>
+        <parentid>n1</parentid>
+        <childid>n3</childid>
+        <isroot>false</isroot>
+		<layoutid>titleoverimage</layoutid>
+       </node>
+      <node>
+		<id>n3</id>
+		<funcid>emi_f13</funcid>
+        <locx>310</locx>
+		<locy>374</locy>
+        <title>Access Views</title>
+        <description>Access the views of different commentators on a common theme.</description>
+        <parentid>n2</parentid>
+        <childid>n4</childid>
+        <isroot>false</isroot>
+		<layoutid>accessviews</layoutid>
+       </node>
+      <node>
+		<id>n4</id>
+		<funcid>emi_f14</funcid>
+        <locx>310</locx>
+		<locy>481</locy>
+        <title>Multiple Choice</title>
+        <description>Answer questions with feedback designed to improve sensitivity to interpretation.</description>
+        <parentid>n3</parentid>
+        <childid>n5</childid>
+        <isroot>false</isroot>
+		<layoutid>mcquiztext</layoutid>
+       </node>
+      <node>
+		<id>n5</id>
+		<funcid>emi_f15</funcid>
+        <locx>310</locx>
+		<locy>588</locy>
+        <title>Reflect</title>
+        <description>Reflect on what you have learned about evaluating the views of others.</description>
+        <parentid>n4</parentid>
+        <childid>null</childid>
+        <isroot>false</isroot>
+		<layoutid>titleoverimage</layoutid>
+       </node>      
+    </instance>
+</pattern>

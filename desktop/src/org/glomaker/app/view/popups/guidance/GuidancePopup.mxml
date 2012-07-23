@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+/////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2007-09 LTRI, London Metropolitan Uni. All rights reserved.
+// An Open Source Release under the GPL v3 licence  (see http://www.gnu.org/licenses/).
+// Authors: Tom Boyle, Nils Millahn, Musbah Sagar, Martin Agombar.
+// See http://www.glomaker.org for full details
+/////////////////////////////////////////////////////////////////////////
+-->
+
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+	layout="vertical" width="340" height="400"
+	title="Pedagogical Guide"
+	showCloseButton="true"
+	styleName="clearPopup"
+	xmlns:guidance="org.glomaker.app.view.popups.guidance.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.events.FlexEvent;
+			import mx.controls.Alert;
+			import org.glomaker.interfaces.pattern.IPatternGuidancePage;
+			
+			private var pageList:Array = null;
+			
+			public function displayGuidance(pl:Array):void
+			{	
+				pageList = pl;
+			    //tabNav.selectedIndex = 0;
+			    //tabNav.addEventListener(FlexEvent.VALUE_COMMIT,changeRepeater);
+			    tabRepeater.visible = true;
+				
+				if(pageList)
+					tabRepeater.dataProvider = pageList;
+					
+				tabNav.visible = true;
+				
+			    tabRepeater.addEventListener(FlexEvent.VALUE_COMMIT,changeRepeater);
+			}
+			
+			public function clearGuidance():void
+			{
+				tabRepeater.dataProvider = null;
+				tabNav.visible = false;
+			}
+			
+			protected function resetTabNav():void
+			{
+				tabNav.selectedIndex = 0;
+			}
+			
+			protected function changeRepeater(evt:Event):void
+			{
+				//tabNav.removeEventListener(FlexEvent.VALUE_COMMIT,changeRepeater);
+				tabRepeater.removeEventListener(FlexEvent.VALUE_COMMIT,changeRepeater);
+
+				tabNav.selectedIndex = 0;
+				trace("changeRepeater");
+				
+				
+			}
+			
+
+		]]>
+	</mx:Script>
+	
+	<mx:Style>
+		
+        .guidanceTabNav {
+            backgroundColor: #bbbbbb;
+            cornerRadius: 0;
+            tabStyleName: "guidanceTabStyle";
+            selectedTabTextStyleName: "selectedTabStyle";
+        }
+
+        .guidanceTabStyle {
+            backgroundColor: #5e5e5e;
+            cornerRadius: 0;
+            color: #5e5e5e;
+            textRollOverColor: #5e5e5e;
+        }
+
+        .selectedTabStyle {
+            backgroundColor: #5e5e5e;
+            cornerRadius: 0;
+            color: #ffffff;
+            textRollOverColor: #ffffff;
+        }
+		
+		
+	</mx:Style>
+	
+	<mx:TabNavigator width="100%" height="100%" styleName="guidanceTabNav" id="tabNav">
+		
+		<mx:Repeater id="tabRepeater" repeatEnd="resetTabNav()" >
+			<guidance:GuidancePage width="100%" height="100%"
+				label="{tabRepeater.currentItem.title}"
+				htmlContent="{tabRepeater.currentItem.htmlContent}"/>
+		</mx:Repeater>
+		
+	</mx:TabNavigator>
+	
+</mx:TitleWindow>

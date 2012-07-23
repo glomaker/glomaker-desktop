@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<plugin>
+
+	<id>accessviews</id>
+	<author></author>
+	<version>1.0</version>
+	<glomaker>2.0</glomaker>
+	<name>Access Views</name>
+	<description>Access multiple expert views.</description>
+	
+<component id="accessviews" x="0.016" y="0.031" width="0.967" height="0.863">
+  <AccessVDP>
+    <internalData speakerCount="3" topicCount="3"/>
+    <speaker title="&quot;Speaker 1&quot;">
+      <image isPath="true">""</image>
+      <sound isPath="true" id="&quot;Topic_1&quot;">""</sound>
+      <sound isPath="true" id="&quot;Topic_2&quot;">""</sound>
+      <sound isPath="true" id="&quot;Topic_3&quot;">""</sound>
+    </speaker>
+    <speaker title="&quot;Speaker 2&quot;">
+      <image isPath="true">""</image>
+      <sound isPath="true" id="&quot;Topic_1&quot;">""</sound>
+      <sound isPath="true" id="&quot;Topic_2&quot;">""</sound>
+      <sound isPath="true" id="&quot;Topic_3&quot;">""</sound>
+    </speaker>
+    <speaker title="&quot;Speaker 3&quot;">
+      <image isPath="true">""</image>
+      <sound isPath="true" id="&quot;Topic_1&quot;">""</sound>
+      <sound isPath="true" id="&quot;Topic_2&quot;">""</sound>
+      <sound isPath="true" id="&quot;Topic_3&quot;">""</sound>
+    </speaker>
+    <topic id="&quot;Topic_1&quot;" data="&quot;Topic 1&quot;"/>
+    <topic id="&quot;Topic_2&quot;" data="&quot;Topic 2&quot;"/>
+    <topic id="&quot;Topic_3&quot;" data="&quot;Topic 3&quot;"/>
+  </AccessVDP>
+  <DividerWidth>429</DividerWidth>
+</component>
+<component id="imageloader" x="0.044" y="0.342" width="0.485" height="0.475">
+  <source isPath="true">"FilePathProperty::NoUrlSet"</source>
+  <maintainRatio>false</maintainRatio>
+</component>
+</plugin>

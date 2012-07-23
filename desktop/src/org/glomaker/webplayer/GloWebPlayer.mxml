@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+/////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2007-09 LTRI, London Metropolitan Uni. All rights reserved.
+// An Open Source Release under the GPL v3 licence  (see http://www.gnu.org/licenses/).
+// Authors: Tom Boyle, Nils Millahn, Musbah Sagar, Martin Agombar.
+// See http://www.glomaker.org for full details
+/////////////////////////////////////////////////////////////////////////
+-->
+
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute"
+applicationComplete="initialiseApplication()" xmlns:player="org.glomaker.webplayer.view.player.*" xmlns:local="*"
+
+	backgroundColor="#ededed"
+	backgroundImage="{null}"
+
+>
+	
+	<mx:Script>
+		<![CDATA[
+			import org.glomaker.app.model.ProjectSettingsProxy;
+			import mx.managers.PopUpManager;
+			import org.glomaker.shared.component.optimisation.PluginOptimiser;
+			import org.glomaker.webplayer.core.GLOPlayerFacade;
+            
+            // This fixes the problem of popupmanager conflics between components (swfs).
+            private static var temp:PopUpManager; 
+			/**
+			 * Multiton application key for PureMVC Multicore.
+			**/
+			private static const APP_KEY:String = "GLOPLAYERv2AppKey";
+			
+
+			/**
+			 * Initialise application.
+			**/
+			private function initialiseApplication():void
+			{	
+				// force inclusion of the plugin optimisation library
+				var o:Object = PluginOptimiser;
+				
+				playerView.blendMode = BlendMode.LAYER;
+				
+				// start the PureMVC facade
+				GLOPlayerFacade.start(APP_KEY, this);
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<local:PlayerModule id="playerView" width="100" height="100" visible="false" horizontalCenter="0" verticalCenter="0"/>
+	
+</mx:Application>

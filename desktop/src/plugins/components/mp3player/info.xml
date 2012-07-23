@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<plugin>
+	<id>mp3player</id>
+	<author>Musbah</author>
+	<version>1.0</version>
+	<glomaker>2.0</glomaker>	
+	<name>MP3 Player</name>
+	<description>Import Sound</description>
+	<swf>Mp3PlayerPlugin.swf</swf>
+</plugin>

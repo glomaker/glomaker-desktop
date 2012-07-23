@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+/////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2007-09 LTRI, London Metropolitan Uni. All rights reserved.
+// An Open Source Release under the GPL v3 licence  (see http://www.gnu.org/licenses/).
+// Authors: Tom Boyle, Nils Millahn, Musbah Sagar, Martin Agombar.
+// See http://www.glomaker.org for full details
+/////////////////////////////////////////////////////////////////////////
+-->
+
+<BaseComponent xmlns="org.glomaker.shared.component.*" 
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:fig="com.adobe.wheelerstreet.fig.panzoom.*" layout="absolute">
+	
+	<mx:Script>
+		<![CDATA[
+			import org.glomaker.shared.properties.AbstractSimpleProperty;
+			import mx.controls.Alert;
+			import org.glomaker.shared.properties.IComponentProperty;
+	
+			import org.glomaker.shared.properties.FilePathProperty;
+			
+			[Bindable]
+			[Embed(source="files/control_zin.png")]
+			protected var zin:Class;
+			
+			[Bindable]
+			[Embed(source="files/control_zin_blue.png")]
+			protected var zinb:Class;
+			
+			[Bindable]
+			[Embed(source="files/control_zin_grey.png")]
+			protected var zing:Class;
+			
+			[Bindable]
+			[Embed(source="files/control_zout.png")]
+			protected var zout:Class;
+			
+			[Bindable]
+			[Embed(source="files/control_zout_blue.png")]
+			protected var zoutb:Class;
+			
+			[Bindable]
+			[Embed(source="files/control_zout_grey.png")]
+			protected var zoutg:Class;
+			
+			[Bindable]
+			protected var control_x:int = 20;
+			
+			[Bindable]
+			protected var control_y:int = 20;
+
+			[Bindable]
+			protected var zoom:int = 500;
+
+			// Store the data of the imageViewer			
+			[Bindable]
+        	protected var _dataProperty:ImageMagnifierDataProperty = new ImageMagnifierDataProperty("AccessVDP");
+
+
+			protected var sourceField:FilePathProperty; 
+			
+			override protected function defineProperties():void
+			{
+				super.defineProperties();
+				sourceField = new FilePathProperty("source", "Image path"); 
+	 			
+	 			//addSaveableProperty(_dataProperty);
+	 			addProperty(sourceField);
+	 			
+			}
+			
+			override public function propertyValuesInitialised():void
+			{
+				if(sourceField.propValue != FilePathProperty.NO_URL_VALUE){
+				imageViewer.imageURL = sourceField.propValue;
+			    if(image.visible){
+						image.visible = false;
+						zoomInButton.enabled = true;
+						zoomOutButton.enabled = true;
+				}}
+				
+				imageViewer._contentRectangle = _dataProperty.contentRectangle;
+				imageViewer.invalidateDisplayList();
+
+			}
+			
+			override public function prepareValuesForSave():void
+            {
+            	_dataProperty.contentRectangle = imageViewer._contentRectangle;
+            }
+			
+			override public function editablePropertyUpdated(prop:IComponentProperty):void
+			{
+				if(prop == sourceField){
+					imageViewer.imageURL = sourceField.propValue;
+					if(image.visible){
+						image.visible = false;
+						zoomInButton.enabled = true;
+						zoomOutButton.enabled = true;
+					}
+				}
+			}
+			
+			override public function hasEditMode():Boolean
+			{
+				return false;
+			}
+			
+			public function zoomIn(event:MouseEvent):void
+			{
+				imageViewer.zoomInOut("in");
+			}
+			
+			public function zoomOut(event:MouseEvent):void
+			{
+				imageViewer.zoomInOut("out");
+			}
+			
+			
+		]]>
+	</mx:Script>
+	
+	<mx:Style>
+		.missingImageStyle {
+			broken-image-skin: ClassReference("org.glomaker.shared.component.utils.MissingImageSkin");
+			broken-image-border-skin: ClassReference(null);
+		}
+	</mx:Style>
+	
+
+<fig:ImageViewer
+			id="imageViewer"
+			bitmapScaleFactorMax="5"
+			bitmapScaleFactorMin=".05"
+			width="100%" height="100%"
+			zoom="{zoom}" styleName="missingImageStyle"
+			/>
+
+<mx:Image id="image" source="none" styleName="missingImageStyle" width="100%" height="100%" scaleContent="true"/>
+			 
+<mx:Button id="zoomInButton" enabled="false" x="{control_x}" y="{control_y}" click="zoomIn(event) " disabledIcon="{zing}" overIcon="{zinb}" icon="{zin}" width="16" height="16"/>
+
+<mx:Button id="zoomOutButton"  enabled="false" x="{control_x+20}" y="{control_y}" click="zoomOut(event) " disabledIcon="{zoutg}" overIcon="{zoutb}" icon="{zout}" width="16" height="16"/>
+
+
+</BaseComponent>

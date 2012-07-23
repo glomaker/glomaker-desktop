@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute"
+applicationComplete="initialiseApplication()" xmlns:player="org.gloplayer.view.player.*">
+	
+	
+	<mx:Script>
+		<![CDATA[
+			import org.gloplayer.core.GLOPlayerFacade;
+			import fr.kapit.PureMVCConsole;
+			
+
+			/**
+			 * Multiton application key for PureMVC Multicore.
+			**/
+			private static const APP_KEY:String = "GLOPLAYERv2AppKey";
+			
+
+			/**
+			 * Initialise application.
+			**/
+			private function initialiseApplication():void
+			{	
+				// conditional compiler directive to include the KapIT PureMVC console
+                CONFIG::debug
+                {
+                    var p : PureMVCConsole = new PureMVCConsole();
+                }
+
+				// start the PureMVC facade
+				GLOPlayerFacade.start(APP_KEY, this);
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<player:PlayerView id="playerView" width="100%" height="100%"/>
+	
+</mx:Application>

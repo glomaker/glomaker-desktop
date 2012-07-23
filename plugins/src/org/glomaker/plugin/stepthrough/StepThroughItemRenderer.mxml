@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+/////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2007-09 LTRI, London Metropolitan Uni. All rights reserved.
+// An Open Source Release under the GPL v3 licence  (see http://www.gnu.org/licenses/).
+// Authors: Tom Boyle, Nils Millahn, Musbah Sagar, Martin Agombar.
+// See http://www.glomaker.org for full details
+/////////////////////////////////////////////////////////////////////////
+-->
+
+<mx:HBox 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	implements="mx.controls.listClasses.IDropInListItemRenderer"
+	
+	verticalAlign="middle"
+	width="100"
+	cornerRadius="5"
+	backgroundAlpha="1"
+	borderColor="black"
+	borderStyle="solid"
+	paddingTop="0"
+	paddingBottom="0"
+	paddingLeft="0"
+	paddingRight="0"
+	horizontalGap="0"
+	verticalGap="0"
+	textAlign="center"
+	horizontalAlign="left">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.controls.List;
+			import mx.controls.listClasses.BaseListData;
+			import mx.controls.listClasses.IDropInListItemRenderer;
+			
+			public static const DELETE_EVENT:String = "StepThroughItemRenderer.Delete";
+			
+			[Bindable]
+			[Embed(source="org/glomaker/plugin/stepthrough/cancel.png")]
+			protected static var image:Class;
+            
+            
+            protected static const HIGHLIGHT_COLOUR:uint = 0xd5d5d5;
+            protected static const NORMAL_COLOUR:uint = 0x5e5e5e;
+            
+            protected static const TEXT_NORMAL_COLOUR:uint = 0xffffff;
+            protected static const TEXT_HIGHLIGHT_COLOUR:uint = 0x000000;
+            
+            protected static const BACKGROUND_STYLE:String = "backgroundColor";
+            protected static const TEXT_STYLE:String = "color";
+            
+            
+            /**
+            * Getter / setter for listData property.
+            * Required by IDropInLIstItemRenderer.
+           **/
+        
+			
+    private var _listData:BaseListData;
+     
+     // Make the listData property bindable.
+     
+     // Define the getter method.
+     public function get listData():BaseListData
+     {
+       return _listData;
+     }
+     
+     // Define the setter method,
+     public function set listData(value:BaseListData):void
+     {
+       _listData = value;
+       
+       // clearing dataprovider might result in null listData
+       // added to resolve issue 155
+       if(_listData)
+       	itemLabel.text = String(_listData.rowIndex);
+       else
+       	itemLabel.text = "";
+     }
+     
+     	override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void
+     	{
+     		super.updateDisplayList(unscaledWidth, unscaledHeight);
+     		
+     		// correct background colour
+     		if(listData)
+     		{
+     			var owner:List = List(listData.owner);
+     			var isSelected:Boolean = owner.isItemSelected(data);
+
+				// update background / text colours     			
+     			if(isSelected)
+     			{
+     				setStyle(BACKGROUND_STYLE, HIGHLIGHT_COLOUR);
+     				itemLabel.setStyle(TEXT_STYLE, TEXT_HIGHLIGHT_COLOUR);
+     			}else{
+     				setStyle(BACKGROUND_STYLE, NORMAL_COLOUR);
+     				itemLabel.setStyle(TEXT_STYLE, TEXT_NORMAL_COLOUR);
+     			}
+     			
+   				// only show the delete button if this item is currently selected and there are other items in the list
+   				deleteButton.visible = isSelected && (owner.dataProvider.length > 1);
+   				buttonMode = isSelected;
+     		}
+     		
+     	}
+            
+         private function clickHandler(event:MouseEvent):void{
+            	event.stopImmediatePropagation();
+            	event.stopPropagation();
+            	
+            	dispatchEvent(new Event(DELETE_EVENT, true));
+         }
+    ]]>
+	</mx:Script>
+	
+	<mx:Label id="itemLabel"/>
+	<mx:Spacer width="5"/>
+	<mx:Button id="deleteButton" visible="false" useHandCursor="true" toolTip="Delete this item" width="16" height="16" skin="{image}" click="clickHandler(event);"/>
+	<mx:Spacer width="5"/>
+	
+</mx:HBox>

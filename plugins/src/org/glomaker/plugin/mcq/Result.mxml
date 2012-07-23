@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+/////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2007-09 LTRI, London Metropolitan Uni. All rights reserved.
+// An Open Source Release under the GPL v3 licence  (see http://www.gnu.org/licenses/).
+// Authors: Tom Boyle, Nils Millahn, Musbah Sagar, Martin Agombar.
+// See http://www.glomaker.org for full details
+/////////////////////////////////////////////////////////////////////////
+-->
+
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute"
+	
+	width="300"
+
+	cornerRadius="0"
+	headerHeight="7"
+	
+	dropShadowEnabled="false"
+	backgroundColor="#999999"
+	backgroundAlpha="1"
+	borderColor="#999999"
+	borderAlpha="1"
+	
+	modalTransparencyBlur="0"
+	modalTransparencyDuration="0"
+	
+	themeColor="haloSilver"
+>
+	  <mx:Script>
+ 	<![CDATA[
+ 		import mx.core.UIComponent;
+ 		import mx.managers.PopUpManager;
+ 		
+ 	public function show(parent:UIComponent):void{
+        PopUpManager.addPopUp(this, parent, true);
+        PopUpManager.centerPopUp(this); 
+     }
+ 	
+ 	public function clickOK(evt:Event):void{
+ 		PopUpManager.removePopUp(this);        
+ 	}
+ 	
+ 	public function set text(text:String):void {
+ 		_text.text = text;
+ 	}
+
+ 	public function get text():String {
+ 		return _text.text;
+ 	}
+
+ 	]]>
+ </mx:Script>
+ 
+ <mx:Text
+ 	id="_text"
+ 	width="100%"
+ 	textAlign="center"
+ 	selectable="false"
+ 	color="#ffffff"
+ 	fontWeight="bold"/>
+ 	
+ <mx:ControlBar>
+ 	 <mx:Image id="answerImage" width="16" height="16"/>
+ 	 <mx:Spacer width="100%"/>
+ 	 <mx:Button id="ok" label="OK" click="clickOK(event)"/>
+ </mx:ControlBar>
+</mx:TitleWindow>

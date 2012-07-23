@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute">
+
+
+	<!-- DO NOT MAKE CHANGES TO THIS FILE!!!! -->
+
+	
+	<mx:Script>
+		<![CDATA[
+			
+			import org.glomaker.shared.component.optimisation.PluginOptimiser;
+		
+			private var forceCompile:Object = [PluginOptimiser];
+			
+		]]>
+	</mx:Script>
+
+</mx:Application>

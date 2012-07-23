@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<plugin>
+
+	<id>stepthrough</id>
+	<author></author>
+	<version>1.0</version>
+	<glomaker>2.0</glomaker>
+	<name>Step Through Explanation</name>
+	<description>Display image, or animation, with accompanying commentary</description>
+	
+	<component id="stepthrough" x="0.034" y="0.09" width="0.9" height="0.738"/>
+</plugin>

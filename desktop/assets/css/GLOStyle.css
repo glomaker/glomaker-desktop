@@ -1,0 +1,228 @@
+/* CSS file */
+
+/* FONTS */
+
+@font-face
+{
+	font-family: VerdanaEmbedded;
+	src: url("../fonts/verdana.ttf");
+	unicode-range:
+		U+0020-U+0040, /* Punctuation, Numbers */
+		U+0041-U+005A, /* Upper-Case A-Z */
+		U+005B-U+0060, /* Punctuation and Symbols */
+		U+0061-U+007A, /* Lower-Case a-z */
+		U+007B-U+007E; /* Punctuation and Symbols */
+}
+
+@font-face
+{
+	font-family: VerdanaBoldEmbedded;
+	font-weight: bold;
+	src: url("../fonts/verdanab.ttf");
+	unicode-range:
+		U+0020-U+0040, /* Punctuation, Numbers */
+		U+0041-U+005A, /* Upper-Case A-Z */
+		U+005B-U+0060, /* Punctuation and Symbols */
+		U+0061-U+007A, /* Lower-Case a-z */
+		U+007B-U+007E; /* Punctuation and Symbols */
+}
+
+
+WindowedApplication
+{
+	fontSize:"10";
+	padding-top: 0;
+	padding-left: 5;
+	padding-right: 5;
+	padding-bottom: 0;
+	background-color: #ededed;
+}
+
+TabNavigator
+{
+	background-color:"0xBBBBBB";
+}
+
+/* DIALOG AND ALERTS */
+
+TitleWindow
+{
+	background-alpha: 1;
+	background-color: #d5d5d5;
+	
+	border-color: #5e5e5e;
+	border-thickness: 1;
+	border-alpha: 1;
+	
+	corner-radius: 0;
+	rounded-bottom-corners: false;
+	
+	shadow-distance: 3;
+	header-height: 33;
+	
+	title-style-name: windowTitleStyle;
+	close-button-up-skin: Embed(source="../skins/icons/close_icon.png");
+	close-button-over-skin: Embed(source="../skins/icons/close_icon_over.png");
+	close-button-down-skin: Embed(source="../skins/icons/close_icon_over.png");
+}
+
+.windowTitleStyle
+{
+    /* Style the Window title message. */
+    	font-family: Verdana;
+        color: white;
+        font-size: 11;
+        font-weight: bold;
+}
+
+
+Alert
+{
+	background-alpha: 1;
+	background-color: #d5d5d5;
+	
+	header-colors : #5e5e5e, #5e5e5e;
+	footer-colors : #5e5e5e, #5e5e5e;
+	border-color : #5e5e5e;
+	color: #000000;	
+
+	header-height: 33;
+	corner-radius: 0;
+	
+	title-style-name: windowTitleStyle;
+	
+	padding-top: 10;
+	padding-bottom: 10;
+	
+	button-style-name: alertButtonStyle;
+	message-style-name: alertMessageStyle;
+	
+	modal-transparency: 0.8;
+	modal-transparency-blur: 0;
+	modal-transparency-duration: 0;
+	modal-transparency-color: #eeeeee;
+}
+
+.alertButtonStyle
+{
+	padding-top: 10;
+	padding-bottom: 10;
+}
+
+.alertMessageStyle
+{
+	padding-bottom: 10;		
+}
+
+.modalPopup {
+	modal-transparency: 0.8;
+	modal-transparency-duration: 0;
+	modal-transparency-blur: 0;
+	modal-transparency-color: #eeeeee;
+}
+
+.clearPopup {
+	modal-transparency: 0;
+	modal-transparency-duration: 0;
+	modal-transparency-blur: 0;
+}
+
+
+/* MAIN NAVIGATION BAR STYLES */
+
+.appNavStyle {
+	background-image: Embed("../skins/bg/navbar_bg.png");
+	background-size: "100%";
+	vertical-align: middle;
+	padding-left: 9;
+	padding-right: 9;
+}
+
+
+/* GENERIC BUTTON STYLES */
+
+.navButtonLight
+{
+	skin: Embed("../skins/buttons/navbutton_light.png", scaleGridTop="2", scaleGridLeft="2", scaleGridRight="118", scaleGridBottom="23");
+	down-skin: Embed("../skins/buttons/navbutton_light_over.png", scaleGridTop="2", scaleGridLeft="2", scaleGridRight="118", scaleGridBottom="23");
+	over-skin: Embed("../skins/buttons/navbutton_light_over.png", scaleGridTop="2", scaleGridLeft="2", scaleGridRight="118", scaleGridBottom="23");
+	color: #333333;
+	text-roll-over-color: #333333;
+	text-selected-color: #333333;
+}
+
+.navButtonDark
+{
+	skin: Embed("../skins/buttons/navbutton_dark.png", scaleGridTop="2", scaleGridLeft="2", scaleGridRight="118", scaleGridBottom="23");
+	down-skin: Embed("../skins/buttons/navbutton_dark_over.png", scaleGridTop="2", scaleGridLeft="2", scaleGridRight="118", scaleGridBottom="23");
+	over-skin: Embed("../skins/buttons/navbutton_dark_over.png", scaleGridTop="2", scaleGridLeft="2", scaleGridRight="118", scaleGridBottom="23");
+	color: #ffffff;
+	text-roll-over-color: #ffffff;
+	text-selected-color: #ffffff;
+}
+
+
+.bold
+{
+	fontWeight:"bold";
+}
+.italic
+{
+	fontStyle:"italic";
+}
+.underline
+{
+	textDecoration:"underline";
+}
+.titleTxt
+{
+	fontSize:"24";
+}
+
+.libraryPanels
+{
+	background-color:"0xCCCCCC";	
+}
+.labels
+{
+	fontWeight:"bold";
+}
+
+.grid
+{
+	 padding-top:10;
+	 padding-left:10;
+}
+
+
+/* PatternMaker */
+
+.patternMakerStyle {
+	background-color: #ffffff;
+}
+
+/* Help Panel */
+
+.helpPanel {
+	background-color: #cccccc;
+	padding-left: 5px;
+	padding-right: 5px;
+	padding-top: 5px;
+	padding-bottom: 5px;
+}
+
+.helpTitle {
+	font-weight: bold;
+	font-size: 14;
+}
+
+.helpText {
+	font-size: 12;
+}
+
+.componentLibraryStyle { 
+    background-color:none;
+    borderStyle:none;
+}
+
+

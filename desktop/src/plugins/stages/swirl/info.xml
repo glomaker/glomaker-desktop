@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<plugin>
+	<id>swirlstage</id>
+	<author>Musbah Sagar</author>
+	<version>1.0</version>
+	<glomaker>2.0</glomaker>
+	<name>Neutral blue</name>
+	<description>Swirl Bar</description>
+	<swf>SwirlNavBar.swf</swf>
+</plugin>

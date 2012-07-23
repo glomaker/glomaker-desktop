@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<plugin>
+
+	<id>londonmetstage</id>
+	<author>Nils Millahn</author>
+	<version>1.0</version>
+	<glomaker>2.0</glomaker>
+	<name>London Metropolitan University</name>
+	<description>LondonMet</description>
+	
+	<swf>LondonMetNavBar.swf</swf>
+</plugin>

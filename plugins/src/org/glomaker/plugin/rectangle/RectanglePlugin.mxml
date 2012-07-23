@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+/////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2007-09 LTRI, London Metropolitan Uni. All rights reserved.
+// An Open Source Release under the GPL v3 licence  (see http://www.gnu.org/licenses/).
+// Authors: Tom Boyle, Nils Millahn, Musbah Sagar, Martin Agombar.
+// See http://www.glomaker.org for full details
+/////////////////////////////////////////////////////////////////////////
+-->
+
+<BaseComponent  xmlns="org.glomaker.shared.component.*" xmlns:mx="http://www.adobe.com/2006/mxml">
+
+<mx:Script>
+	<![CDATA[
+		import org.glomaker.shared.properties.IComponentProperty;
+		import org.glomaker.shared.properties.NumericStepperProperty;
+		import org.glomaker.shared.properties.ColourProperty;
+
+		protected var _cornerRadius:NumericStepperProperty = new NumericStepperProperty("cornerRadius", "Corner Radius", 0);
+		protected var _bgColour:ColourProperty = new ColourProperty("bgcolour", "Colour", 0xeeeeee);
+
+
+		override protected function defineProperties():void
+		{
+			super.defineProperties();
+
+			_cornerRadius.minimum = 0;
+			_cornerRadius.maximum = 25;
+			addProperty(_cornerRadius);
+
+			addProperty(_bgColour);			
+		}
+		
+		override public function propertyValuesInitialised():void
+		{
+			shape.setStyle("cornerRadius", _cornerRadius.propValue);
+			shape.setStyle("backgroundColor", _bgColour.propValue);
+		}
+		
+		override public function editablePropertyUpdated(prop:IComponentProperty):void
+		{
+			switch(prop)
+			{
+				case _cornerRadius:
+					shape.setStyle("cornerRadius", _cornerRadius.propValue);
+					break;
+					
+				case _bgColour:
+					shape.setStyle("backgroundColor", _bgColour.propValue);
+					break;
+			}
+		}
+		
+		override public function hasEditMode():Boolean
+		{
+			return false;
+		}
+
+	]]>
+</mx:Script>
+
+	<mx:Canvas id="shape" width="100%" height="100%" borderStyle="solid" borderThickness="0"/>
+</BaseComponent>

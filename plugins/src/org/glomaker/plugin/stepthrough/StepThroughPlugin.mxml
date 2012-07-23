@@ -1,0 +1,407 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+/////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2007-09 LTRI, London Metropolitan Uni. All rights reserved.
+// An Open Source Release under the GPL v3 licence  (see http://www.gnu.org/licenses/).
+// Authors: Tom Boyle, Nils Millahn, Musbah Sagar, Martin Agombar.
+// See http://www.glomaker.org for full details
+/////////////////////////////////////////////////////////////////////////
+-->
+
+<BaseComponent xmlns="org.glomaker.shared.component.*" xmlns:mx="http://www.adobe.com/2006/mxml"
+	horizontalScrollPolicy="off" 
+	verticalScrollPolicy="off"
+	themeColor="haloSilver">
+	
+	<mx:Script>
+		<![CDATA[
+			import org.glomaker.shared.properties.IComponentProperty;
+			import mx.collections.ArrayCollection;
+			import org.glomaker.shared.properties.FilePathProperty;
+			import org.glomaker.shared.properties.ArrayProperty;
+			import org.glomaker.shared.properties.NumericStepperProperty;
+			import mx.events.ListEvent;
+    
+    
+            protected var filePath:FilePathProperty;
+            protected var fontSizeField:NumericStepperProperty;
+            protected var dataList:ArrayProperty = new ArrayProperty("dataList","", []);
+            
+            
+            // array used internally to manage data
+            [Bindable]
+          	protected var internalDataList:ArrayCollection;
+          
+    	    // index of the item currently being displayed in the text field (in edit and in display mode)
+     	    private var displayCounter:int = -1;
+     	    
+     	    // previously selected list index in the edit list
+     	    // used to save values when user selects a new list entry
+     	    protected var previousEditListIndex:int = -1;
+     	    
+     	    
+     	    // bindable properties updated via the component property values
+     	    [Bindable]
+     	    protected var currentFontSize:Number;
+     	    
+     	    [Bindable]
+     	    protected var currentFilePath:String;
+     	    
+
+			// ***************************************
+			// BaseComponent overrides
+			// ***************************************
+			
+			
+			
+			override protected function defineProperties():void
+			{
+				super.defineProperties();
+				
+				fontSizeField = new NumericStepperProperty("fontSize", "Font Size:", 15);
+				fontSizeField.minimum = 9;
+				fontSizeField.maximum = 20;
+				addProperty(fontSizeField);
+				
+				filePath = new FilePathProperty("swfFile", "Animation:", "");
+				filePath.fileTypeLabel = "SWF Files (*.swf)"; 
+				filePath.fileExtensions = "*.swf";
+				addProperty(filePath);
+				
+				addSaveableProperty(dataList);
+			}
+			
+			
+			override public function propertyValuesInitialised():void
+			{
+				currentFilePath = filePath.propValue;
+				currentFontSize = fontSizeField.propValue;
+				
+				//
+				internalDataList = new ArrayCollection();
+								
+				// copy dataList entries into our internal ArrayCollection
+				// each entry is stored as a PageItem instance, as duplicate text entries will cause problems in the edit-state's List
+				for each(var str:String in dataList.valueArray)
+				{
+					internalDataList.addItem(new PageItem(str));	
+				}
+				
+				// if there are no initial items, we add our own
+				if(internalDataList.length == 0)
+					addNewItem();
+				
+				// update textfield to show first value
+				displayCounter = 0;
+				updateTextField();
+				
+				// go into display state
+				toDisplayState();
+			}
+			
+			override public function editablePropertyUpdated(prop:IComponentProperty):void
+			{
+				switch(prop)
+				{
+					case filePath:
+						currentFilePath = filePath.propValue;
+						break;
+						
+					case fontSizeField:
+						currentFontSize = fontSizeField.propValue;
+						break;
+				}
+			}
+			
+			
+			override public function prepareValuesForSave():void
+			{
+				// if in edit mode, make sure current item is properly saved
+				if(currentState == "EditState")
+					saveEditTextFieldValue();
+					
+				// copy internal data back into the arraycollection
+				var list:Array = [];
+				for each(var item:PageItem in internalDataList.source)
+					list.push(item.textValue);
+					
+				dataList.propValue = list;
+			}
+			
+			override public function destroy():void
+			{
+				// remove list listeners
+				// 'list' is only defined when in edit state
+				if(list)
+				{
+	 				list.removeEventListener(StepThroughItemRenderer.DELETE_EVENT,deleteItem);
+	 				list.removeEventListener(ListEvent.CHANGE,listChanged);
+	 			}
+ 				
+ 				// clean up internal data storage
+ 				internalDataList = null;
+ 				
+ 				// unload content
+ 				try{
+ 					displaySWFLoader.unloadAndStop(true);
+ 				}catch(e:Error){}
+ 			 	 
+			}
+			
+			// Change the mode of the component between edit (true) and display (false) modes 
+			override public function setEditMode(f:Boolean):void
+			{
+				 if(f)
+				 {
+				 	toEditState();
+				 } else {
+				 	toDisplayState();
+				 }
+			}
+			
+			
+			/**
+		 	* Called each time the display list is updated.
+		 	*/
+			override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void
+			{
+				super.updateDisplayList(unscaledWidth, unscaledHeight);
+				
+				// ensures the movie clip is cropped to the window size
+				scrollRect = new Rectangle(0, 0, width, height);
+			}
+			
+			 
+			private function deleteItem(event:Event):void
+			{
+				// never remove the only item in the list
+				if(internalDataList.length <= 1)
+					return;
+
+				// remove list change listener so update events don't trigger changes
+				list.removeEventListener(ListEvent.CHANGE,listChanged);
+
+				// get index to delete
+				var deleteIndex:int = StepThroughItemRenderer(event.target).listData.rowIndex;
+				
+				// store currently selected index so we can update later on
+				var selectedIndex:int = list.selectedIndex;
+				
+				// remove item from dataprovider
+				internalDataList.removeItemAt(deleteIndex);
+
+				// make sure correct item is now selected
+				// this will select the same item OR the last item in the list, if the list is now too short
+				// we set 'selectedItem' instead of 'selectedIndex' - the latter caused some problems
+				var newIndex:int = Math.min(selectedIndex, internalDataList.length - 1);
+				list.selectedItem = internalDataList.getItemAt(newIndex);
+
+				// save previous text
+				saveEditTextFieldValue();
+				
+				// show next text
+				displayCounter = newIndex;
+				updateTextField();
+								
+				// Add list change listener again
+				list.addEventListener(ListEvent.CHANGE,listChanged);	
+			}
+			
+			// Update last item and copy the text to the textarea!
+			private function listChanged(event:Event):void
+			{
+				// save current value
+				saveEditTextFieldValue();
+				
+				// update
+				displayCounter = list.selectedIndex;
+				updateTextField();
+			}
+			
+			protected function saveEditTextFieldValue():void
+			{
+				try{
+					
+					var item:PageItem = PageItem(internalDataList.getItemAt(displayCounter)); 
+					
+					// if the text in the textArea is the default text for the current page
+					// we just save an empty string
+					var defaultText:String = getDefaultText(displayCounter);
+					
+					if(textArea.text == getDefaultText(displayCounter))
+						item.textValue = "";
+					else
+						item.textValue = textArea.text;
+						
+				}catch(e:Error){}
+			}
+			
+			
+			// Add new item
+			private function addNewItem():void
+			{
+				var item:PageItem = new PageItem("");
+				
+				// add it
+				internalDataList.addItem(item);
+				
+				// select it
+				if(currentState == "EditState")
+				{
+					list.selectedItem = item;
+					
+					// list won't update until 1 frame later
+					// and setting selectedItem doesn't trigger the change event
+					// so we do a manual update here
+					saveEditTextFieldValue();
+					displayCounter = internalDataList.length - 1;
+					updateTextField();
+				}
+			}
+			
+			// next item
+			private function nextItem():void
+			{
+				// was: if(displaySWFLoader.content)
+				// however with introduction of the missing image skin, the content was always defined
+				try{
+					MovieClip(displaySWFLoader.content).play();
+				}catch(e:Error){}
+
+                incrementDisplayCounter();
+                updateTextField();
+			}
+			
+			protected function updateTextField():void
+			{
+				// out of range errors or problems with the edit/display state might result in an exception
+				try{
+					
+					var item:PageItem = PageItem(internalDataList.getItemAt(displayCounter));
+					var textValue:String = "";
+					
+					// default text if user hasn't entered anything yet
+					if(item.textValue == "")
+					{
+						textValue = getDefaultText(displayCounter);
+					}else{
+						textValue = item.textValue;
+					}
+					
+					// update the relevant textfield
+					if(currentState == "DisplayState")
+						textAreaDisplay.text = textValue;
+					else
+						textArea.text = textValue;
+						
+				}catch(e:Error){}
+			}
+			
+			protected function getDefaultText(pageIndex:int):String
+			{
+				return "This is item " + pageIndex + ". Enter your own text here.";
+			}
+			
+			
+			protected function incrementDisplayCounter():void
+			{
+				displayCounter = (displayCounter + 1) % internalDataList.length;
+			}			
+
+
+			// Set currentState to Display state
+			protected function toDisplayState():void
+			{
+				currentState = "DisplayState";
+			}
+		 	
+			// Set currentState to Edit state
+			protected function toEditState():void
+			{
+				currentState = "EditState";
+			}
+			
+			protected function onExitEditState():void
+			{
+				  list.removeEventListener(StepThroughItemRenderer.DELETE_EVENT,deleteItem);
+ 			 	  list.removeEventListener(ListEvent.CHANGE,listChanged);
+ 			 	  
+ 			 	  // save current item
+ 			 	  saveEditTextFieldValue();
+			}
+			
+			protected function onEnterEditState():void{
+		 		
+		 		list.addEventListener(StepThroughItemRenderer.DELETE_EVENT,deleteItem);	
+				list.addEventListener(ListEvent.CHANGE,listChanged);
+
+				// Select first index
+				list.selectedIndex = 0;
+				
+				// Copy content to the textArea
+				displayCounter = 0;
+				updateTextField();
+			}	
+			
+			protected function onEnterDisplay():void
+			{
+				displayCounter = 0;
+				updateTextField();
+				
+				// rewind animation
+				try{
+					MovieClip(displaySWFLoader.content).gotoAndStop(1);
+				}catch(e:Error){}
+			}
+	
+			
+		]]>
+	</mx:Script>
+	
+	<mx:Style>
+		.missingImageStyle {
+			broken-image-skin: ClassReference("org.glomaker.shared.component.utils.MissingImageSkin");
+			broken-image-border-skin: ClassReference(null);
+		}
+	</mx:Style>	
+
+<states>
+	<mx:State name="EditState" exitState="onExitEditState()" enterState="onEnterEditState()">
+		<mx:AddChild position="lastChild">	
+			<mx:HDividedBox borderStyle="solid" width="100%" height="100%" backgroundAlpha="0">
+			
+				<mx:SWFLoader id="editSwfLoader" source="{currentFilePath}" styleName="missingImageStyle" maintainAspectRatio="true" width="100%" height="100%"/>
+				
+				<mx:HBox borderStyle="solid" paddingTop="0" paddingBottom="0" paddingLeft="0" paddingRight="0" horizontalGap="0" verticalGap="0"  width="200" height="100%">
+					<mx:List id="list" height="100%" dataProvider="{internalDataList}" paddingRight="-5" backgroundAlpha="0" borderStyle="none" itemRenderer="org.glomaker.plugin.stepthrough.StepThroughItemRenderer"/>
+					<mx:VBox id="textAreaBox" backgroundColor="#d5d5d5" width="100%" height="100%" paddingTop="10" paddingBottom="10" paddingLeft="10" paddingRight="10">
+						<mx:TextArea id="textArea" fontSize="{currentFontSize}" width="100%" height="100%" cornerRadius="5"/>
+						<mx:Button label="Add" click="addNewItem()"/>
+					</mx:VBox>
+				</mx:HBox>
+				
+			</mx:HDividedBox>
+		</mx:AddChild>
+	</mx:State>
+	
+	<mx:State name="DisplayState" enterState="onEnterDisplay()">
+		<mx:AddChild position="lastChild">
+		 	<mx:HBox width="100%" height="100%">
+		 	
+				<mx:SWFLoader id="displaySWFLoader" source="{currentFilePath}" styleName="missingImageStyle" maintainAspectRatio="true" width="100%" height="100%"/>
+			
+				<mx:VBox backgroundColor="#d5d5d5" width="{textAreaBox.width}" height="100%" paddingTop="10" paddingBottom="10" paddingLeft="10" paddingRight="10">
+					<mx:TextArea id="textAreaDisplay" fontSize="{currentFontSize}" selectable="true" editable="false" focusEnabled="false" width="100%" height="100%" cornerRadius="5"/>
+					<mx:Button label="Show" click="nextItem()" />
+				</mx:VBox>
+			</mx:HBox>
+		</mx:AddChild>
+	</mx:State>
+
+</states>
+
+<mx:HDividedBox />
+		
+
+</BaseComponent>

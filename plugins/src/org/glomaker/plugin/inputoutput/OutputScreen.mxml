@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TextArea xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" 
+	color="{_fc}" fontSize="{_fs}"
+	horizontalScrollPolicy="off" verticalScrollPolicy="auto"
+	backgroundAlpha="0"
+	editable="false"
+	borderStyle="solid" borderColor="0">
+	<mx:Script>
+		<![CDATA[
+			public static const NAME:String = "OutputScreen";
+			
+			[Bindable]
+			private var _fc:uint;
+			
+			[Bindable]
+			private var _fs:uint;
+			
+			public function set color(val:uint):void
+			{
+				_fc = val;
+			}
+			
+			public function set fontSize(val:uint):void
+			{
+				_fs = val;
+				trace(_fs);
+			}
+			
+			protected function init():void
+			{
+				name = NAME;
+			}
+		]]>
+	</mx:Script>
+</mx:TextArea>

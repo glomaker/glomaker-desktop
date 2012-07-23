@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<pattern>
+
+	<id>freestyle</id>
+	<author>musbah</author>
+	<version>1.0</version>
+	<glomaker>2.0</glomaker>	
+	<name>Freestyle</name>
+	<description>Freestyle - your own pattern...</description>
+
+	<allowNodeEditing>yes</allowNodeEditing>
+
+	<htmlLongDescription><![CDATA[<h1>Freestyle</h1>
+<p>This is an open authoring situation where you can create a learning object from scratch. There are three main stages:</p>
+<ol>
+<li>Use the Planner screen (this screen) to create a top level plan by dragging icons onto the screen. Label and describe the pedagogical function associated with each node that you create, and then join the nodes to form a learning sequence.</li>
+<li>Click on the ‘Designer’ button to switch to unfolding the screens for this design. Your initial plan will automatically create a set of possible screen layouts. You can use these layouts, or change them, as you desire, using the ‘Layouts’ panel. This gives access to a wide range of screen layouts. If none of these suit, then you can use the ‘Component’ palette to create your own custom page layout.</li>
+<li>Then add content to the screen layouts to translate the design into a working learning resource.</li>
+</ol>
+<p>Note: You can return to the Planner screen at any point to add a new pedagogical function.</p>]]></htmlLongDescription>
+
+
+	<library>
+	
+		<heading id="introduce" title="Introduce" colour="0xff0000">
+	      <func>
+	      	<id>freestyle_f1</id>
+	      	<title>Introduce</title>
+	        <description>Give decription of pedagogical function</description>
+			<defaultLayoutId>titleinfopage</defaultLayoutId>
+	      </func>
+	    </heading>
+	    <heading id="doLearning" title="Do Learning" colour="0x009966">
+	      <func>
+	      	<id>freestyle_f2</id>
+	      	<title>Do Learning</title>
+	        <description>Give decription of pedagogical function</description>
+			<defaultLayoutId>mediacommentary</defaultLayoutId>
+	      </func>
+	    </heading>
+	    <heading id="assessReflect" title="Assess / Reflect" colour="0x0000FF">
+	      <func>
+	      	<id>freestyle_f3</id>
+	      	<title>Assess / Reflect</title>
+	        <description>Give description of pedagogical function</description>
+			<defaultLayoutId>mcquiztext</defaultLayoutId>
+	      </func>
+	    </heading>
+	    <heading id="self" title="Self defined" colour="0xCCCCCC">
+	    	<func>
+	      	<id>freestyle_f4</id>
+	        <title>My function</title>
+			<description>Define as you please.</description>
+			<defaultLayoutId>blankpage</defaultLayoutId>
+	      </func>
+	    </heading>	
+	</library>
+	
+    <instance/>
+</pattern>

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+/////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2007-09 LTRI, London Metropolitan Uni. All rights reserved.
+// An Open Source Release under the GPL v3 licence  (see http://www.gnu.org/licenses/).
+// Authors: Tom Boyle, Nils Millahn, Musbah Sagar, Martin Agombar.
+// See http://www.glomaker.org for full details
+/////////////////////////////////////////////////////////////////////////
+-->
+
+<mx:TitleWindow
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	layout="vertical" width="400"
+	paddingBottom="10"
+	paddingLeft="10"
+	paddingRight="10"
+	paddingTop="10"
+	verticalGap="10"
+	title="Stage Properties"
+>
+	
+	<mx:Script>
+		<![CDATA[
+			
+			public function updateCustomSize():void
+			{
+				customSizeFields.enabled = false;
+				
+				if(stageSize.selectedItem)
+				{
+					if(stageSize.selectedItem.data)
+					{
+						widthInput.text = stageSize.selectedItem.data.width;
+						heightInput.text = stageSize.selectedItem.data.height;
+					}else{
+						customSizeFields.enabled = true;
+					}
+				}
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:HBox>
+		<mx:Label text="Navigation Style:" width="120" textAlign="right"/>
+		<mx:Spacer width="100%"/>
+		<mx:ComboBox id="stageStyle" labelField="name"/>
+	</mx:HBox>
+	
+	<mx:HRule width="100%" strokeWidth="1" strokeColor="#5e5e5e"/>
+	
+	<mx:HBox>
+		<mx:Label text="Size:" width="120" textAlign="right"/>
+		<mx:Spacer width="100%"/>
+		<mx:ComboBox id="stageSize" width="110" change="updateCustomSize()"/>
+	</mx:HBox>
+	
+	<mx:HBox>
+		
+		<mx:Spacer width="128"/>
+		
+		<mx:VBox id="customSizeFields" paddingLeft="5" paddingTop="5" paddingRight="5" paddingBottom="5" backgroundColor="#eeeeee">
+			<mx:HBox>
+				<mx:Label text="Width:" width="55"/>
+				<mx:TextInput id="widthInput" text="100" restrict="0-9" width="50"/>
+			</mx:HBox>
+			<mx:HBox>
+				<mx:Label text="Height:" width="55"/>
+				<mx:TextInput id="heightInput" text="100" restrict="0-9" width="50"/>
+			</mx:HBox>
+		</mx:VBox>
+
+	</mx:HBox>
+	
+
+	<mx:HRule width="100%" strokeWidth="1" strokeColor="#5e5e5e"/>
+	
+	<mx:HBox>
+		<mx:Label text="Background Colour:" width="120" textAlign="right"/>
+		<mx:Spacer width="100%"/>
+		<mx:ColorPicker id="stageColor"/>
+	</mx:HBox>
+
+	<mx:HRule width="100%" strokeWidth="1" strokeColor="#5e5e5e"/>
+
+	<mx:Spacer height="100%"/>
+	
+	<mx:HBox width="100%" horizontalAlign="center">
+		<mx:Button label="Cancel" id="cancelButton"/>
+		<mx:Button label="OK" id="okButton"/>
+	</mx:HBox>
+		
+</mx:TitleWindow>

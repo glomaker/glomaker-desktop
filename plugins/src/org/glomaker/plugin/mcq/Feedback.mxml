@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+/////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2007-09 LTRI, London Metropolitan Uni. All rights reserved.
+// An Open Source Release under the GPL v3 licence  (see http://www.gnu.org/licenses/).
+// Authors: Tom Boyle, Nils Millahn, Musbah Sagar, Martin Agombar.
+// See http://www.glomaker.org for full details
+/////////////////////////////////////////////////////////////////////////
+-->
+
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+	
+	layout="absolute"
+	width="300"
+	height="220"
+	title="Enter feedback for this answer"
+
+	cornerRadius="0"
+	borderColor="#999999"
+	borderAlpha="1"
+
+	backgroundColor="#999999"
+	backgroundAlpha="1"
+	
+	color="#ffffff"
+	fontWeight="bold"
+
+	modalTransparencyBlur="0"
+	modalTransparencyDuration="0"
+	
+	themeColor="haloSilver"
+>
+
+ <mx:Script>
+ 	<![CDATA[
+ 		import mx.core.UIComponent;
+ 		import mx.managers.PopUpManager;
+ 		
+ 		public static const FEEDBACKCHANGED:String = "FEEDBACK.CHANGED";
+
+ 		
+ 	public function show(parent:UIComponent,t:String = null):void{
+ 		
+        PopUpManager.addPopUp(this, parent, true);
+        PopUpManager.centerPopUp(this); 	
+
+ 		if(t != null) 
+ 		  text = t;
+
+     }
+ 	
+ 	public function clickOK(evt:Event):void{
+ 		dispatchEvent(new Event(FEEDBACKCHANGED));
+ 		PopUpManager.removePopUp(this);        
+ 	}
+ 	
+ 	public function set text(text:String):void {
+ 		textArea.text = text;
+ 	}
+
+ 	public function get text():String {
+ 		return textArea.text;
+ 	}
+
+ 	public function clickCancel(evt:Event = null):void{
+ 		text ="";
+ 		PopUpManager.removePopUp(this);  
+ 	}
+ 		
+ 	]]>
+ </mx:Script>
+ 	
+ 
+ <mx:TextArea
+ 	id="textArea"
+ 	width="100%"
+ 	height="100%"
+ 	themeColor="#333333"
+ 	focusThickness="1"
+ 	dropShadowEnabled="false"
+ 	color="#000000"
+ 	fontWeight="normal"/>
+ 	
+ <mx:ControlBar>
+ 	 <mx:Spacer width="100%"/>
+     <mx:Button id="ok" label="OK" click="clickOK(event)"/>
+     <mx:Button id="cancel" label="Cancel" click="clickCancel(event)"/>
+ </mx:ControlBar>
+ 
+</mx:TitleWindow>

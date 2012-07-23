@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<plugin>
+	<id>swfloader</id>
+	<author>Martin</author>
+	<version>1.0</version>
+	<glomaker>2.0</glomaker>	
+	<name>Flash Animation</name>
+	<description>Adds a Flash animation and provides controls to play/pause/step through the animation.</description>
+	<swf>SWFLoaderPlugin.swf</swf>
+</plugin>

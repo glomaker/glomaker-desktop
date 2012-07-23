@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+/////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2007-09 LTRI, London Metropolitan Uni. All rights reserved.
+// An Open Source Release under the GPL v3 licence  (see http://www.gnu.org/licenses/).
+// Authors: Tom Boyle, Nils Millahn, Musbah Sagar, Martin Agombar.
+// See http://www.glomaker.org for full details
+/////////////////////////////////////////////////////////////////////////
+-->
+
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+	layout="vertical" width="400"
+	title="Package Process Completed"
+	styleName="modalPopup"
+	>
+
+
+	<mx:Script>
+		<![CDATA[
+			
+			[Bindable]
+			[Embed(source="../assets/skins/icons/tick.png")]
+			protected var tickImage:Class;
+			
+		]]>
+	</mx:Script>
+
+
+	<mx:Text text="Your project was successfully published." fontWeight="bold" width="100%" selectable="false"/>
+	
+	<mx:HBox width="100%">
+		<mx:Image source="{tickImage}"/>
+		<mx:Label text="Project file saved."/>
+	</mx:HBox>	
+
+	<mx:HBox width="100%">
+		<mx:Image source="{tickImage}"/>
+		<mx:Label text="Media assets copied."/>
+	</mx:HBox>
+	
+	<mx:HBox width="100%">
+		<mx:Image source="{tickImage}"/>
+		<mx:Label text="Plugin files copied."/>
+	</mx:HBox>
+		
+	<mx:HBox width="100%">
+		<mx:Image source="{tickImage}"/>
+		<mx:Label text="HTML wrapper generated."/>
+	</mx:HBox>
+
+	<mx:ControlBar horizontalAlign="center">
+		<mx:Button label="Close" click="dispatchEvent(new Event(Event.CLOSE, true));"/>
+	</mx:ControlBar>
+	
+</mx:TitleWindow>

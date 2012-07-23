@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" height="100%"
+	implements="org.glomaker.shared.player.IPlayerBridge"
+	creationComplete="init()">
+	
+	<mx:Script>
+		<![CDATA[
+			import org.gloplayer.view.stage.ComponentDisplayView;
+			import org.gloplayer.data.SlideshowStatusVO;
+			import org.gloplayer.events.NavigationEvent;
+			import org.glomaker.shared.component.interfaces.ISlideshowStatusObject;
+			import org.gloplayer.data.StageVO;
+			import org.gloplayer.data.PageInstanceVO;
+			
+			protected var pages:Array;
+			protected var gloStage:StageVO;
+			protected var currentIndex:int = -1;
+			protected var pageView:ComponentDisplayView;
+			protected var stageView:ComponentDisplayView;
+	
+			protected function init():void
+			{
+				pageView = new ComponentDisplayView(pageDisplay);
+				addViewListeners(pageView);
+				
+				stageView = new ComponentDisplayView(stageUIDisplay);
+				addViewListeners(stageView);
+				
+				if(pages)
+					showPage(0);
+					
+				if(gloStage)
+					showStage();
+			}
+			
+			public function setPageList(value:Array):void
+			{
+				pages = value.slice();
+								
+				if(pageView)
+					showPage(0);
+			}
+			
+			public function setGLOStage(value:Object):void
+			{
+				gloStage = value as StageVO;
+				
+				if(stageView)
+					showStage();
+			}
+			
+			protected function showPage(index:int = -1):void
+			{
+				if(index == -1)
+					index = currentIndex;
+					
+				currentIndex = index;
+				
+				var page:PageInstanceVO = pages[index];
+				pageView.clear();
+				pageView.addComponentList(page.components);
+				
+				// status update
+				var status:SlideshowStatusVO = new SlideshowStatusVO(pages.length, currentIndex);
+				pageView.handleSlideshowStatus(status);
+				stageView.handleSlideshowStatus(status);
+			
+			}
+			
+			protected function showStage():void
+			{
+				stageView.addComponent(gloStage.navComponent);
+			}
+			
+			protected function previousPage():void
+			{
+				var newIndex:int = Math.max(0, currentIndex - 1);
+				if(newIndex != currentIndex)
+					showPage(newIndex);
+			}
+			protected function nextPage():void
+			{
+				var newIndex:int = Math.min(pages.length - 1, currentIndex + 1);
+				if(newIndex != currentIndex)
+					showPage(newIndex);
+			}
+			
+			protected function addViewListeners(view:ComponentDisplayView):void
+			{
+				view.addEventListener(NavigationEvent.NEXT, handleNextClick);
+				view.addEventListener(NavigationEvent.PREVIOUS, handlePreviousClick);
+				view.addEventListener(NavigationEvent.GOTO, handleGotoClick);
+			}
+			
+			protected function handleNextClick(evt:NavigationEvent):void
+			{
+				nextPage();
+			}
+
+			protected function handlePreviousClick(evt:NavigationEvent):void
+			{
+				previousPage();
+			}
+
+			protected function handleGotoClick(evt:NavigationEvent):void
+			{
+				showPage(evt.pageIndex);
+			}
+
+
+			
+		]]>
+	</mx:Script>
+	
+	
+	<mx:Canvas id="pageDisplay" 
+		top="20"
+		backgroundColor="0xFFFFFF" 
+		horizontalCenter="0"
+		clipContent="false"
+		width="640" height="480"/>
+	
+	<mx:Canvas id="stageUIDisplay"
+		top="20"
+		horizontalCenter="0"
+		backgroundAlpha="0"
+		mouseEnabled="false"
+		width="640" height="480"
+	/>	
+	
+	
+</mx:Module>

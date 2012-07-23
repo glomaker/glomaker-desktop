@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<plugin>
+	<id>rectangle</id>
+	<author>Nils</author>
+	<version>1.0</version>
+	<glomaker>2.0</glomaker>	
+	<name>Rectangle Shape</name>
+	<description>Draws a rectangle shape with customisable background colour and corner radius.</description>
+	<swf>RectanglePlugin.swf</swf>
+</plugin>

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+/////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2007-09 LTRI, London Metropolitan Uni. All rights reserved.
+// An Open Source Release under the GPL v3 licence  (see http://www.gnu.org/licenses/).
+// Authors: Tom Boyle, Nils Millahn, Musbah Sagar, Martin Agombar.
+// See http://www.glomaker.org for full details
+/////////////////////////////////////////////////////////////////////////
+-->
+
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:patternmaker="org.glomaker.patternmaker.*"
+	width="100%"
+	
+	clipContent="true"
+	horizontalScrollPolicy="off"
+	verticalScrollPolicy="off"
+	>
+	
+	<mx:Script >
+		<![CDATA[
+			import com.hotdraw.java.awt.geom._Point;
+			import org.glomaker.patternmaker.PatternMaker;
+			import org.glomaker.interfaces.pattern.IPatternMakerBridge;
+			
+			private var _printFlag:Boolean = false;
+	
+		  // Return the Pattern Maker
+		  public function getPatternMaker():IPatternMakerBridge
+		  {
+		  	return pm.getContent();
+		  }
+		  
+		/**
+		 * Set the text to be displayed by the long description HTML control. 
+		 **/
+ 		public function setLongDescription(htmlText:String):void
+		  {
+				// assign the text
+				// htmlControl.htmlText can't be null
+				if(htmlText)
+				{
+					// required for css / image loading
+					longDescriptionContainer.htmlLoader.placeLoadStringContentInApplicationSandbox = true;
+					
+					// links should open in normal system browser
+					longDescriptionContainer.htmlLoader.navigateInSystemBrowser = true;
+
+					// assign text
+					longDescriptionContainer.htmlText = htmlText;
+					longDescriptionContainer.visible = true;
+				}else{
+					longDescriptionContainer.visible = false;
+				}		  	
+		  }
+		  
+		  
+		  
+		  protected function onAlignNodes(evt:MouseEvent):void
+		  {
+		  	(getPatternMaker() as PatternMaker).alignNodes();
+		  }
+		  
+		  protected function onPrint(evt:MouseEvent):void
+		  {
+		  	_printFlag = true;
+		  	
+		  	(getPatternMaker() as PatternMaker).printSetup();
+		  }
+		  
+		  override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void
+		  {
+		  	super.updateDisplayList(unscaledWidth, unscaledHeight);
+		  	
+		  	if(_printFlag)
+		  	{
+		  		(getPatternMaker() as PatternMaker).printNodes();
+		  	}
+  	
+		  	_printFlag = false;
+		  }
+		  
+		]]>
+	</mx:Script>
+	
+	<mx:VBox width="100%" verticalGap="0" height="100%">
+		<mx:HBox backgroundColor="#cccccc" width="100%" height="40" horizontalGap="30" verticalAlign="middle">
+			<mx:Label text="Planner" color="#676767" fontSize="20" fontWeight="bold"/>
+		</mx:HBox>
+	
+		<patternmaker:PatternMakerWrapper width="100%" height="100%" id="pm"/>
+	</mx:VBox>
+	
+	<mx:HBox top="4" right="10" verticalAlign="middle" height="40">
+		<mx:Button label="Align Nodes" 
+			click="onAlignNodes(event)"/>
+			
+		<mx:Button label="Print" 
+			click="onPrint(event)"/>
+	</mx:HBox>
+	
+	<!-- CSS for this is in src/appdata/css/patterninfo.css -->
+	<mx:HTML
+		id="longDescriptionContainer"
+		width="250" minHeight="100" maxHeight="{height*0.8}" right="10" top="65"/>
+	
+
+</mx:Canvas>

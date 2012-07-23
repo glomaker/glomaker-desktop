@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<actionScriptProperties mainApplicationPath="GLO_v2.mxml" projectUUID="85e18e6c-c353-4049-9592-617b4e676676" version="6">
+  <compiler additionalCompilerArguments="-locale en_US -incremental=true -use-network=false" autoRSLOrdering="true" copyDependentFiles="true" flexSDK="Flex 3.2" fteInMXComponents="false" generateAccessible="false" htmlExpressInstall="true" htmlGenerate="false" htmlHistoryManagement="false" htmlPlayerVersionCheck="true" includeNetmonSwc="false" outputFolderPath="bin-debug" sourceFolderPath="src" strict="true" targetPlayerVersion="0.0.0" useApolloConfig="true" useDebugRSLSwfs="true" verifyDigests="true" warn="true">
+    <compilerSourcePath/>
+    <libraryPath defaultLinkType="1">
+      <libraryPathEntry kind="4" path=""/>
+      <libraryPathEntry kind="1" linkType="1" path="libs"/>
+    </libraryPath>
+    <sourceAttachmentPath/>
+  </compiler>
+  <applications>
+    <application path="GLO_v2.mxml">
+      <airExcludes/>
+    </application>
+  </applications>
+  <modules>
+    <module application="src/GLO_v2.mxml" destPath="PlayerModule.swf" optimize="true" sourcePath="src/PlayerModule.mxml"/>
+    <module application="src/GLO_v2.mxml" destPath="org/glomaker/webplayer/GloWebPlayer.swf" optimize="false" sourcePath="src/org/glomaker/webplayer/GloWebPlayer.mxml"/>
+  </modules>
+  <buildCSSFiles/>
+</actionScriptProperties>

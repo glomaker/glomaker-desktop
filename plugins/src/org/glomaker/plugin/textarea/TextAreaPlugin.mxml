@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+/////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2007-09 LTRI, London Metropolitan Uni. All rights reserved.
+// An Open Source Release under the GPL v3 licence  (see http://www.gnu.org/licenses/).
+// Authors: Tom Boyle, Nils Millahn, Musbah Sagar, Martin Agombar.
+// See http://www.glomaker.org for full details
+/////////////////////////////////////////////////////////////////////////
+-->
+
+<BaseComponent xmlns="org.glomaker.shared.component.*" xmlns:mx="http://www.adobe.com/2006/mxml"
+	horizontalScrollPolicy="off" verticalScrollPolicy="off">
+	
+	<mx:Script>
+		<![CDATA[
+			import org.glomaker.shared.properties.BooleanProperty;
+			import org.glomaker.shared.properties.RichTextProperty;
+			import org.glomaker.shared.properties.IComponentProperty;
+			import org.glomaker.shared.properties.StringProperty;
+
+			// required to attach event listeners to textArea's internal textfield			
+			import mx.core.mx_internal;
+			
+			// custom component properties
+			protected var textValue:RichTextProperty; 
+			protected var border:BooleanProperty = new BooleanProperty("borderStyle", "Border", true);
+			
+			// used by fix for Issue 149 to reapply htmlText after border property was changed
+			protected var preStyleChangeHTML:String;
+			
+
+			// ***************************************
+			// BaseComponent overrides
+			// ***************************************
+			
+			override protected function defineProperties():void
+			{
+				super.defineProperties();
+				
+				// add to properties list
+				textValue = new RichTextProperty("htmlText", "Label text", "Enter text");
+				textValue.textArea = textArea;
+
+				addSaveableProperty(textValue);
+				addProperty(border);
+			}
+			
+			override public function propertyValuesInitialised():void
+			{
+				textArea.htmlText = textValue.propValue;
+				updateBorder();
+			}
+			
+			override public function editablePropertyUpdated(prop:IComponentProperty):void
+			{
+				if(prop == border)
+				{
+					updateBorder();
+				}
+				
+				if(prop == textValue)
+				{
+					textArea.htmlText = prop.propValue;
+				}
+				 
+			}
+
+			
+			override public function prepareValuesForSave():void
+			{
+				textValue.propValue = textArea.htmlText; 
+			}
+			
+			/**
+		 	* Change the mode of the component between edit (true) and display (false) modes 
+		 	*/		
+			override public function setEditMode(f:Boolean):void
+			{
+				//textArea.editable = textArea.selectable = textArea.focusEnabled = f;
+				textArea.editable = f;
+				
+				// deselect text if switching out of edit mode
+				if(!f)
+					textArea.selectionBeginIndex = textArea.selectionEndIndex = 0;
+					
+				// focus textArea if switching into edit mode
+				if(f)
+					textArea.setFocus();
+			}
+			
+
+			
+			/**
+			 * Update the textArea border to match value stored in 'border' property field.
+			**/
+			protected function updateBorder():void
+			{
+				// there is a problem with the html formatting disappearing when changing border styles
+				// we avoid it by listening to the textFieldStyleChange event and re-applying the html text
+				// see glomaker issue 149
+				
+				preStyleChangeHTML = textArea.htmlText;
+				textArea.mx_internal::getTextField().addEventListener("textFieldStyleChange", onStyleChange, false, 0, true);
+				
+				// apply border styles
+				if(border.propValue)
+				{
+					textArea.setStyle("borderStyle", "solid");
+				}else{
+					textArea.setStyle("borderStyle", "none");
+				}
+			}
+			
+					
+			/**
+			 * Event listener - the textFieldStyleChange has been triggered on the text field as a result of border-property changes.
+			 * We need to reapply the htmlText property (see glomaker Issue 149).
+			 * @param evt
+			**/ 
+			protected function onStyleChange(evt:Event):void
+			{
+				// don't need the listener anymore
+				textArea.mx_internal::getTextField().removeEventListener("textFieldStyleChange", onStyleChange);
+				
+				if(preStyleChangeHTML)
+				{
+					textArea.htmlText = preStyleChangeHTML;
+					preStyleChangeHTML = null;
+				}
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<!--
+		focusEnabled="false"
+		selectable="false"
+
+		-->
+	
+	
+	<mx:TextArea id="textArea" width="100%" height="100%" 
+		fontSize="14"
+		editable="false"
+		backgroundAlpha="0"/>
+
+</BaseComponent>

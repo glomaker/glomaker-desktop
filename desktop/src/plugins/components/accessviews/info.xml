@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<plugin>
+	<id>accessviews</id>
+	<author>Musbah</author>
+	<version>1.0</version>
+	<glomaker>2.0</glomaker>	
+	<name>Access Views</name>
+	<description>Access Views</description>
+	<swf>AccessViewsPlugin.swf</swf>
+</plugin>

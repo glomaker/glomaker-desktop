@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+/////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2007-09 LTRI, London Metropolitan Uni. All rights reserved.
+// An Open Source Release under the GPL v3 licence  (see http://www.gnu.org/licenses/).
+// Authors: Tom Boyle, Nils Millahn, Musbah Sagar, Martin Agombar.
+// See http://www.glomaker.org for full details
+/////////////////////////////////////////////////////////////////////////
+-->
+
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml">
+	
+	<mx:Label id="pageNameLabel" text="" fontWeight="bold"/>
+
+	<mx:HBox>
+		<mx:Button id="layoutButton" label="Layouts"/>
+		<mx:Button id="componentsButton" label="Components"/>
+	</mx:HBox>
+
+</mx:VBox>

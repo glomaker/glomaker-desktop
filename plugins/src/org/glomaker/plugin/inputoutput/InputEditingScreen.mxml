@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%"
+	minWidth="200" minHeight="175"
+	creationComplete="init()"
+	horizontalScrollPolicy="off" verticalScrollPolicy="off"
+	backgroundColor="0xDDDDDD">
+	<mx:Script>
+		<![CDATA[
+		
+			public static const NAME:String = "InputEditingScreen";
+			
+			[Bindable]
+			private var _txt:String;
+			
+			[Bindable]
+			private var _info:String;
+			
+			public function get inputID():String
+			{
+				return _txt;
+			}
+			
+			public function set inputID(val:String):void
+			{
+				_txt = val;
+			}
+			
+			protected function init():void
+			{
+				name = NAME;
+				_info = "<b>Input Component</b>" + "\n" + "Enter unique ID for this component."
+			}
+			
+			protected function onChange(evt:Event):void
+			{
+				_txt = input.text;
+				dispatchEvent(evt);
+			}
+		]]>
+	</mx:Script>
+	<mx:VBox width="200" height="125"
+		horizontalScrollPolicy="off" verticalScrollPolicy="off" 
+		horizontalCenter="0" verticalCenter="0"
+		verticalGap="8">
+		<mx:TextArea width="200" height="75" htmlText="{_info}" fontSize="12"
+			horizontalScrollPolicy="off" verticalScrollPolicy="off"
+			borderStyle="none"
+			selectable="false"/>
+		<mx:TextInput id="input" width="200" text="{_txt}" change="onChange(event)"/>
+	</mx:VBox>
+	
+</mx:Canvas>

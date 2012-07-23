@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+/////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2007-09 LTRI, London Metropolitan Uni. All rights reserved.
+// An Open Source Release under the GPL v3 licence  (see http://www.gnu.org/licenses/).
+// Authors: Tom Boyle, Nils Millahn, Musbah Sagar, Martin Agombar.
+// See http://www.glomaker.org for full details
+/////////////////////////////////////////////////////////////////////////
+-->
+
+<mx:SWFLoader xmlns:mx="http://www.adobe.com/2006/mxml"
+	complete="onSWFLoaderComplete(event)">
+	
+	<mx:Script>
+		<![CDATA[
+			
+			/**
+		 	* Store a reference to the filePath.
+		 	*/
+			private var _filePath:String;
+			
+			/**
+		 	* A unique ID is required to identify specific instances of LocalConnection SWF.
+		 	*/
+			private var _connectionID:String;
+			
+			/**
+		 	* A local reference to the local connection object.
+		 	*/
+			private var AVM_lc:CustomLocalConnection;
+			
+			/**
+		 	* A local reference to AVM1 loader instance.
+		 	*/
+			private var _AVM1LoaderInstance:DisplayObject;
+			
+			/**
+		 	* Custom event identifier.
+		 	*/
+			public static const AVM1_LOADED:String = "AVM1Loaded";
+
+			
+			/**
+		 	* Once an object has been loaded, its type is determined. If it is an AVM1 movie, 
+		 	* the localConnection SWF is loaded to handle it using a local connection.
+		 	*/
+			protected function onSWFLoaderComplete(evt:Event):void
+			{		
+				if(content is Bitmap || content is MovieClip)
+				{
+					// easy, nothing to do
+					return;
+				}
+
+				if(content is AVM1Movie)
+				{
+					// load the AVM1Loader instance
+					source = _AVM1LoaderInstance;
+					
+					// send load command
+					AVM_lc.send(_connectionID, "load","file:///"+ _filePath);
+					
+					// send an event to notify SWFLoaderPlugin
+					dispatchEvent(new Event(AVM1_LOADED));	
+				}
+
+			}
+
+			/**
+		 	* AVM1 movies and movie clips need to be handled differently.
+		 	*/
+			public function play():void
+			{
+				
+				if(content == _AVM1LoaderInstance)
+				{	
+					AVM_lc.send(_connectionID, "play");
+				}
+				
+				if(content is MovieClip)
+				{
+					(content as MovieClip).play();
+				}
+			}
+			
+			/**
+		 	* AVM1 movies and movie clips need to be handled differently.
+		 	*/
+			public function stop():void
+			{
+				if(content == _AVM1LoaderInstance)
+				{
+					AVM_lc.send(_connectionID, "stop");
+				}
+				
+				if(content is MovieClip)
+				{
+					(content as MovieClip).stop();
+				}
+			}
+			
+			/**
+		 	* Sets a reference to the local connection object.
+		 	*/
+			public function set LC(lc:CustomLocalConnection):void
+			{
+				AVM_lc = lc;
+			}
+			
+			/**
+		 	* Sets a reference to the AVM1 loader instance.
+		 	*/
+			public function set AVM1Instance(instance:DisplayObject):void
+			{
+				_AVM1LoaderInstance = instance;
+			}
+			
+			/**
+		 	* Sets a reference to the unique connection ID.
+		 	*/
+			public function set connectionID(id:String):void
+			{
+				_connectionID = id;
+			}
+			
+			/**
+		 	* Stores a reference to the filePath.
+		 	*/
+			public  function set filePath(path:String):void
+			{
+				_filePath = path;
+				
+				// may as well load the thing!
+				load(path);
+			}
+			
+			public  function get filePath():String
+			{
+				return _filePath;
+			} 
+			
+			public function destroy():void
+			{
+				if(AVM_lc)
+				{
+					AVM_lc.send(_connectionID, "destroy");
+					AVM_lc.close();
+				}
+			}
+		]]>
+	</mx:Script>
+	
+</mx:SWFLoader>

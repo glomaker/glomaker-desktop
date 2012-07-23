@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<plugin>
+
+	<id>blankpage</id>
+	<author></author>
+	<version>1.0</version>
+	<glomaker>2.0</glomaker>
+	<name>Blank Page</name>
+	<description>Blank page with no components</description>
+	
+</plugin>

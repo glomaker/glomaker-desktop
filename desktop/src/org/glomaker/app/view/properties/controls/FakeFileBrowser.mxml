@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" 
+	layout="vertical" 
+	width="400" height="300"
+	title="Browse for file">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.managers.PopUpManager;
+			
+			public function get filePath():String
+			{
+				return fp.text;
+			}
+			
+			public function remove():void
+			{
+				PopUpManager.removePopUp(this);
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:TextArea text="Type in the file path below: " borderStyle="none"/>
+	
+	<mx:TextInput id="fp"/>
+	
+	<mx:Button label="Save"/>
+</mx:TitleWindow>

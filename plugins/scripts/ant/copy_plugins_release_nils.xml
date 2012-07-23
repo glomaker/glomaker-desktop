@@ -1,0 +1,29 @@
+<project name="Copy Plugins to Glomaker" basedir="..\..\.">
+
+	<!-- EDIT TO MATCH YOUR SYSTEM -->
+	<property name="GLOMAKER_HOME" value="D:\WORK\CLIENTS\ltri\glo\dev\svn\GLO_Project_v2"/>
+
+
+	<!-- DON'T EDIT BELOW -->
+	
+	<property name="PLUGIN_HOME" value="${basedir}\bin-release\org\glomaker\plugin"/>
+	<property name="STAGE_HOME" value="${basedir}\bin-release\org\glomaker\stage"/>
+
+	<property name="GLOMAKER_PLUGIN_HOME" value="${GLOMAKER_HOME}\src\plugins\components"/>
+	<property name="GLOMAKER_STAGE_HOME" value="${GLOMAKER_HOME}\src\plugins\stages"/>
+
+
+	<!-- COPY ALL PLUGINS -->
+	
+	<copy verbose="true" flatten="false" todir="${GLOMAKER_PLUGIN_HOME}">
+		<fileset dir="${PLUGIN_HOME}"/>
+	</copy>
+
+
+	<!-- COPY ALL STAGES -->
+	
+	<copy verbose="true" flatten="false" todir="${GLOMAKER_STAGE_HOME}">
+		<fileset dir="${STAGE_HOME}"/>
+	</copy>
+	
+</project>

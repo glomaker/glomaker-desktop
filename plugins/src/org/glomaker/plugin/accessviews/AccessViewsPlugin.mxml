@@ -1,0 +1,477 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+/////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2007-09 LTRI, London Metropolitan Uni. All rights reserved.
+// An Open Source Release under the GPL v3 licence  (see http://www.gnu.org/licenses/).
+// See http://www.glomaker.org for full details
+/////////////////////////////////////////////////////////////////////////
+-->
+
+<BaseComponent xmlns="org.glomaker.shared.component.*" xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:accessviews="org.glomaker.plugin.accessviews.*"
+    horizontalScrollPolicy="off" verticalScrollPolicy="off">
+       
+    <mx:Script>
+        <![CDATA[
+        	import mx.managers.PopUpManagerChildList;
+        	import mx.managers.PopUpManager;
+        	import mx.messaging.AbstractConsumer;
+        	import mx.containers.dividedBoxClasses.BoxDivider;
+        	import org.glomaker.shared.properties.IntegerProperty;
+        	import org.glomaker.plugin.accessviews.files.TopicData;
+        	import org.glomaker.shared.properties.ArrayProperty;
+        	import org.glomaker.shared.properties.NumericStepperProperty;
+        	import org.glomaker.shared.properties.FilePathProperty;
+        	import org.glomaker.shared.properties.IComponentProperty;
+        	import mx.containers.VBox;
+        	import mx.controls.Alert;
+        	import mx.controls.Image;
+            import mx.controls.TextArea;
+            import mx.collections.ArrayCollection;
+            import mx.controls.NumericStepper;
+            import mx.controls.TextInput;
+
+            [Bindable]
+            protected var _fontSize:int = 15;
+             
+            protected var _imageSourceField:FilePathProperty = new FilePathProperty("source", "Image:", "");
+            
+            protected var _soundSourceField:FilePathProperty = new FilePathProperty("source", "Sound:", "");
+            
+            protected var _scriptSourceField:FilePathProperty = new FilePathProperty("source", "Script:", "");
+			
+			[Bindable]
+            protected var _accessVDP:AccessViewsDataProperty = new AccessViewsDataProperty("AccessVDP");
+            
+            protected var dividerWidth:IntegerProperty = new IntegerProperty("DividerWidth","",100);
+
+            [Bindable]
+            protected var isEditMode:Boolean = false;
+           
+            protected var mp3Player:Mp3Player = new Mp3Player();
+
+            // Current selected speaker from property panel
+            private var selectedSpeakerIndex:int = -1;
+            
+            // Current selected topic from property panel
+            [Bindable]
+            private var selectedTopicIndex:int = -1;
+            
+            private var currentScript:String = "";
+            
+            // Used to load the scripts from the text file
+            private var myURLLoader:URLLoader = new URLLoader();
+            
+            // Used to show the script
+            private var popup:ScriptWindow = new ScriptWindow();
+
+
+            
+            // ***************************************
+            // BaseComponent overrides
+            // ***************************************
+           
+            override protected function defineProperties():void
+            {
+                super.defineProperties();
+                
+				addSaveableProperty(_accessVDP);
+				addSaveableProperty(dividerWidth);
+				
+				addEditableProperty(_imageSourceField);
+				addEditableProperty(_soundSourceField);
+				addEditableProperty(_scriptSourceField);
+
+                // Register all events
+                speakersGroupDisplay.addEventListener(SpeakerBox.DELETE_EVENT,onDeleteSpeaker); 
+                speakersGroupDisplay.addEventListener(SpeakerBox.PLAY_PAUSE_EVENT,playPauseHandler);
+                speakersGroupDisplay.addEventListener(SpeakerBox.STOP_EVENT,stopHandler);
+                speakersGroupDisplay.addEventListener(SpeakerBox.SCRIPT_EVENT,scriptHandler);
+                
+                myURLLoader.addEventListener(Event.COMPLETE, loadingScriptHandler);
+
+                disableDividers();  
+            }
+            
+             // Remove all events
+            override public function destroy():void{
+                
+                speakersGroupDisplay.removeEventListener(SpeakerBox.DELETE_EVENT,onDeleteSpeaker); 
+                 speakersGroupDisplay.removeEventListener(SpeakerBox.PLAY_PAUSE_EVENT,playPauseHandler);
+                speakersGroupDisplay.removeEventListener(SpeakerBox.STOP_EVENT,stopHandler);
+                speakersGroupDisplay.removeEventListener(SpeakerBox.SCRIPT_EVENT,scriptHandler);
+                
+                myURLLoader.removeEventListener(Event.COMPLETE, loadingScriptHandler);
+
+            	// Stop Mp3Player
+            	mp3Player.stop();
+            } 
+            
+            override public function propertyValuesInitialised():void
+            {
+            	dividerBox.width = dividerWidth.propValue;
+             }
+
+            override public function editablePropertyUpdated(prop:IComponentProperty):void
+            {
+            	if(prop == _imageSourceField)
+					imageSource = _imageSourceField.propValue;
+					
+           		if(prop == _soundSourceField)
+					soundSource = _soundSourceField.propValue;
+
+           		if(prop == _scriptSourceField)
+					scriptSource = _scriptSourceField.propValue;
+			   
+            }
+           
+            override public function prepareValuesForSave():void
+            {
+              saveSpeakerData();
+              saveTopicData();
+              
+              dividerWidth.propValue = dividerBox.width;
+            }
+            
+
+             /**
+			 * Getter / setter for the imageSource property.
+			 * If the source value is empty/null, the default image is shown instead.
+			 */
+			public function set imageSource(value:String):void
+			{
+				if(value != null && value != ""){
+				 // update the data 
+				 _accessVDP.changeSpeakerImage(selectedSpeakerIndex,value);
+				 // update the view
+				 SpeakerBox(speakerBoxArray[selectedSpeakerIndex]).imageSource = value;
+				}
+ 			}
+ 			
+            /**
+			 * Getter / setter for the soundSource property.
+			 */
+			public function set soundSource(value:String):void
+			{
+				if(value != null && value != "")
+				 _accessVDP.changeSpeakerTopicSound(selectedSpeakerIndex,selectedTopicIndex,value);
+			}
+			
+            /**
+			 * Getter / setter for the scriptSource property.
+			 */
+			public function set scriptSource(value:String):void
+			{
+			if(value != null && value != "")
+				_accessVDP.changeSpeakerTopicScript(selectedSpeakerIndex,selectedTopicIndex,value);
+				
+			}
+			
+
+        // MP3 Player functions 
+        
+        public function playPauseHandler(event:Event):void{
+			mp3Player.playPause();
+        }
+       
+        public function stopHandler(event:Event):void{
+            mp3Player.stop();
+        }
+        
+        public function scriptHandler(event:Event):void{
+        	
+			// Remove first 
+			PopUpManager.removePopUp(popup);
+			
+			// Change the text to the script
+			popup.htmlText = currentScript;
+
+			PopUpManager.addPopUp(popup, parent, false, PopUpManagerChildList.POPUP);
+			PopUpManager.centerPopUp(popup);
+			
+        }
+        
+            // Add new Speaker
+            protected function onAddSpeaker(evt:MouseEvent=null):void
+            {   
+            	saveSpeakerData();
+            	_accessVDP.addSpeaker();            	
+
+            }
+            
+
+           // Change the mode of the component between edit (true) and display (false) modes
+            override public function setEditMode(f:Boolean):void{
+              isEditMode = f;
+              
+              if(f)
+              enableDividers();
+              else
+              disableDividers();
+            }  
+            
+            
+                // Refresh SpeakerBox objects after repeater finishes redrawing 
+                protected function refresh():void{
+            	// Updake the selected speaker
+				   if(selectedSpeakerIndex!=-1){
+            	   // Retrive the selected speaker
+            	   var speaker:SpeakerBox = speakerBoxArray[selectedSpeakerIndex] as SpeakerBox;
+            	   
+            	   // Stop the music
+            	    mp3Player.stop();
+				   // Highlight
+			       speaker.selected = false;
+ 				   speaker.selected = true;
+ 				  }
+            }
+            
+               // Copy infor from SpeakerBox objects to data objects => _accessVDP  
+                protected function saveSpeakerData():void{
+
+                	for each(var spkBox:SpeakerBox in speakerBoxArray)
+                	  spkBox.saveData();
+            }
+
+               // Copy infor from TextInput objects to data objects => _accessVDP  
+                protected function saveTopicData():void{
+
+                	for each(var ti:TextInput in topicsArray){
+                		var topicData:TopicData = ti.data as TopicData;
+                		topicData.data = ti.text;
+                	}
+			
+            }
+            
+            // Add new line of Topic
+            protected function onAddTopic(evt:MouseEvent=null):void
+            {
+            	saveTopicData();
+               _accessVDP.addTopic();
+              // topicsGroup.selectedValue = topicsGroup.selectedValue;
+            }
+            
+            // Delete topic
+            protected function onDeleteTopic(evt:MouseEvent=null):void
+            {
+            	saveTopicData();
+
+                 // Use the same pointer to modify the answers and feedback arrays (they must always have same number of elements)
+                var index:int = (deleteArray as Array).indexOf(evt.target);
+
+  				if(index >= 0 && _accessVDP._topics.length >1)
+					_accessVDP.removeTopic(index);
+
+            }
+            
+            // Delete speaker
+            protected function onDeleteSpeaker(event:Event=null):void
+            {
+            	saveSpeakerData();
+            	
+                // Use the same pointer to modify the answers and feedback arrays (they must always have same number of elements)
+                // index == selectedSpeakerIndex
+                var index:int = (speakerBoxArray as Array).indexOf(event.target);
+				selectedSpeakerIndex = -1;
+					
+  				if(index >= 0 && _accessVDP._speakers.length >1)
+					_accessVDP.removeSpeaker(index);
+					
+            }
+            
+            // show the feedback, delete buttons
+            protected function showButtons(evt:FocusEvent):void
+            {
+                var index:int = (topicsArray as Array).indexOf(evt.currentTarget);
+
+                var i:uint;
+                var total:uint = deleteArray.length;
+                var moreThanOne:Boolean = (total > 1);
+               
+                for(i=0;i<total;i++)
+                {
+                    deleteArray[i].visible = moreThanOne && (i == index);
+                }   
+            }
+            
+               protected function onTopicClick(evt:MouseEvent=null):void {
+                
+                   var index:int = (radioArray as Array).indexOf(evt.target);
+
+				   if(index >= 0) {
+					selectedTopicIndex = index;
+				   
+				   // Updake the selected speaker
+				   if(selectedSpeakerIndex!=-1){
+            	   // Retrive the selected speaker
+            	   var speaker:SpeakerBox = speakerBoxArray[selectedSpeakerIndex] as SpeakerBox;
+            	   
+            	   // Stop the music
+            	   mp3Player.stop();
+            	   
+			       speaker.selected = false;
+ 				   speaker.selected = true;
+
+             	   // Load the sound file 
+            	   var soundPath:String = _accessVDP.getSpeakerTopicSound(selectedSpeakerIndex,selectedTopicIndex);
+            	   
+                     if(soundPath){
+ 						mp3Player.loadSound(soundPath);
+ 						 speaker.enabledPlay(true);
+
+ 					 } else {
+ 						mp3Player.loadSound(null);
+ 						speaker.enabledPlay(false);
+ 				     }
+ 				     
+		           // Load the script file 
+            	   var scriptPath:String = _accessVDP.getSpeakerTopicScript(selectedSpeakerIndex,selectedTopicIndex);
+            	   
+				     if(scriptPath){
+						 myURLLoader.load(new URLRequest(scriptPath));
+ 						 speaker.enabledScript(true);
+
+ 					 } else {
+ 						speaker.enabledScript(false);
+ 				     }
+ 				     
+				    }
+				   }
+                }
+                
+                protected function onSpeakerBoxClick(evt:MouseEvent=null):void
+            {
+            	if(selectedTopicIndex==-1){
+            		Alert.show("Please choose a topic first!","Warning");
+            		return;
+            	}
+            	 
+           		// Get the clikced speaker
+            	var clickedSpeaker:SpeakerBox = SpeakerBox(evt.currentTarget);
+            	
+            	// Retrive the previously selected speaker
+            	var lastSpeaker:SpeakerBox = speakerBoxArray[selectedSpeakerIndex] as SpeakerBox;
+            	
+            	// if the clicked object is same as selected one or return
+            	if(clickedSpeaker == lastSpeaker)
+            		return;
+            	
+            	// Select it
+            	clickedSpeaker.selected = true;
+
+            	
+            	// Unselect the previously selected speaker
+            	if(lastSpeaker && lastSpeaker.index!=-1)
+            	  lastSpeaker.selected = false;
+            	
+            	// Set the current index with the clicked spaker
+            	selectedSpeakerIndex = clickedSpeaker.index;
+            	
+                // Stop the music
+                mp3Player.stop();
+  
+            	// Load the sound file 
+            	var soundPath:String = _accessVDP.getSpeakerTopicSound(selectedSpeakerIndex,selectedTopicIndex);
+                
+               if(soundPath){
+ 					mp3Player.loadSound(soundPath);
+ 					clickedSpeaker.enabledPlay(true);
+ 				} else {
+ 					mp3Player.loadSound(null);
+ 					clickedSpeaker.enabledPlay(false);
+ 				} 
+ 				
+ 				   // Load the script file 
+            	   var scriptPath:String = _accessVDP.getSpeakerTopicScript(selectedSpeakerIndex,selectedTopicIndex);
+            	   
+				     if(scriptPath){
+						 myURLLoader.load(new URLRequest(scriptPath));
+ 						 clickedSpeaker.enabledScript(true);
+
+ 					 } else {
+ 						clickedSpeaker.enabledScript(false);
+ 				     }
+ 				
+            }
+            
+            
+			/* Handler function for the URLLoader object. This function sets the text in the label
+			  instance to the contents of the remote text file. */
+			  private function loadingScriptHandler(evt:Event):void {
+			  	 var txt:String = URLLoader(evt.currentTarget).data as String;
+			  	 currentScript = txt;
+			  }
+
+
+        // hide show dividers handles, by nils
+        
+        protected function disableDividers():void
+        {
+            var div:BoxDivider;
+            for(var i:uint = 0;i<dividerComponent.numDividers;i++)
+            {
+                div = dividerComponent.getDividerAt(i);
+                div.enabled = false;
+                div.visible = false;
+            }
+        }
+
+		protected function enableDividers():void
+        {
+            var div:BoxDivider;
+            for(var i:uint = 0;i<dividerComponent.numDividers;i++)
+            {
+                div = dividerComponent.getDividerAt(i);
+                div.enabled = true;
+                div.visible = true;
+            }
+        }
+
+           
+        ]]>
+    </mx:Script>
+   
+        <mx:Style>
+       
+        .editInput {
+            background-alpha: 0;
+            border-style: none;
+            theme-color: #333333;
+            focus-thickness: 1;
+            disabledColor: black;
+        }
+           
+        .deleteButton {
+            font-size: 9;
+            font-weight: normal;
+            color: #ff0000;
+            skin: Embed("org/glomaker/plugin/accessviews/delete.png");
+        }
+
+       
+    </mx:Style>
+                  <mx:VBox width="100%" height="100%">
+                        <mx:HBox width="100%" id="speakersGroupDisplay">
+                              <mx:Repeater id="speakersRepeater" dataProvider="{_accessVDP._speakers}" repeatEnd="refresh();">
+                                    <accessviews:SpeakerBox id="speakerBoxArray" speakerData="{speakersRepeater.currentItem}"  deletable="{_accessVDP._speakers.length>1}" index="{speakersRepeater.currentIndex}" width="100%" height="145" editMode="{isEditMode}" click="onSpeakerBoxClick(event)"/>
+                              </mx:Repeater>
+                        </mx:HBox>
+                        <mx:HDividedBox id="dividerComponent" width="100%" height="100%">
+                              <mx:HBox  id="dividerBox" width="100%" height="100%"/>
+								<mx:VBox width="30%" height="100%">
+                                    <mx:Repeater id="topicsRP" dataProvider="{_accessVDP._topics}" repeatEnd="refresh();">
+                                          <mx:HBox verticalAlign="middle" height="100%" width="100%">
+                                                <mx:RadioButton id="radioArray" groupName="topicsGroup" selected="{topicsRP.currentIndex == selectedTopicIndex}" fontSize="{_fontSize}" click="onTopicClick(event)" />
+                                                <mx:TextInput id="topicsArray" data="{topicsRP.currentItem}" enabled="{isEditMode}" styleName="editInput" fontSize="{_fontSize}" text="{String(topicsRP.currentItem.data)}" width="100%" focusIn="showButtons(event)"/>
+                                                <mx:Button id="deleteArray" styleName="deleteButton" buttonMode="true" click="onDeleteTopic(event)" visible="false"/>
+                                          </mx:HBox>
+                                    </mx:Repeater>
+                              </mx:VBox>
+                        </mx:HDividedBox>
+                        <mx:HBox>
+							  <mx:Button label="Add Topic" click="onAddTopic(event)" visible="{isEditMode}"/>
+                              <mx:Button label="Add Speaker" click="onAddSpeaker(event)" visible="{isEditMode}"/>                        
+                        </mx:HBox>
+                  </mx:VBox>
+</BaseComponent>
+ 

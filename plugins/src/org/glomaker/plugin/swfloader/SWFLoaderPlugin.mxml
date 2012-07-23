@@ -1,0 +1,672 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+/////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2007-09 LTRI, London Metropolitan Uni. All rights reserved.
+// An Open Source Release under the GPL v3 licence  (see http://www.gnu.org/licenses/).
+// Authors: Tom Boyle, Nils Millahn, Musbah Sagar, Martin Agombar.
+// See http://www.glomaker.org for full details
+/////////////////////////////////////////////////////////////////////////
+-->
+
+<BaseComponent xmlns="org.glomaker.shared.component.*" 
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	width="100%" height="100%"
+	resize="onResize(event)">
+	
+	<mx:Script>
+		<![CDATA[
+			//import com.hotdraw.java.awt.geom._Point;
+			import mx.events.ResizeEvent;
+			import org.glomaker.shared.properties.IntegerProperty;
+			import org.glomaker.shared.properties.ColourProperty;
+			import org.glomaker.shared.properties.StringProperty;
+
+			import org.glomaker.shared.properties.FilePathProperty;
+			import org.glomaker.shared.properties.IComponentProperty;
+			import org.glomaker.shared.properties.BooleanProperty;
+			
+			/**
+		 	* Embed play button up skin.
+		 	*/
+			[Bindable]
+			[Embed(source="org/glomaker/plugin/swfloader/assets/controls_play.png")]	
+			public var playBtn:Class;
+			
+			/**
+		 	* Embed play rollover skin.
+		 	*/
+			[Bindable]
+			[Embed(source="org/glomaker/plugin/swfloader/assets/controls_play_rollover.png")]	
+			public var playRolloverBtn:Class;
+			
+			/**
+		 	* Embed pause button up skin.
+		 	*/
+			[Bindable]
+			[Embed(source="org/glomaker/plugin/swfloader/assets/controls_pause.png")]	
+			public var pauseBtn:Class;
+			
+			/**
+		 	* Embed pause rollover skin.
+		 	*/
+			[Bindable]
+			[Embed(source="org/glomaker/plugin/swfloader/assets/controls_pause_rollover.png")]	
+			public var pauseRolloverBtn:Class;
+			
+			/**
+		 	* Embed forward button up skin.
+		 	*/
+			[Bindable]
+			[Embed(source="org/glomaker/plugin/swfloader/assets/controls_forward.png")]	
+			public var fwdBtn:Class;
+			
+			/**
+		 	* Embed forward rollover skin.
+		 	*/
+			[Bindable]
+			[Embed(source="org/glomaker/plugin/swfloader/assets/controls_forward_rollover.png")]	
+			public var fwdRolloverBtn:Class;
+			
+			/**
+		 	* Embed back button up skin.
+		 	*/
+			[Bindable]
+			[Embed(source="org/glomaker/plugin/swfloader/assets/controls_rewind.png")]	
+			public var backBtn:Class;
+			
+			/**
+		 	* Embed back rollover skin.
+		 	*/
+			[Bindable]
+			[Embed(source="org/glomaker/plugin/swfloader/assets/controls_rewind_rollover.png")]	
+			public var backRolloverBtn:Class;
+			
+			/**
+		 	* Sets up a Browse control button on the Property Panel.
+		 	*/
+			protected var filePath:FilePathProperty;
+			
+			/**
+		 	* Sets up a field on the Property Panel to control the existence of the play button.
+		 	*/
+			protected var playControl:BooleanProperty;
+			
+			/**
+		 	* Sets up a field on the Property Panel to control the existence of the jump button.
+		 	*/
+			protected var jumpControl:BooleanProperty;			
+			
+			/**
+		 	* Sets up a field on the Property Panel to control the colour of the background strip.
+		 	*/
+			protected var bgColour:ColourProperty;
+			
+			/**
+		 	* Stores file type.
+		 	*/
+		 	protected var fileType:StringProperty;
+			
+			/**
+		 	* Stores an array of MovieClip labels.
+		 	*/
+			private var _labels:Array = [];
+			
+			/**
+		 	* Indicates whether the loaded content has been prompted by the user or because
+		 	* we have returned to a page / are in the web player.
+		 	*/
+			private var _userLoadedContent:Boolean;
+			
+			/**
+		 	* Used to carry information visible in the web player for debugging purposes only.
+		 	*/
+		 	[Bindable]
+			private var _debug:String = "Debugging: ";
+			
+			/**
+		 	* Constants used to determine controls set-up.
+		 	*/
+			protected static const PLAY:String = "play";
+			protected static const JUMP:String = "jump";
+			protected static const ALL:String = "all";
+			protected static const NONE:String = "none";
+		 	
+		 	/**
+		 	* Stores the width of the SWFLoader.
+		 	*/
+		 	protected var containerWidth:IntegerProperty;
+		 	
+		 	/**
+		 	* Stores the height of a loaded SWFLoader.
+		 	*/
+		 	protected var containerHeight:IntegerProperty;
+		 	
+		 	/**
+		 	* Stop filePath from being garbage collected.
+		 	*/
+		 	public var storeFilePath:String;
+
+			
+			///////////////////////////////////////////////////////
+			//
+			// GLOMaker called functions
+			//
+			///////////////////////////////////////////////////////
+			
+			/**
+		 	* Called by GLOMaker when the properties need to be defined. This happens 
+		 	* each time the component is created.
+		 	*/
+			override protected function defineProperties():void
+			{
+				super.defineProperties();
+				
+				_userLoadedContent = false;
+				
+				// set up nav controls
+				playControl = new BooleanProperty("playControlValue", "Play button ?", true);
+				jumpControl = new BooleanProperty("labelControlValue", "Jump button ?", true);
+				
+				// set up file browser
+				filePath = new FilePathProperty("filePath", "File Path:", "");
+				filePath.fileTypeLabel = "SWFs"; 
+				filePath.fileExtensions = "*.swf";
+				
+				// set up colour control
+				bgColour = new ColourProperty("bgcolour", "Colour", 0x666666);
+				
+				// stores the file type
+				fileType = new StringProperty("fileType", "StringProperty::NotSet");
+				
+				// store the width and height values of an AVM1 movie
+				containerWidth = new IntegerProperty("containerWidth", "", 0);
+				containerHeight = new IntegerProperty("containerHeight", "", 0);
+				
+				// add properties 
+				addProperty(filePath);
+				addProperty(bgColour);
+				addProperty(playControl);
+				addProperty(jumpControl);
+				
+				addSaveableProperty(fileType);
+				
+				addSaveableProperty(containerWidth);
+				addSaveableProperty(containerHeight);
+				
+				 _debug += "defineProperties ";
+				
+			}
+			
+			/**
+		 	* Called by GLOMaker when the properties need to be initialised. This happens 
+		 	* each time the component is created.
+		 	*/
+			override public function propertyValuesInitialised():void
+			{	
+				controls.setStyle("backgroundColor", bgColour.propValue);	
+				
+				if(filePath.propValue == "FilePathProperty::NoUrlSet" || filePath.propValue == "")
+				{
+					// we must be in the Editor or a component has been created without a filePath being set,
+					// either way there is nothing to do
+		
+					return;
+				}
+
+				// we must be in the web player or returning from a page
+				// the container width is set here to rectify a problem in the web player
+				// where the content is not sized correctly on the first page	
+				if(containerWidth.propValue > 0 && containerHeight.propValue > 0)
+				{
+					container.width = containerWidth.propValue;
+					container.height = containerHeight.propValue;
+				}
+				
+				storeFilePath = filePath.propValue;
+				swfLoader.load(filePath.propValue);
+				
+				setupControls();
+				
+				_debug += "propertyValuesInitialised ";
+				
+			}	
+				
+			
+			/**
+		 	* Called by GLOMaker when the properties need to be updated.
+		 	*/
+			override public function editablePropertyUpdated(prop:IComponentProperty):void
+			{
+				_userLoadedContent = true;
+				
+				if(prop == filePath)
+				{
+					swfLoader.load(filePath.propValue);
+					setupControls();	
+					
+					_debug += "editablePropertyUpdated::filePath ";
+				}		
+					
+				if(prop == playControl || prop == jumpControl)
+				{
+					setupControls();
+					
+					_debug += "editablePropertyUpdated::playControl, jumpControl ";
+				}
+		
+				if(prop == bgColour)
+				{
+					controls.setStyle("backgroundColor", bgColour.propValue);
+					
+					_debug += "editablePropertyUpdated::bgColor ";
+				}
+			}
+			
+			/**
+		 	* Called by GLOMaker prior to properties being saved.
+		 	*/
+			override public function prepareValuesForSave():void
+			{
+				containerWidth.propValue = container.width;
+				containerHeight.propValue = container.height;
+				
+				_debug += "prepareValuesForSave ";
+			}
+			
+			/**
+		 	* Called by GLOMaker when the component is no longer needed.
+		 	*/
+			override public function destroy():void
+			{
+				swfLoader.source = null;
+				
+				_debug += "destroy ";
+			}
+			
+			///////////////////////////////////////////////////////
+			//
+			// User features
+			//
+			///////////////////////////////////////////////////////
+			
+			/**
+		 	* Set up the play and jump controls.
+		 	*/
+			protected function setupControls():void
+			{
+				
+				if(fileType.propValue == "bitmap" || fileType.propValue == "AVM1")
+				{
+					buildControls(SWFLoaderPlugin.NONE);
+					updatePropertiesPanel();
+					
+					_debug += "setupControls::bitmap, AVM1 ";
+					
+					return;
+				}
+				
+
+				if(playControl.propValue && jumpControl.propValue)
+				{
+					buildControls(SWFLoaderPlugin.ALL);
+				}
+				
+				if(playControl.propValue && !jumpControl.propValue)
+				{
+					buildControls(SWFLoaderPlugin.PLAY);
+				}
+				
+				if(!playControl.propValue && jumpControl.propValue)
+				{
+					buildControls(SWFLoaderPlugin.JUMP);
+				}
+				
+				if(!playControl.propValue && !jumpControl.propValue)
+				{
+					buildControls(SWFLoaderPlugin.NONE);
+				}
+				
+				updatePropertiesPanel();
+				
+				_debug += "setupControls::movieClip ";
+			}
+			
+			/**
+		 	* Build the player controls.
+		 	*/
+			protected function buildControls(config:String):void
+			{
+				// start with a clean sheet
+				controls.removeAllChildren();
+				
+				// make sure the controls are in place
+				container.addChild(controls);
+				
+				// ensure controls are visible
+				//controls.visible = true;
+				
+				switch(config)
+				{
+					case SWFLoaderPlugin.PLAY:
+					
+						controls.addChild(stop);
+						controls.addChild(play);
+						
+						break;
+						
+					case SWFLoaderPlugin.JUMP:
+						
+						controls.addChildAt(back, 0);
+						controls.addChild(fwd);
+						
+						break;
+					
+					case SWFLoaderPlugin.ALL:
+						
+						controls.addChild(stop);
+						controls.addChild(play);
+						
+						controls.addChildAt(back, 0);
+						controls.addChild(fwd);
+						
+						break;
+						
+					case SWFLoaderPlugin.NONE:
+						
+						// no buttons to display. make controls invisible
+						container.removeChild(controls);
+						
+						break;
+				}
+				
+				_debug += "buildControls::config="+config+" ";
+			}
+			
+			/**
+		 	* Update the controls in GLO Maker.
+		 	*/
+			protected function updatePropertiesPanel():void
+			{
+				switch(fileType.propValue)
+				{
+					case "movieClip":
+						updateEditableProperties([filePath, bgColour, playControl, jumpControl]);
+						break;
+					
+					case "bitmap":
+						updateEditableProperties([filePath, bgColour]);
+						break;
+						
+					case "AVM1":
+						updateEditableProperties([filePath, bgColour]);
+						break;
+				}
+				
+				_debug += "updatePropertiesPanel ";
+			}
+			
+					
+			///////////////////////////////////////////////////////
+			//
+			// Event Handlers
+			//
+			///////////////////////////////////////////////////////
+			
+			/**
+		 	* This function is where a loaded SWF or image is first sorted in terms of its type.
+		 	*/
+			protected function onSWFLoaderComplete(evt:Event):void
+			{
+				//  ensure swf is cropped
+				swfLoader.scrollRect = new Rectangle(0, 0, swfLoader.width, swfLoader.height);
+				
+				// determine what has been loaded
+				if(!_userLoadedContent)
+				{
+					if(fileType.propValue == "movieClip")
+					{
+						_labels = (swfLoader.content as MovieClip).currentLabels;
+					}
+					
+					_debug += "onSWFLoaderComplete::not user loaded content ";
+					
+					return;
+				}
+				
+				containerWidth.propValue = container.width;
+				containerHeight.propValue = container.height;
+				
+				if(swfLoader.content is Bitmap)
+				{
+					fileType.propValue = "bitmap";
+					
+				}
+
+				if(swfLoader.content is MovieClip)
+				{
+
+					_labels = (swfLoader.content as MovieClip).currentLabels;
+					
+					fileType.propValue = "movieClip";
+
+				}
+				
+				if(swfLoader.content is AVM1Movie)
+				{
+					fileType.propValue = "AVM1";
+
+				}
+				
+				setupControls();
+				
+				_debug += "onSWFLoaderComplete::user loaded content ";
+			}
+			
+			/**
+		 	* Back button.
+		 	*/
+			protected function onBack(evt:MouseEvent):void
+			{
+				// only used when a MovieClip is loaded
+				var previousFrameLabel:FrameLabel = getFrameLabel("back");
+
+				if(previousFrameLabel != null)
+				{
+					(swfLoader.content as MovieClip).gotoAndStop(previousFrameLabel.frame);
+					
+					_debug += "onBack ";
+				}
+			}
+			
+			/**
+		 	* Fwd button.
+		 	*/
+			protected function onFwd(evt:MouseEvent):void
+			{	
+				// only used when a MovieClip is loaded
+				var nextFrameLabel:FrameLabel = getFrameLabel("fwd");
+				
+				if(nextFrameLabel != null)
+				{
+					(swfLoader.content as MovieClip).gotoAndStop(nextFrameLabel.frame);
+					
+					_debug += "onFwd ";
+				}
+			}
+			
+			/**
+		 	* Play button.
+		 	*/
+			protected function onPlay(evt:MouseEvent):void
+			{
+
+				if(swfLoader.content is MovieClip)
+				{
+					(swfLoader.content as MovieClip).play();
+					
+					_debug += "onPlay ";
+				}
+
+			}
+			
+			/**
+		 	* Stop button.
+		 	*/
+			protected function onStop(evt:MouseEvent):void
+			{
+
+				if(swfLoader.content is MovieClip)
+				{
+					(swfLoader.content as MovieClip).stop();
+					
+					_debug += "onStop ";
+				}
+
+			}
+			
+			/**
+		 	* Returns the specified FrameLabel object or null if one does not exist.
+		 	*/
+			protected function getFrameLabel(direction:String):FrameLabel
+			{
+				var fl:FrameLabel = null;
+				
+				if(_labels.length < 1)
+				{
+					return fl;
+				}
+				
+				if(direction == "current")
+				{
+					fl = (swfLoader.content as MovieClip).currentLabel as FrameLabel;
+					
+					return fl;
+				}
+
+				var currentIndex:int = getLabelIndex();
+				
+				if(direction == "back")
+				{
+					if(currentIndex == _labels.length)
+					{
+						fl = _labels[currentIndex] as FrameLabel;
+						
+					}else{
+						
+						fl = _labels[currentIndex + 1] as FrameLabel;
+
+					}
+					
+					return fl;
+				}
+				
+				if(direction == "fwd")
+				{
+					if(currentIndex == 0)
+					{
+						fl = _labels[currentIndex] as FrameLabel;
+						
+					}else{
+						
+						fl = _labels[currentIndex - 1] as FrameLabel;
+						
+					}
+					
+					return fl
+				}
+				
+				return fl;
+			}
+			
+			/**
+		 	* Returns the current index of all the frame labels.
+		 	*/
+			protected function getLabelIndex():int
+			{
+				_labels.sortOn("frame", Array.NUMERIC | Array.DESCENDING);
+				
+				var currentFrame:int = (swfLoader.content as MovieClip).currentFrame;
+				
+				for(var i:uint=0; i<_labels.length; i++)
+				{
+					if(currentFrame >= (_labels[i] as FrameLabel).frame)
+					{
+						return i;
+					}
+				}
+				
+				return 0;
+				
+			}
+			
+			/**
+		 	* Resize.
+		 	*/
+			protected function onResize(evt:ResizeEvent):void
+			{
+				container.percentWidth = 100;
+				container.percentHeight = 100;
+				swfLoader.scrollRect = new Rectangle(0, 0, swfLoader.width, swfLoader.height);
+			}
+
+		]]>
+	</mx:Script>
+	
+	<mx:VBox width="100%" height="100%" 
+		id="container">
+		
+		<!--<mx:TextArea id="readout" width="100%" text="{_debug}"/>
+		<mx:Canvas width="100%" height="100%"
+			id="swfLoaderContainer"
+			borderStyle="solid"
+			borderColor="0xff00ff"
+			borderThickness="2">-->
+			
+			<mx:SWFLoader width="100%" height="100%"
+				id="swfLoader"
+				styleName="missingImageStyle"
+				complete="onSWFLoaderComplete(event)"/>
+			
+		<!--</mx:Canvas>-->	
+				
+		<mx:HBox width="100%"
+			id="controls" horizontalGap="2"
+			paddingTop="2"
+			paddingBottom="2"
+			paddingLeft="2"
+			paddingRight="2">
+			
+				<mx:Button width="24" height="24"
+					id="back" 
+					upSkin="{backBtn}"
+					overSkin="{backRolloverBtn}"
+					downSkin="{backRolloverBtn}"
+					click="onBack(event)"/>
+					
+				<mx:Button width="24" height="24"
+					id="stop" 
+					upSkin="{pauseBtn}"
+					overSkin="{pauseRolloverBtn}"
+					downSkin="{pauseRolloverBtn}"
+					click="onStop(event)"/>
+					
+				<mx:Button width="24" height="24"
+					id="play" 
+					upSkin="{playBtn}"
+					overSkin="{playRolloverBtn}"
+					downSkin="{playRolloverBtn}"
+					click="onPlay(event)"/>
+									
+				<mx:Button width="24" height="24"
+					id="fwd" 
+					upSkin="{fwdBtn}"
+					overSkin="{fwdRolloverBtn}"
+					downSkin="{fwdRolloverBtn}"
+					click="onFwd(event)"/>
+
+		</mx:HBox>
+		
+	</mx:VBox>
+	
+</BaseComponent>

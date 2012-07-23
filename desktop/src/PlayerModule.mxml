@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+/////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2007-09 LTRI, London Metropolitan Uni. All rights reserved.
+// An Open Source Release under the GPL v3 licence  (see http://www.gnu.org/licenses/).
+// Authors: Tom Boyle, Nils Millahn, Musbah Sagar, Martin Agombar.
+// See http://www.glomaker.org for full details
+/////////////////////////////////////////////////////////////////////////
+-->
+
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="100%" height="100%"
+	implements="org.glomaker.shared.player.IPlayerBridge"
+	creationComplete="init()" >
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import org.glomaker.common.vo.PageInstanceVO;
+			import org.glomaker.common.data.SlideshowStatusVO;
+			import org.glomaker.shared.component.interfaces.ISlideshowStatusObject;
+			import org.glomaker.app.events.NavigationEvent;
+			import org.glomaker.common.data.StageVO;
+			import org.glomaker.app.view.stage.ComponentDisplayView;
+			
+			protected var pages:Array;
+			protected var gloStage:StageVO;
+			protected var currentIndex:int = -1;
+			protected var pageView:ComponentDisplayView;
+			protected var stageView:ComponentDisplayView;
+			
+			[Bindable]
+			protected var bgColour:uint = 0xffffff;
+			
+			// Index of the start page
+			protected var startPageIndex:int = 0;		
+			
+			public function init():void
+			{
+				if(!pageView){
+					pageView = new ComponentDisplayView(pageDisplay);
+					pageView.setSharedMemory( {} );
+					addViewListeners(pageView);
+				}
+				
+				if(!stageView){
+					stageView = new ComponentDisplayView(stageUIDisplay);
+					addViewListeners(stageView);
+				}
+				
+				if(pages)
+					showPage(startPageIndex);
+					
+				if(gloStage)
+					showStage();
+					
+			}
+			
+			public function setStartPageIndex(value:int):void{
+				startPageIndex = value;
+			}
+			
+			public function setPageList(value:Array):void
+			{
+				pages = value.slice();
+				
+				if(pageView)
+					showPage(startPageIndex);
+			}
+			
+			public function setGLOStage(value:Object):void
+			{
+				gloStage = value as StageVO;
+				
+				if(stageView)
+					showStage();
+			}
+			
+			public function setBackgroundColour(rgb:uint):void
+			{
+				bgColour = rgb;
+			}
+			
+			protected function showPage(index:int = -1):void
+			{
+				if(index == -1)
+					index = currentIndex;
+					
+				currentIndex = index;
+				
+				var page:PageInstanceVO = pages[index];
+				if(!page)
+					return;
+					
+				pageView.clear();
+				pageView.addComponentList(page.components);
+				
+				// status update
+				var status:SlideshowStatusVO = new SlideshowStatusVO(pages.length, currentIndex);
+				pageView.handleSlideshowStatus(status);
+				stageView.handleSlideshowStatus(status);
+			}
+			
+			protected function showStage():void
+			{
+				stageView.addComponent(gloStage.componentInstance);
+				
+			}
+			
+			protected function previousPage():void
+			{
+				var newIndex:int = Math.max(0, currentIndex - 1);
+				if(newIndex != currentIndex)
+					showPage(newIndex);
+			}
+			protected function nextPage():void
+			{
+				var newIndex:int = Math.min(pages.length - 1, currentIndex + 1);
+				if(newIndex != currentIndex)
+					showPage(newIndex);
+			}
+			
+			protected function addViewListeners(view:ComponentDisplayView):void
+			{
+				view.addEventListener(NavigationEvent.NEXT, handleNextClick);
+				view.addEventListener(NavigationEvent.PREVIOUS, handlePreviousClick);
+				view.addEventListener(NavigationEvent.GOTO, handleGotoClick);
+			}
+			
+			protected function removeViewListeners(view:ComponentDisplayView):void
+			{
+				view.removeEventListener(NavigationEvent.NEXT, handleNextClick);
+				view.removeEventListener(NavigationEvent.PREVIOUS, handlePreviousClick);
+				view.removeEventListener(NavigationEvent.GOTO, handleGotoClick);
+			}
+			
+			protected function handleNextClick(evt:NavigationEvent):void
+			{
+				nextPage();
+			}
+
+			protected function handlePreviousClick(evt:NavigationEvent):void
+			{
+				previousPage();
+			}
+
+			protected function handleGotoClick(evt:NavigationEvent):void
+			{
+				showPage(evt.pageIndex);
+			}
+			
+			public function destroy():void{
+				
+				removeViewListeners(pageView);
+				removeViewListeners(stageView);
+				
+				pageView.destroy();
+				stageView.destroy();
+				
+				pageView = null;
+				stageView = null;
+			}
+			
+
+
+			
+		]]>
+	</mx:Script>
+	
+	<mx:Canvas id="background" backgroundColor="{bgColour}" width="100%" height="100%"/>
+		
+	<mx:Canvas id="pageDisplay" 
+		clipContent="true"
+		width="100%" height="100%"
+		verticalScrollPolicy="off"
+		horizontalScrollPolicy="off"/>
+		
+	
+	<mx:Canvas id="stageUIDisplay"
+		backgroundAlpha="0"
+		mouseEnabled="false"
+		width="100%" height="100%"/>
+</mx:Module>
