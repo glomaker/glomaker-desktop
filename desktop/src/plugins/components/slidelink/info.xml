@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<plugin>
+	<id>slidelink</id>
+	<author>Haykel</author>
+	<version>1.0</version>
+	<glomaker>2.0</glomaker>	
+	<name>Slide Link</name>
+	<description>A button that links to another slide in the GLO.</description>
+	<swf>SlideLinkPlugin.swf</swf>
+</plugin>

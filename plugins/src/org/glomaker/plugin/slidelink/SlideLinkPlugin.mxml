@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+/////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2007-12 LTRI, London Metropolitan Uni. All rights reserved.
+// An Open Source Release under the GPL v3 licence  (see http://www.gnu.org/licenses/).
+// Authors: Tom Boyle, Nils Millahn, Musbah Sagar, Martin Agombar.
+// See http://www.glomaker.org for full details
+/////////////////////////////////////////////////////////////////////////
+-->
+
+<BaseComponent
+	xmlns="org.glomaker.shared.component.*"
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:editbutton="org.glomaker.shared.ui.editbutton.*"
+	horizontalScrollPolicy="off"
+	verticalScrollPolicy="off"
+	>
+	
+	<mx:Script>
+		<![CDATA[
+			import org.glomaker.shared.properties.IntegerProperty;
+			import org.glomaker.shared.properties.StringProperty;
+			
+			//--------------------------------------------------
+			// Protected vars
+			//--------------------------------------------------
+			
+			// component properties
+			protected var title:StringProperty = new StringProperty("title", "Title", "Link Title");
+			protected var slideNumber:IntegerProperty = new IntegerProperty("slide", "Target Slide Number (1, 2, ...)", -1);
+			
+			//--------------------------------------------------
+			// Overrides
+			//--------------------------------------------------
+			
+			override protected function defineProperties():void
+			{
+				super.defineProperties();
+				
+				addProperty(slideNumber);
+				addSaveableProperty(title);
+			}
+			
+			override public function propertyValuesInitialised():void
+			{
+				button.label = title.propValue;
+			}
+			
+			override public function prepareValuesForSave():void
+			{
+				title.propValue = button.label;
+			}
+			
+			override public function setEditMode(value:Boolean):void
+			{
+				button.isEditable = value;
+			}
+		]]>
+	</mx:Script>
+	
+	<editbutton:EditableButton
+		id="button"
+		width="100%" height="100%"
+		/>
+
+</BaseComponent>
