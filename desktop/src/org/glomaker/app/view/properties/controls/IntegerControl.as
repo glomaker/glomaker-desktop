@@ -63,7 +63,7 @@ package org.glomaker.app.view.properties.controls
 		protected function onValueChange(evt:Event):void
 		{
 			// update the value stored in the property
-			_prop.propValue = text;
+			_prop.propValue = parseInt(text);
 			
 			// notify the associated component
 			_comp.editablePropertyUpdated(_prop);
