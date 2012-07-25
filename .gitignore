@@ -1,0 +1,5 @@
+.DS_Store
+*.air
+bin
+bin-debug
+bin-release
