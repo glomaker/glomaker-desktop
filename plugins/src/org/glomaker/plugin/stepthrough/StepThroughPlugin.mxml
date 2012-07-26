@@ -10,28 +10,35 @@
 -->
 
 <BaseComponent xmlns="org.glomaker.shared.component.*" xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:editbutton="org.glomaker.shared.ui.editbutton.*"
 	horizontalScrollPolicy="off" 
 	verticalScrollPolicy="off"
 	themeColor="haloSilver">
 	
 	<mx:Script>
 		<![CDATA[
-			import org.glomaker.shared.properties.IComponentProperty;
 			import mx.collections.ArrayCollection;
-			import org.glomaker.shared.properties.FilePathProperty;
-			import org.glomaker.shared.properties.ArrayProperty;
-			import org.glomaker.shared.properties.NumericStepperProperty;
 			import mx.events.ListEvent;
+			
+			import org.glomaker.shared.properties.ArrayProperty;
+			import org.glomaker.shared.properties.FilePathProperty;
+			import org.glomaker.shared.properties.IComponentProperty;
+			import org.glomaker.shared.properties.NumericStepperProperty;
+			import org.glomaker.shared.properties.StringProperty;
     
     
             protected var filePath:FilePathProperty;
             protected var fontSizeField:NumericStepperProperty;
+			protected var nextButtonLabel:StringProperty = new StringProperty("nextLabel", "", "Show");
             protected var dataList:ArrayProperty = new ArrayProperty("dataList","", []);
             
             
             // array used internally to manage data
             [Bindable]
           	protected var internalDataList:ArrayCollection;
+			
+			[Bindable]
+			protected var internalNextLabel:String = "";
           
     	    // index of the item currently being displayed in the text field (in edit and in display mode)
      	    private var displayCounter:int = -1;
@@ -69,6 +76,7 @@
 				filePath.fileExtensions = "*.swf";
 				addProperty(filePath);
 				
+				addSaveableProperty(nextButtonLabel);
 				addSaveableProperty(dataList);
 			}
 			
@@ -77,6 +85,8 @@
 			{
 				currentFilePath = filePath.propValue;
 				currentFontSize = fontSizeField.propValue;
+				
+				internalNextLabel = nextButtonLabel.propValue;
 				
 				//
 				internalDataList = new ArrayCollection();
@@ -117,6 +127,8 @@
 			
 			override public function prepareValuesForSave():void
 			{
+				nextButtonLabel.propValue = internalNextLabel;
+				
 				// if in edit mode, make sure current item is properly saved
 				if(currentState == "EditState")
 					saveEditTextFieldValue();
@@ -324,6 +336,8 @@
 			
 			protected function onExitEditState():void
 			{
+				editNextButton.removeEventListener("labelChanged", nextButton_labelChangedHandler);
+				
 				  list.removeEventListener(StepThroughItemRenderer.DELETE_EVENT,deleteItem);
  			 	  list.removeEventListener(ListEvent.CHANGE,listChanged);
  			 	  
@@ -331,8 +345,10 @@
  			 	  saveEditTextFieldValue();
 			}
 			
-			protected function onEnterEditState():void{
-		 		
+			protected function onEnterEditState():void
+			{
+		 		editNextButton.addEventListener("labelChanged", nextButton_labelChangedHandler);
+				
 		 		list.addEventListener(StepThroughItemRenderer.DELETE_EVENT,deleteItem);	
 				list.addEventListener(ListEvent.CHANGE,listChanged);
 
@@ -356,6 +372,11 @@
 			}
 	
 			
+			protected function nextButton_labelChangedHandler(event:Event):void
+			{
+				internalNextLabel = editNextButton.label;
+			}
+			
 		]]>
 	</mx:Script>
 	
@@ -378,6 +399,7 @@
 					<mx:VBox id="textAreaBox" backgroundColor="#d5d5d5" width="100%" height="100%" paddingTop="10" paddingBottom="10" paddingLeft="10" paddingRight="10">
 						<mx:TextArea id="textArea" fontSize="{currentFontSize}" width="100%" height="100%" cornerRadius="5"/>
 						<mx:Button label="Add" click="addNewItem()"/>
+						<editbutton:EditableButton id="editNextButton" isEditable="true" label="{internalNextLabel}" />
 					</mx:VBox>
 				</mx:HBox>
 				
@@ -393,7 +415,7 @@
 			
 				<mx:VBox backgroundColor="#d5d5d5" width="{textAreaBox.width}" height="100%" paddingTop="10" paddingBottom="10" paddingLeft="10" paddingRight="10">
 					<mx:TextArea id="textAreaDisplay" fontSize="{currentFontSize}" selectable="true" editable="false" focusEnabled="false" width="100%" height="100%" cornerRadius="5"/>
-					<mx:Button label="Show" click="nextItem()" />
+					<mx:Button label="{internalNextLabel}" click="nextItem()" />
 				</mx:VBox>
 			</mx:HBox>
 		</mx:AddChild>
