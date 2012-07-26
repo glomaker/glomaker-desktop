@@ -29,7 +29,7 @@
 			//--------------------------------------------------
 			
 			// component properties
-			protected var title:StringProperty = new StringProperty("title", "Title", "Link Title");
+			protected var buttonLabel:StringProperty = new StringProperty("label", "Label", "Button Label");
 			protected var slideNumber:IntegerProperty = new IntegerProperty("slide", "Target Slide Number (1, 2, ...)", -1);
 
 			protected var navControl:ISlideshowNavigationController;
@@ -57,21 +57,21 @@
 				super.defineProperties();
 				
 				addProperty(slideNumber);
-				addSaveableProperty(title);
+				addSaveableProperty(buttonLabel);
 			}
 			
 			override protected function componentInitComplete():void
 			{
 				super.componentInitComplete();
 				
-				button.label = title.propValue;
+				button.label = buttonLabel.propValue;
 			}
 			
 			override public function prepareValuesForSave():void
 			{
 				super.prepareValuesForSave();
 				
-				title.propValue = button.label;
+				buttonLabel.propValue = button.label;
 			}
 			
 			override public function setEditMode(value:Boolean):void
