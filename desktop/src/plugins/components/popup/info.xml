@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<plugin>
+	<id>popup</id>
+	<author>Haykel</author>
+	<version>1.0</version>
+	<glomaker>2.0</glomaker>	
+	<name>PopUp</name>
+	<description>Displays a button that reveals a text area on click.</description>
+	<swf>PopupPlugin.swf</swf>
+</plugin>

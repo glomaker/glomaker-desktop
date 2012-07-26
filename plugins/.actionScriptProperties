@@ -33,6 +33,7 @@
     <module application="src/PluginOptimiserApp.mxml" destPath="org/glomaker/plugin/accessviews/AccessViewsPlugin.swf" optimize="true" sourcePath="src/org/glomaker/plugin/accessviews/AccessViewsPlugin.mxml"/>
     <module application="src/PluginOptimiserApp.mxml" destPath="org/glomaker/stage/cetl/CETLNavBar.swf" optimize="true" sourcePath="src/org/glomaker/stage/cetl/CETLNavBar.mxml"/>
     <module application="src/PluginOptimiserApp.mxml" destPath="org/glomaker/plugin/slidelink/SlideLinkPlugin.swf" optimize="true" sourcePath="src/org/glomaker/plugin/slidelink/SlideLinkPlugin.mxml"/>
+    <module application="src/PluginOptimiserApp.mxml" destPath="org/glomaker/plugin/popup/PopupPlugin.swf" optimize="true" sourcePath="src/org/glomaker/plugin/popup/PopupPlugin.mxml"/>
   </modules>
   <buildCSSFiles/>
   <flashCatalyst validateFlashCatalystCompatibility="false"/>
