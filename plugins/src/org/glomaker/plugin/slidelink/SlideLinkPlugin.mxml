@@ -13,12 +13,14 @@
 	xmlns="org.glomaker.shared.component.*"
 	xmlns:mx="http://www.adobe.com/2006/mxml"
 	xmlns:editbutton="org.glomaker.shared.ui.editbutton.*"
+	implements="org.glomaker.shared.component.interfaces.ISlideshowNavigator"
 	horizontalScrollPolicy="off"
 	verticalScrollPolicy="off"
 	>
 	
 	<mx:Script>
 		<![CDATA[
+			import org.glomaker.shared.component.interfaces.ISlideshowNavigationController;
 			import org.glomaker.shared.properties.IntegerProperty;
 			import org.glomaker.shared.properties.StringProperty;
 			
@@ -29,6 +31,22 @@
 			// component properties
 			protected var title:StringProperty = new StringProperty("title", "Title", "Link Title");
 			protected var slideNumber:IntegerProperty = new IntegerProperty("slide", "Target Slide Number (1, 2, ...)", -1);
+
+			protected var navControl:ISlideshowNavigationController;
+			
+			//--------------------------------------------------
+			// ISlideshowNavigator
+			//--------------------------------------------------
+			
+			public function attachSlideshowController(controller:ISlideshowNavigationController):void
+			{
+				navControl = controller;
+			}
+			
+			public function detachSlideshowController():void
+			{
+				navControl = null;
+			}
 			
 			//--------------------------------------------------
 			// Overrides
@@ -42,19 +60,35 @@
 				addSaveableProperty(title);
 			}
 			
-			override public function propertyValuesInitialised():void
+			override protected function componentInitComplete():void
 			{
+				super.componentInitComplete();
+				
 				button.label = title.propValue;
 			}
 			
 			override public function prepareValuesForSave():void
 			{
+				super.prepareValuesForSave();
+				
 				title.propValue = button.label;
 			}
 			
 			override public function setEditMode(value:Boolean):void
 			{
+				super.setEditMode(value);
+				
 				button.isEditable = value;
+			}
+			
+			//--------------------------------------------------
+			// Event handlers
+			//--------------------------------------------------
+			
+			protected function button_clickHandler(event:MouseEvent):void
+			{
+				if (!button.isEditable && navControl && slideNumber.propValue > 0)
+					navControl.goto(slideNumber.propValue - 1);
 			}
 		]]>
 	</mx:Script>
@@ -62,6 +96,7 @@
 	<editbutton:EditableButton
 		id="button"
 		width="100%" height="100%"
+		click="button_clickHandler(event)"
 		/>
 
 </BaseComponent>
