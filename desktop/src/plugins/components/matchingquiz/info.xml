@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<plugin>
+	<id>matchingquiz</id>
+	<author>Haykel</author>
+	<version>1.0</version>
+	<glomaker>2.0</glomaker>	
+	<name>Matching Quiz</name>
+	<description>Displays a Matching Quiz, where the student must match elements from two lists of text entries.</description>
+	<swf>MatchingQuizPlugin.swf</swf>
+</plugin>

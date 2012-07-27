@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:ui="org.glomaker.shared.ui.*"
+	horizontalScrollPolicy="off" verticalScrollPolicy="off"
+	backgroundColor="#FFFFFF"
+	borderStyle="solid"
+	buttonMode="{!editMode}"
+	mouseChildren="{editMode}"
+	>
+	
+	<mx:Metadata>
+		[Event(name="change", type="flash.events.Event")]
+	</mx:Metadata>
+	
+	<mx:Script>
+		<![CDATA[
+			[Bindable]
+			public var editMode:Boolean;
+			
+			[Bindable]
+			public var text:String;
+			
+			protected function textArea_changeHandler(event:Event):void
+			{
+				text = textArea.text;
+				
+				dispatchEvent(event);
+			}
+		]]>
+	</mx:Script>
+
+	<mx:Style>
+		.editInput {
+			border-style: none;
+			background-alpha: 0;
+			theme-color: #333333;
+			focus-thickness: 1;
+		}
+	</mx:Style>
+	
+	<ui:DynamicTextArea
+		id="textArea"
+		styleName="editInput"
+		width="100%"
+		text="{text}"
+		editable="{editMode}"
+		selectable="{editMode}"
+		change="textArea_changeHandler(event)"
+		/>
+</mx:Canvas>

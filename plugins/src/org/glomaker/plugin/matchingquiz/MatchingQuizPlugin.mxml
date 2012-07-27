@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+/////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2007-12 LTRI, London Metropolitan Uni. All rights reserved.
+// An Open Source Release under the GPL v3 licence  (see http://www.gnu.org/licenses/).
+// Authors: Tom Boyle, Nils Millahn, Musbah Sagar, Martin Agombar.
+// See http://www.glomaker.org for full details
+/////////////////////////////////////////////////////////////////////////
+-->
+
+<BaseComponent
+	xmlns="org.glomaker.shared.component.*"
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:ui="org.glomaker.shared.ui.*"
+	xmlns:editbutton="org.glomaker.shared.ui.editbutton.*"
+	layout="absolute"
+	horizontalScrollPolicy="off"
+	verticalScrollPolicy="off" xmlns:matchingquiz="org.glomaker.plugin.matchingquiz.*"
+	>
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.managers.PopUpManager;
+			
+			import org.glomaker.shared.properties.ArrayProperty;
+			import org.glomaker.shared.properties.StringProperty;
+			
+			//--------------------------------------------------
+			// Protected vars
+			//--------------------------------------------------
+			
+			// component properties
+			protected var list1:ArrayProperty = new ArrayProperty("list1", "", []);
+			protected var list2:ArrayProperty = new ArrayProperty("list2", "", []);
+			protected var submitLabel:StringProperty = new StringProperty("submit", "", "Submit");
+			protected var correctFeedback:StringProperty = new StringProperty("correct", "", "That is correct - well done!");
+			protected var wrongFeedback:StringProperty = new StringProperty("wrong", "", "Not quite - try again!");
+
+			//
+			protected var feedback:Feedback;
+			
+			[Bindable]
+			protected var editMode:Boolean;
+			
+			//--------------------------------------------------
+			// Protected functions
+			//--------------------------------------------------
+			
+			protected function shuffle(list:Array):Array
+			{
+				var ret:Array = [];
+				var source:Array = list.concat();
+				var r:uint;
+				
+				while(source.length > 0)
+				{
+					r = Math.floor(Math.random() * source.length);
+					ret.push(source.splice(r, 1)[0]);
+				}
+				
+				return ret;
+			}
+			
+			protected function updateRepeaters():void
+			{
+				list1RP.dataProvider = editMode ? list1.valueArray : shuffle(list1.valueArray);
+				list2RP.dataProvider = editMode ? list2.valueArray : shuffle(list2.valueArray);
+				deleteRP.dataProvider = new Array(list1.valueArray.length);
+			}
+			
+			protected  function showFeedback(property:StringProperty, title:String = "Enter Feedback"):void
+			{
+				if(!feedback)
+					feedback = new Feedback();
+				
+				PopUpManager.addPopUp(feedback, this, true);
+				PopUpManager.centerPopUp(feedback); 
+				
+				feedback.relatedProp = property;
+				feedback.title = title;
+			}
+
+			//--------------------------------------------------
+			// Overrides
+			//--------------------------------------------------
+			
+			override protected function defineProperties():void
+			{
+				super.defineProperties();
+				
+				addSaveableProperty(list1);
+				addSaveableProperty(list2);
+				addSaveableProperty(submitLabel);
+				addSaveableProperty(correctFeedback);
+				addSaveableProperty(wrongFeedback);
+			}
+			
+			override protected function componentInitComplete():void
+			{
+				super.componentInitComplete();
+				
+				// lists
+				updateRepeaters();
+				
+				// other
+				submitButton.label = submitLabel.propValue;
+			}
+			
+			override public function prepareValuesForSave():void
+			{
+				super.prepareValuesForSave();
+				
+				submitLabel.propValue = submitButton.label;
+			}
+			
+			override public function setEditMode(value:Boolean):void
+			{
+				super.setEditMode(value);
+				
+				if (value == editMode)
+					return;
+				
+				editMode = value;
+				
+				updateRepeaters();
+			}
+			
+			//--------------------------------------------------
+			// Event handlers
+			//--------------------------------------------------
+			
+			protected function addButton_clickHandler(event:MouseEvent):void
+			{
+				list1.valueArray.push("");
+				list2.valueArray.push("");
+				
+				updateRepeaters();
+			}
+			
+			protected function deleteButton_clickHandler(event:MouseEvent):void
+			{
+				var index:int = event.target.data;
+				if (index >= 0 && index < list1.valueArray.length)
+				{
+					list1.valueArray.splice(index, 1);
+					list2.valueArray.splice(index, 1);
+					
+					updateRepeaters();
+				}
+			}
+			
+			protected function list1Item_changeHandler(event:Event):void
+			{
+				var index:int = event.target.data;
+				if (index >= 0 && index < list1.valueArray.length)
+					list1.valueArray[index] = event.target.text;
+			}
+			
+			protected function list2Item_changeHandler(event:Event):void
+			{
+				var index:int = event.target.data;
+				if (index >= 0 && index < list2.valueArray.length)
+					list2.valueArray[index] = event.target.text;
+			}
+			
+			protected function correctFeedbackButton_clickHandler(event:MouseEvent):void
+			{
+				showFeedback(correctFeedback);
+			}
+			
+			protected function wrongFeedbackButton_clickHandler(event:MouseEvent):void
+			{
+				showFeedback(wrongFeedback);
+			}
+			
+			protected function submitButton_clickHandler(event:MouseEvent):void
+			{
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:Style>
+		.correctFeedbackButton {
+			font-size: 9;
+			font-weight: normal;
+			icon: Embed("assets/tick.png");
+		}
+		
+		.wrongFeedbackButton {
+			font-size: 9;
+			font-weight: normal;
+			icon: Embed("assets/cross.png");
+		}
+		
+		.addButton {
+			font-size: 9;
+			font-weight: normal;
+			icon: Embed("assets/add.png");
+		}
+		
+		.deleteButton {
+			font-size: 9;
+			font-weight: normal;
+			skin: Embed("assets/delete.png");
+		}
+	</mx:Style>
+
+	<mx:UIComponent id="drawCanvas" width="100%" height="100%" />
+	
+	<mx:VBox width="100%" height="100%">
+		<mx:HBox width="100%" height="100%">
+			<mx:VBox width="100%" height="100%">
+				<mx:Repeater id="list1RP">
+					<matchingquiz:ListItem
+						width="100%" height="100%"
+						editMode="{editMode}"
+						data="{list1RP.currentIndex}"
+						text="{String(list1RP.currentItem)}"
+						change="list1Item_changeHandler(event)"
+						/>
+				</mx:Repeater>
+			</mx:VBox>
+			<mx:Spacer width="60" />
+			<mx:VBox width="100%" height="100%">
+				<mx:Repeater id="list2RP">
+					<matchingquiz:ListItem
+						width="100%" height="100%"
+						editMode="{editMode}"
+						data="{list2RP.currentIndex}"
+						text="{String(list2RP.currentItem)}"
+						change="list2Item_changeHandler(event)"
+						/>
+				</mx:Repeater>
+			</mx:VBox>
+			<mx:VBox height="100%">
+				<mx:Repeater id="deleteRP">
+					<mx:HBox height="100%" verticalAlign="top">
+						<mx:Button
+							id="deleteButton"
+							styleName="deleteButton"
+							buttonMode="true"
+							data="{deleteRP.currentIndex}"
+							visible="{editMode}"
+							click="deleteButton_clickHandler(event)"
+							/>
+					</mx:HBox>
+				</mx:Repeater>
+			</mx:VBox>
+		</mx:HBox>
+		<mx:HBox>
+			<editbutton:EditableButton
+				id="submitButton"
+				width="100%" height="100%"
+				isEditable="{editMode}"
+				click="submitButton_clickHandler(event)"
+				/>
+			<mx:Button styleName="addButton" visible="{editMode}" click="addButton_clickHandler(event)" />
+			<mx:Button styleName="correctFeedbackButton" label="Feedback" visible="{editMode}" click="correctFeedbackButton_clickHandler(event)" />
+			<mx:Button styleName="wrongFeedbackButton" label="Feedback" visible="{editMode}" click="wrongFeedbackButton_clickHandler(event)" />
+		</mx:HBox>
+	</mx:VBox>
+
+</BaseComponent>
