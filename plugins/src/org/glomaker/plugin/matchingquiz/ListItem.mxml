@@ -9,23 +9,102 @@
 	mouseChildren="{editMode}"
 	>
 	
-	<mx:Metadata>
-		[Event(name="change", type="flash.events.Event")]
-	</mx:Metadata>
-	
 	<mx:Script>
 		<![CDATA[
+			import org.glomaker.shared.properties.ArrayProperty;
+			
+			//--------------------------------------------------
+			// Public vars
+			//--------------------------------------------------
+			
 			[Bindable]
 			public var editMode:Boolean;
 			
+			//--------------------------------------------------
+			// Protected vars
+			//--------------------------------------------------
+			
+			protected var sourceUpdated:Boolean;
+			
 			[Bindable]
-			public var text:String;
+			protected var text:String;
+			
+			//--------------------------------------------------
+			// list
+			//--------------------------------------------------
+			
+			private var _list:ArrayProperty;
+
+			[Bindable]
+			/**
+			 * The list property that coontains the item managed by this <code>ListItem</code>.
+			 */		
+			public function get list():ArrayProperty
+			{
+				return _list;
+			}
+
+			public function set list(value:ArrayProperty):void
+			{
+				if (value == list)
+					return;
+				
+				_list = value;
+				
+				sourceUpdated = true;
+				invalidateProperties();
+			}
+			
+			//--------------------------------------------------
+			// index
+			//--------------------------------------------------
+			
+			private var _index:int = -1;
+
+			[Bindable]
+			/**
+			 * Index of the item in <code>list</code>.
+			 */		
+			public function get index():int
+			{
+				return _index;
+			}
+
+			public function set index(value:int):void
+			{
+				if (value == index)
+					return;
+				
+				_index = value;
+				
+				sourceUpdated = true;
+				invalidateProperties();
+			}
+			
+			//--------------------------------------------------
+			// Overrides
+			//--------------------------------------------------
+			
+			override protected function commitProperties():void
+			{
+				super.commitProperties();
+				
+				if (sourceUpdated)
+				{
+					sourceUpdated = false;
+					
+					text = list && list.valueArray && index >= 0 && index < list.valueArray.length ? list.valueArray[index] : "";
+				}
+			}
+			
+			//--------------------------------------------------
+			// Event handlers
+			//--------------------------------------------------
 			
 			protected function textArea_changeHandler(event:Event):void
 			{
-				text = textArea.text;
-				
-				dispatchEvent(event);
+				if (list && list.valueArray && index >= 0 && index < list.valueArray.length)
+					list.valueArray[index] = textArea.text;
 			}
 		]]>
 	</mx:Script>

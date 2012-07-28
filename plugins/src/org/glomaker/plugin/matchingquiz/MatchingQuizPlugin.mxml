@@ -31,13 +31,13 @@
 			//--------------------------------------------------
 			
 			// component properties
-			protected var list1:ArrayProperty = new ArrayProperty("list1", "", []);
-			protected var list2:ArrayProperty = new ArrayProperty("list2", "", []);
-			protected var submitLabel:StringProperty = new StringProperty("submit", "", "Submit");
-			protected var correctFeedback:StringProperty = new StringProperty("correct", "", "That is correct - well done!");
-			protected var wrongFeedback:StringProperty = new StringProperty("wrong", "", "Not quite - try again!");
+			protected const list1:ArrayProperty = new ArrayProperty("list1", "", []);
+			protected const list2:ArrayProperty = new ArrayProperty("list2", "", []);
+			protected const submitLabel:StringProperty = new StringProperty("submit", "", "Submit");
+			protected const correctFeedback:StringProperty = new StringProperty("correct", "", "That is correct - well done!");
+			protected const wrongFeedback:StringProperty = new StringProperty("wrong", "", "Not quite - try again!");
 
-			//
+			// other
 			protected var feedback:Feedback;
 			
 			[Bindable]
@@ -150,20 +150,6 @@
 				}
 			}
 			
-			protected function list1Item_changeHandler(event:Event):void
-			{
-				var index:int = event.target.data;
-				if (index >= 0 && index < list1.valueArray.length)
-					list1.valueArray[index] = event.target.text;
-			}
-			
-			protected function list2Item_changeHandler(event:Event):void
-			{
-				var index:int = event.target.data;
-				if (index >= 0 && index < list2.valueArray.length)
-					list2.valueArray[index] = event.target.text;
-			}
-			
 			protected function correctFeedbackButton_clickHandler(event:MouseEvent):void
 			{
 				showFeedback(correctFeedback);
@@ -215,9 +201,8 @@
 					<matchingquiz:ListItem
 						width="100%" height="100%"
 						editMode="{editMode}"
-						data="{list1RP.currentIndex}"
-						text="{String(list1RP.currentItem)}"
-						change="list1Item_changeHandler(event)"
+						list="{list1}"
+						index="{list1RP.currentIndex}"
 						/>
 				</mx:Repeater>
 			</mx:VBox>
@@ -227,9 +212,8 @@
 					<matchingquiz:ListItem
 						width="100%" height="100%"
 						editMode="{editMode}"
-						data="{list2RP.currentIndex}"
-						text="{String(list2RP.currentItem)}"
-						change="list2Item_changeHandler(event)"
+						list="{list2}"
+						index="{list2RP.currentIndex}"
 						/>
 				</mx:Repeater>
 			</mx:VBox>
