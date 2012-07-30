@@ -11,8 +11,6 @@
 	
 	<mx:Script>
 		<![CDATA[
-			import org.glomaker.shared.properties.ArrayProperty;
-			
 			//--------------------------------------------------
 			// Public vars
 			//--------------------------------------------------
@@ -33,18 +31,18 @@
 			// list
 			//--------------------------------------------------
 			
-			private var _list:ArrayProperty;
+			private var _list:Array;
 
 			[Bindable]
 			/**
 			 * The list property that coontains the item managed by this <code>ListItem</code>.
 			 */		
-			public function get list():ArrayProperty
+			public function get list():Array
 			{
 				return _list;
 			}
 
-			public function set list(value:ArrayProperty):void
+			public function set list(value:Array):void
 			{
 				if (value == list)
 					return;
@@ -93,7 +91,7 @@
 				{
 					sourceUpdated = false;
 					
-					text = list && list.valueArray && index >= 0 && index < list.valueArray.length ? list.valueArray[index] : "";
+					text = list && index >= 0 && index < list.length ? list[index] : "";
 				}
 			}
 			
@@ -103,8 +101,8 @@
 			
 			protected function textArea_changeHandler(event:Event):void
 			{
-				if (list && list.valueArray && index >= 0 && index < list.valueArray.length)
-					list.valueArray[index] = textArea.text;
+				if (list && index >= 0 && index < list.length)
+					list[index] = textArea.text;
 			}
 		]]>
 	</mx:Script>

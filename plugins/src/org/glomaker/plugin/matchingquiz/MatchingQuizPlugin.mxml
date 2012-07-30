@@ -14,13 +14,15 @@
 	xmlns:mx="http://www.adobe.com/2006/mxml"
 	xmlns:ui="org.glomaker.shared.ui.*"
 	xmlns:editbutton="org.glomaker.shared.ui.editbutton.*"
+	xmlns:matchingquiz="org.glomaker.plugin.matchingquiz.*"
 	layout="absolute"
 	horizontalScrollPolicy="off"
-	verticalScrollPolicy="off" xmlns:matchingquiz="org.glomaker.plugin.matchingquiz.*"
+	verticalScrollPolicy="off"
 	>
 	
 	<mx:Script>
 		<![CDATA[
+			import mx.collections.ArrayCollection;
 			import mx.managers.PopUpManager;
 			
 			import org.glomaker.shared.properties.ArrayProperty;
@@ -38,35 +40,56 @@
 			protected const wrongFeedback:StringProperty = new StringProperty("wrong", "", "Not quite - try again!");
 
 			// other
+			protected var correctAnswers:Array;
+			
 			protected var feedback:Feedback;
 			
 			[Bindable]
 			protected var editMode:Boolean;
 			
+			[Bindable]
+			protected var list1DP:ArrayCollection = new ArrayCollection();
+			
+			[Bindable]
+			protected var list2DP:ArrayCollection = new ArrayCollection();
+			
 			//--------------------------------------------------
 			// Protected functions
 			//--------------------------------------------------
 			
-			protected function shuffle(list:Array):Array
+			/**
+			 * Shuffles the second list and updates the correct answers accordingly.
+			 */
+			protected function shuffle():void
 			{
-				var ret:Array = [];
-				var source:Array = list.concat();
-				var r:uint;
+				var i:uint;
 				
-				while(source.length > 0)
+				var indices:Array = [];
+				for (i=0; i < list2.valueArray.length; i++)
+					indices.push(i);
+				
+				var shuffled:Array = [];
+				correctAnswers = new Array(indices.length);
+				while (indices.length > 0)
 				{
-					r = Math.floor(Math.random() * source.length);
-					ret.push(source.splice(r, 1)[0]);
+					var r:uint = Math.floor(Math.random() * indices.length);
+					i = indices.splice(r, 1)[0];
+					
+					shuffled.push(list2.valueArray[i]);
+					correctAnswers[i] = shuffled.length - 1;
 				}
 				
-				return ret;
+				list2DP.source = shuffled;
 			}
 			
-			protected function updateRepeaters():void
+			/**
+			 * Sets the items of the second list in the correct order and clears the correct answers as
+			 * the unshuffled list is used only in the edit mode where the answers are not needed.
+			 */
+			protected function unshuffle():void
 			{
-				list1RP.dataProvider = editMode ? list1.valueArray : shuffle(list1.valueArray);
-				list2RP.dataProvider = editMode ? list2.valueArray : shuffle(list2.valueArray);
-				deleteRP.dataProvider = new Array(list1.valueArray.length);
+				correctAnswers = [];
+				list2DP.source = list2.valueArray;
 			}
 			
 			protected  function showFeedback(property:StringProperty, title:String = "Enter Feedback"):void
@@ -101,7 +124,8 @@
 				super.componentInitComplete();
 				
 				// lists
-				updateRepeaters();
+				list1DP.source = list1.valueArray;
+				shuffle(); //list2
 				
 				// other
 				submitButton.label = submitLabel.propValue;
@@ -123,7 +147,10 @@
 				
 				editMode = value;
 				
-				updateRepeaters();
+				if (editMode)
+					unshuffle();
+				else
+					shuffle();
 			}
 			
 			//--------------------------------------------------
@@ -132,10 +159,8 @@
 			
 			protected function addButton_clickHandler(event:MouseEvent):void
 			{
-				list1.valueArray.push("");
-				list2.valueArray.push("");
-				
-				updateRepeaters();
+				list1DP.addItem("");
+				list2DP.addItem("");
 			}
 			
 			protected function deleteButton_clickHandler(event:MouseEvent):void
@@ -143,10 +168,8 @@
 				var index:int = event.target.data;
 				if (index >= 0 && index < list1.valueArray.length)
 				{
-					list1.valueArray.splice(index, 1);
-					list2.valueArray.splice(index, 1);
-					
-					updateRepeaters();
+					list1DP.removeItemAt(index);
+					list2DP.removeItemAt(index);
 				}
 			}
 			
@@ -197,28 +220,28 @@
 	<mx:VBox width="100%" height="100%">
 		<mx:HBox width="100%" height="100%">
 			<mx:VBox width="100%" height="100%">
-				<mx:Repeater id="list1RP">
+				<mx:Repeater id="list1RP" dataProvider="{list1DP}">
 					<matchingquiz:ListItem
 						width="100%" height="100%"
 						editMode="{editMode}"
-						list="{list1}"
+						list="{list1DP.source}"
 						index="{list1RP.currentIndex}"
 						/>
 				</mx:Repeater>
 			</mx:VBox>
 			<mx:Spacer width="60" />
 			<mx:VBox width="100%" height="100%">
-				<mx:Repeater id="list2RP">
+				<mx:Repeater id="list2RP" dataProvider="{list2DP}">
 					<matchingquiz:ListItem
 						width="100%" height="100%"
 						editMode="{editMode}"
-						list="{list2}"
+						list="{list2DP.source}"
 						index="{list2RP.currentIndex}"
 						/>
 				</mx:Repeater>
 			</mx:VBox>
 			<mx:VBox height="100%">
-				<mx:Repeater id="deleteRP">
+				<mx:Repeater id="deleteRP" dataProvider="{list1DP}">
 					<mx:HBox height="100%" verticalAlign="top">
 						<mx:Button
 							id="deleteButton"
