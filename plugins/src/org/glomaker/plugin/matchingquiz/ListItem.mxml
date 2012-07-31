@@ -2,11 +2,12 @@
 <mx:Canvas
 	xmlns:mx="http://www.adobe.com/2006/mxml"
 	xmlns:ui="org.glomaker.shared.ui.*"
+	xmlns:matchingquiz="org.glomaker.plugin.matchingquiz.*"
 	horizontalScrollPolicy="off" verticalScrollPolicy="off"
-	backgroundColor="#FFFFFF"
-	borderStyle="solid"
-	buttonMode="{!editMode}"
 	mouseChildren="{editMode}"
+	mouseOver="mouseOverHandler(event)"
+	mouseOut="mouseOutHandler(event)"
+	mouseDown="mouseDownHandler(event)" 
 	>
 	
 	<mx:Script>
@@ -17,6 +18,20 @@
 			
 			[Bindable]
 			public var editMode:Boolean;
+			
+			[Bindable]
+			/**
+			 * Defines whether this item is a source (true) or destination (false) in a match. Sources
+			 * lie on the left side and can be used to start a dragging operation, while destinations
+			 * lie on the right side and can only be used as destinations for dragging operations.
+			 */
+			public var isSource:Boolean = true;
+			
+			[Bindable]
+			/**
+			 * Used by the internal background animation effect.
+			 */
+			public var boxBGAlpha:Number = 0;
 			
 			//--------------------------------------------------
 			// Protected vars
@@ -99,6 +114,34 @@
 			// Event handlers
 			//--------------------------------------------------
 			
+			protected function mouseOverHandler(event:MouseEvent):void
+			{
+				if (isSource && !editMode)
+				{
+					buttonMode = true;
+					
+					boxBGAnim.toValue = 0.2;
+					boxBGAnim.play();
+				}
+			}
+			
+			protected function mouseOutHandler(event:MouseEvent):void
+			{
+				if (isSource && !editMode)
+				{
+					buttonMode = false;
+					
+					boxBGAnim.toValue = 0;
+					boxBGAnim.play();
+				}
+			}
+			
+			protected function mouseDownHandler(event:MouseEvent):void
+			{
+				if (editMode)
+					textArea.setFocus();
+			}
+			
 			protected function textArea_changeHandler(event:Event):void
 			{
 				if (list && index >= 0 && index < list.length)
@@ -116,13 +159,36 @@
 		}
 	</mx:Style>
 	
-	<ui:DynamicTextArea
-		id="textArea"
-		styleName="editInput"
-		width="100%"
-		text="{text}"
-		editable="{editMode}"
-		selectable="{editMode}"
-		change="textArea_changeHandler(event)"
+	<mx:AnimateProperty id="boxBGAnim" target="{this}" property="boxBGAlpha" duration="100" />
+	
+	<mx:Canvas
+		top="0" bottom="0"
+		left="{isSource ? 0 : 9}" right="{isSource ? 9 : 0}"
+		backgroundColor="#FFFFFF"
+		>
+		<mx:Canvas
+			left="0" right="0" top="0" bottom="0"
+			borderStyle="solid"
+			backgroundColor="{getStyle('borderColor')}"
+			backgroundAlpha="{boxBGAlpha}"
+			/>
+		<ui:DynamicTextArea
+			id="textArea"
+			styleName="editInput"
+			left="12" right="12" minHeight="0" maxHeight="{height}"
+			verticalCenter="0"
+			text="{text}"
+			editable="{editMode}"
+			selectable="{editMode}"
+			change="textArea_changeHandler(event)"
+			/>
+	</mx:Canvas>
+	
+	<matchingquiz:Anchor
+		width="18" height="18"
+		verticalCenter="0"
+		left="{isSource ? NaN : 0}" right="{isSource ? 0 : NaN}"
+		backgroundColor="{getStyle('borderColor')}"
+		backgroundAlpha="{boxBGAlpha}"
 		/>
 </mx:Canvas>
