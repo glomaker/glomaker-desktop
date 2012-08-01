@@ -65,8 +65,10 @@
 				super.setEditMode(value);
 				
 				button.isEditable = value;
+				
 				textArea.editable = value;
 				textArea.visible = value;
+				textArea.setStyle("borderStyle", value ? "solid" : "none");
 			}
 			
 			//--------------------------------------------------
