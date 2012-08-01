@@ -33,8 +33,8 @@
 			//--------------------------------------------------
 			
 			// component properties
-			protected const list1:ArrayProperty = new ArrayProperty("list1", "", ["","","",""]);
-			protected const list2:ArrayProperty = new ArrayProperty("list2", "", ["","","",""]);
+			protected const list1:ArrayProperty = new ArrayProperty("list1", "", ["",""]);
+			protected const list2:ArrayProperty = new ArrayProperty("list2", "", ["",""]);
 			protected const submitLabel:StringProperty = new StringProperty("submit", "", "Submit");
 			protected const correctFeedback:StringProperty = new StringProperty("correct", "", "That is correct - well done!");
 			protected const wrongFeedback:StringProperty = new StringProperty("wrong", "", "Not quite - try again!");
