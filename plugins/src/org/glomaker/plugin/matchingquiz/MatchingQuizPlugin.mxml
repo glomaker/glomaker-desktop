@@ -43,15 +43,26 @@
 			protected var correctAnswers:Array;
 			
 			protected var feedback:Feedback;
+			protected var result:Result;
 			
 			[Bindable]
 			protected var editMode:Boolean;
+			
+			[Bindable]
+			protected var canSubmit:Boolean;
 			
 			[Bindable]
 			protected var list1DP:ArrayCollection = new ArrayCollection();
 			
 			[Bindable]
 			protected var list2DP:ArrayCollection = new ArrayCollection();
+			
+			// for connectionLayer
+			[Bindable]
+			protected var sourceItems:Array;
+			
+			[Bindable]
+			protected var destinationItems:Array;
 			
 			//--------------------------------------------------
 			// Protected functions
@@ -104,6 +115,18 @@
 				feedback.title = title;
 			}
 
+			protected  function showResult(correct:Boolean):void
+			{
+				if(!result)
+					result = new Result();
+				
+				result.correct = correct;
+				result.message = correct ? correctFeedback.propValue : wrongFeedback.propValue;
+				
+				PopUpManager.addPopUp(result, this, true);
+				PopUpManager.centerPopUp(result); 
+			}
+			
 			//--------------------------------------------------
 			// Overrides
 			//--------------------------------------------------
@@ -185,7 +208,31 @@
 			
 			protected function submitButton_clickHandler(event:MouseEvent):void
 			{
+				if (editMode)
+					return;
+				
+				var correct:Boolean = (correctAnswers.length > 0 && connectionLayer.connections.length == correctAnswers.length);
+				
+				if (correct)
+				{
+					for (var i:uint=0; i < correctAnswers.length; i++)
+					{
+						if (correctAnswers[i] != connectionLayer.connections[i])
+						{
+							correct = false;
+							break;
+						}
+					}
+				}
+				
+				showResult(correct);
 			}
+			
+			protected function connectionLayer_changeHandler(event:Event):void
+			{
+				canSubmit = correctAnswers && correctAnswers.length > 0 && connectionLayer.count == correctAnswers.length;
+			}
+			
 		]]>
 	</mx:Script>
 	
@@ -215,13 +262,12 @@
 		}
 	</mx:Style>
 
-	<mx:UIComponent id="drawCanvas" width="100%" height="100%" />
-	
 	<mx:VBox width="100%" height="100%">
 		<mx:HBox width="100%" height="100%">
 			<mx:VBox width="100%" height="100%">
-				<mx:Repeater id="list1RP" dataProvider="{list1DP}">
+				<mx:Repeater id="list1RP" dataProvider="{list1DP}" repeatStart="sourceItems = null" repeatEnd="sourceItems = list1Items">
 					<matchingquiz:ListItem
+						id="list1Items"
 						width="100%" height="100%"
 						editMode="{editMode}"
 						list="{list1DP.source}"
@@ -232,8 +278,9 @@
 			</mx:VBox>
 			<mx:Spacer width="60" />
 			<mx:VBox width="100%" height="100%">
-				<mx:Repeater id="list2RP" dataProvider="{list2DP}">
+				<mx:Repeater id="list2RP" dataProvider="{list2DP}" repeatStart="destinationItems = null" repeatEnd="destinationItems = list2Items">
 					<matchingquiz:ListItem
+						id="list2Items"
 						width="100%" height="100%"
 						editMode="{editMode}"
 						list="{list2DP.source}"
@@ -261,6 +308,7 @@
 			<editbutton:EditableButton
 				id="submitButton"
 				width="100%" height="100%"
+				enabled="{editMode || canSubmit}"
 				isEditable="{editMode}"
 				click="submitButton_clickHandler(event)"
 				/>
@@ -270,4 +318,13 @@
 		</mx:HBox>
 	</mx:VBox>
 
+	<matchingquiz:ConnectionLayer
+		id="connectionLayer"
+		width="100%" height="100%"
+		enabled="{!editMode}"
+		visible="{!editMode}"
+		sources="{sourceItems}"
+		destinations="{destinationItems}"
+		change="connectionLayer_changeHandler(event)"
+		/>
 </BaseComponent>
