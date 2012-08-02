@@ -26,6 +26,9 @@
 			import mx.managers.PopUpManager;
 			
 			import org.glomaker.shared.properties.ArrayProperty;
+			import org.glomaker.shared.properties.ColourProperty;
+			import org.glomaker.shared.properties.IComponentProperty;
+			import org.glomaker.shared.properties.NumericStepperProperty;
 			import org.glomaker.shared.properties.StringProperty;
 			
 			//--------------------------------------------------
@@ -38,6 +41,9 @@
 			protected const submitLabel:StringProperty = new StringProperty("submit", "", "Submit");
 			protected const correctFeedback:StringProperty = new StringProperty("correct", "", "That is correct - well done!");
 			protected const wrongFeedback:StringProperty = new StringProperty("wrong", "", "Not quite - try again!");
+			protected const connectionColour:ColourProperty = new ColourProperty("connections", "Colour for Connections", 0);
+			protected const borderColour:ColourProperty = new ColourProperty("borders", "Colour for Borders of Boxes", 0xB7BABC);
+			protected const fontSize:NumericStepperProperty = new NumericStepperProperty("fontSize", "Font Size", 15);
 
 			// other
 			protected var correctAnswers:Array;
@@ -50,6 +56,15 @@
 			
 			[Bindable]
 			protected var canSubmit:Boolean;
+			
+			[Bindable]
+			protected var currentConnectionColour:uint;
+			
+			[Bindable]
+			protected var currentBorderColour:uint;
+			
+			[Bindable]
+			protected var currentFontSize:uint;
 			
 			[Bindable]
 			protected var list1DP:ArrayCollection = new ArrayCollection();
@@ -140,6 +155,13 @@
 				addSaveableProperty(submitLabel);
 				addSaveableProperty(correctFeedback);
 				addSaveableProperty(wrongFeedback);
+				
+				addProperty(connectionColour);
+				addProperty(borderColour);
+				
+				fontSize.minimum = 10;
+				fontSize.maximum = 50;
+				addProperty(fontSize);
 			}
 			
 			override protected function componentInitComplete():void
@@ -152,6 +174,19 @@
 				
 				// other
 				submitButton.label = submitLabel.propValue;
+				currentBorderColour = borderColour.propValue;
+				currentConnectionColour = connectionColour.propValue;
+				currentFontSize = fontSize.propValue;
+			}
+			
+			override public function editablePropertyUpdated(prop:IComponentProperty):void
+			{
+				if (prop == borderColour)
+					currentBorderColour = borderColour.propValue;
+				else if (prop == connectionColour)
+					currentConnectionColour = connectionColour.propValue;
+				else if (prop == fontSize)
+					currentFontSize = fontSize.propValue;
 			}
 			
 			override public function prepareValuesForSave():void
@@ -269,6 +304,9 @@
 					<matchingquiz:ListItem
 						id="list1Items"
 						width="100%" height="100%"
+						borderColour="{currentBorderColour}"
+						connectionColour="{currentConnectionColour}"
+						fontSize="{currentFontSize}"
 						editMode="{editMode}"
 						list="{list1DP.source}"
 						index="{list1RP.currentIndex}"
@@ -282,6 +320,9 @@
 					<matchingquiz:ListItem
 						id="list2Items"
 						width="100%" height="100%"
+						borderColour="{currentBorderColour}"
+						connectionColour="{currentConnectionColour}"
+						fontSize="{currentFontSize}"
 						editMode="{editMode}"
 						list="{list2DP.source}"
 						index="{list2RP.currentIndex}"
@@ -321,6 +362,7 @@
 	<matchingquiz:ConnectionLayer
 		id="connectionLayer"
 		width="100%" height="100%"
+		color="{currentConnectionColour}"
 		enabled="{!editMode}"
 		visible="{!editMode}"
 		sources="{sourceItems}"

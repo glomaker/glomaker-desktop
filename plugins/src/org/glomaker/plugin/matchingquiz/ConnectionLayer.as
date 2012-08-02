@@ -14,6 +14,8 @@ package org.glomaker.plugin.matchingquiz
 	 */
 	[Event(name="change", type="flash.events.Event")]
 	
+	[Style(name="color", type="uint", format="Color", inherit="yes")]
+	
 	/**
 	 * Manages the display and creation of connections between the quiz elements based on user
 	 * interaction.
@@ -238,6 +240,7 @@ package org.glomaker.plugin.matchingquiz
 			var g:Graphics = currentConnectionShape.graphics;
 			
 			g.clear();
+			g.lineStyle(2, getStyle("color"));
 			
 			if (currentSource && !isNaN(stageX) && !isNaN(stageY))
 			{
@@ -245,7 +248,6 @@ package org.glomaker.plugin.matchingquiz
 				var p1:Point = currentConnectionShape.globalToLocal(anchor.localToGlobal(new Point(anchor.width / 2, anchor.height / 2)));
 				var p2:Point = currentConnectionShape.globalToLocal(new Point(stageX, stageY));
 				
-				g.lineStyle(2);
 				g.moveTo(p1.x, p1.y);
 				g.lineTo(p2.x, p2.y);
 			}
@@ -256,7 +258,7 @@ package org.glomaker.plugin.matchingquiz
 			var g:Graphics = connectionsShape.graphics;
 			
 			g.clear();
-			g.lineStyle(2);
+			g.lineStyle(2, getStyle("color"));
 			
 			var c:uint = 0;
 			for (var i:uint=0; i < connections.length; i++)

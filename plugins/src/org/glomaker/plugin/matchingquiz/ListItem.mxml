@@ -26,6 +26,12 @@
 			public var isSource:Boolean = true;
 			
 			[Bindable]
+			public var borderColour:uint;
+			
+			[Bindable]
+			public var connectionColour:uint;
+			
+			[Bindable]
 			/**
 			 * Used by the internal background animation effect.
 			 */
@@ -176,7 +182,8 @@
 		<mx:Canvas
 			left="0" right="0" top="0" bottom="0"
 			borderStyle="solid"
-			backgroundColor="{getStyle('borderColor')}"
+			borderColor="{borderColour}"
+			backgroundColor="{borderColour}"
 			backgroundAlpha="{boxBGAlpha}"
 			/>
 		<ui:DynamicTextArea
@@ -196,7 +203,9 @@
 		width="18" height="18"
 		verticalCenter="0"
 		left="{isSource ? NaN : 0}" right="{isSource ? 0 : NaN}"
-		backgroundColor="{getStyle('borderColor')}"
+		color="{connectionColour}"
+		borderColor="{borderColour}"
+		backgroundColor="{borderColour}"
 		backgroundAlpha="{boxBGAlpha}"
 		/>
 </mx:Canvas>
