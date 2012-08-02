@@ -96,6 +96,7 @@
 	<editbutton:EditableButton
 		id="button"
 		width="100%" height="100%"
+		icon="@Embed('assets/slidelink.png')"
 		click="button_clickHandler(event)"
 		/>
 
