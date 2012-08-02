@@ -8,28 +8,29 @@
 /////////////////////////////////////////////////////////////////////////
 -->
 
-<BaseComponent xmlns="org.glomaker.shared.component.*" xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:accessviews="org.glomaker.plugin.accessviews.*"
-    horizontalScrollPolicy="off" verticalScrollPolicy="off">
+<BaseComponent
+	xmlns="org.glomaker.shared.component.*"
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:accessviews="org.glomaker.plugin.accessviews.*"
+	xmlns:ui="org.glomaker.shared.ui.*"
+    horizontalScrollPolicy="off" verticalScrollPolicy="off"
+	>
        
     <mx:Script>
         <![CDATA[
-        	import mx.managers.PopUpManagerChildList;
-        	import mx.managers.PopUpManager;
-        	import mx.messaging.AbstractConsumer;
-        	import mx.containers.dividedBoxClasses.BoxDivider;
-        	import org.glomaker.shared.properties.IntegerProperty;
-        	import org.glomaker.plugin.accessviews.files.TopicData;
-        	import org.glomaker.shared.properties.ArrayProperty;
-        	import org.glomaker.shared.properties.NumericStepperProperty;
-        	import org.glomaker.shared.properties.FilePathProperty;
-        	import org.glomaker.shared.properties.IComponentProperty;
-        	import mx.containers.VBox;
-        	import mx.controls.Alert;
-        	import mx.controls.Image;
-            import mx.controls.TextArea;
-            import mx.collections.ArrayCollection;
-            import mx.controls.NumericStepper;
-            import mx.controls.TextInput;
+			import mx.containers.VBox;
+			import mx.containers.dividedBoxClasses.BoxDivider;
+			import mx.controls.Alert;
+			import mx.controls.TextArea;
+			import mx.controls.TextInput;
+			import mx.managers.PopUpManager;
+			import mx.managers.PopUpManagerChildList;
+			
+			import org.glomaker.plugin.accessviews.files.TopicData;
+			import org.glomaker.shared.properties.FilePathProperty;
+			import org.glomaker.shared.properties.IComponentProperty;
+			import org.glomaker.shared.properties.IntegerProperty;
+			import org.glomaker.shared.properties.RichTextProperty;
 
             [Bindable]
             protected var _fontSize:int = 15;
@@ -44,6 +45,8 @@
             protected var _accessVDP:AccessViewsDataProperty = new AccessViewsDataProperty("AccessVDP");
             
             protected var dividerWidth:IntegerProperty = new IntegerProperty("DividerWidth","",100);
+			
+			protected const instructions:RichTextProperty = new RichTextProperty("instructions", "Learner Instructions", "Select a topic from the list.\nThen click on one of the speakers to hear their thoughts.");
 
             [Bindable]
             protected var isEditMode:Boolean = false;
@@ -75,8 +78,11 @@
             {
                 super.defineProperties();
                 
+				instructions.textArea = instructionsTextArea;
+				
 				addSaveableProperty(_accessVDP);
 				addSaveableProperty(dividerWidth);
+				addSaveableProperty(instructions);
 				
 				addEditableProperty(_imageSourceField);
 				addEditableProperty(_soundSourceField);
@@ -107,9 +113,12 @@
             	mp3Player.stop();
             } 
             
-            override public function propertyValuesInitialised():void
+            override protected function componentInitComplete():void
             {
+				super.componentInitComplete();
+				
             	dividerBox.width = dividerWidth.propValue;
+				instructionsTextArea.htmlText = instructions.propValue;
              }
 
             override public function editablePropertyUpdated(prop:IComponentProperty):void
@@ -123,6 +132,8 @@
            		if(prop == _scriptSourceField)
 					scriptSource = _scriptSourceField.propValue;
 			   
+				if (prop == instructions)
+					instructionsTextArea.htmlText = instructions.propValue;
             }
            
             override public function prepareValuesForSave():void
@@ -131,6 +142,7 @@
               saveTopicData();
               
               dividerWidth.propValue = dividerBox.width;
+			  instructions.propValue = instructionsTextArea.htmlText;
             }
             
 
@@ -201,13 +213,22 @@
             
 
            // Change the mode of the component between edit (true) and display (false) modes
-            override public function setEditMode(f:Boolean):void{
-              isEditMode = f;
-              
-              if(f)
-              enableDividers();
-              else
-              disableDividers();
+            override public function setEditMode(f:Boolean):void
+			{
+				isEditMode = f;
+				
+				if(f)
+				{
+					enableDividers();
+				}
+				else
+				{
+					disableDividers();
+					
+					// deselect text if switching out of edit mode
+					if(!f)
+						instructionsTextArea.selectionBeginIndex = instructionsTextArea.selectionEndIndex = 0;
+				}
             }  
             
             
@@ -426,9 +447,7 @@
                 div.visible = true;
             }
         }
-
-           
-        ]]>
+		]]>
     </mx:Script>
    
         <mx:Style>
@@ -451,6 +470,13 @@
        
     </mx:Style>
                   <mx:VBox width="100%" height="100%">
+					  <mx:HBox width="100%" verticalAlign="middle">
+						  <mx:Image source="@Embed('files/instructions.png')" />
+						  <!-- Use a canvas for drawing the border around the text area because changing its border discards the html formatting -->
+						  <mx:Canvas width="100%" borderStyle="{isEditMode ? 'solid' : 'none'}">
+							  <ui:DynamicTextArea id="instructionsTextArea" width="100%" minHeight="0" fontSize="14" editable="{isEditMode}" selectable="{isEditMode}" ignoreEmptyLastLine="{!isEditMode}" backgroundAlpha="0" borderStyle="none" />
+						  </mx:Canvas>
+					  </mx:HBox>
                         <mx:HBox width="100%" id="speakersGroupDisplay">
                               <mx:Repeater id="speakersRepeater" dataProvider="{_accessVDP._speakers}" repeatEnd="refresh();">
                                     <accessviews:SpeakerBox id="speakerBoxArray" speakerData="{speakersRepeater.currentItem}"  deletable="{_accessVDP._speakers.length>1}" index="{speakersRepeater.currentIndex}" width="100%" height="145" editMode="{isEditMode}" click="onSpeakerBoxClick(event)"/>
