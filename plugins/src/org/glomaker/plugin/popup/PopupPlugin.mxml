@@ -66,9 +66,14 @@
 				
 				button.isEditable = value;
 				
+				textWrapper.visible = value;
+				textWrapper.setStyle("borderStyle", value ? "solid" : "none");
+				
 				textArea.editable = value;
-				textArea.visible = value;
-				textArea.setStyle("borderStyle", value ? "solid" : "none");
+				
+				// deselect text if switching out of edit mode
+				if (!value)
+					textArea.selectionBeginIndex = textArea.selectionEndIndex = 0;
 			}
 			
 			//--------------------------------------------------
@@ -77,14 +82,17 @@
 			
 			protected function button_clickHandler(event:MouseEvent):void
 			{
-				textArea.visible = true;
+				textWrapper.visible = true;
 			}
 		]]>
 	</mx:Script>
 	
 	<mx:VBox width="100%" height="100%" horizontalAlign="center">
 		<editbutton:EditableButton id="button" click="button_clickHandler(event)" />
-		<mx:TextArea id="textArea" width="100%" height="100%" visible="false" editable="false" backgroundAlpha="0" borderStyle="none" />
+		<!-- Use a canvas for drawing the border around the text area because changing its border discards the html formatting -->
+		<mx:Canvas id="textWrapper" width="100%" height="100%" visible="false" borderStyle="none">
+			<mx:TextArea id="textArea" width="100%" height="100%" editable="false" backgroundAlpha="0" borderStyle="none" />
+		</mx:Canvas>
 	</mx:VBox>
 	
 </BaseComponent>
