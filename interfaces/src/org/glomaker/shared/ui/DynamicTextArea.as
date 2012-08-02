@@ -29,7 +29,40 @@ package org.glomaker.shared.ui
       addEventListener(FlexEvent.CREATION_COMPLETE, creationCompleteHandler, false, 0, false);
     }
     
-    
+	//--------------------------------------------------
+	// ignoreEmptyLastLine
+	//--------------------------------------------------
+	
+	private var _ignoreEmptyLastLine:Boolean = false;
+
+	/**
+	 * When using htmlText, the text field adds a newline after each paragraph (<p>..</p>)
+	 * which creates an extra empty line at the end of the text. If this property is set to true,
+	 * the last line, if empty, is not included when calculating the height.
+	 */
+	public function get ignoreEmptyLastLine():Boolean
+	{
+		return _ignoreEmptyLastLine;
+	}
+
+	/**
+	 * @private
+	 */
+	public function set ignoreEmptyLastLine(value:Boolean):void
+	{
+		if (value == ignoreEmptyLastLine)
+			return;
+		
+		_ignoreEmptyLastLine = value;
+		
+		callLater(adjustHeightHandler);
+	}
+
+	
+	//--------------------------------------------------
+	// Overrides
+	//--------------------------------------------------
+	
     override public function setStyle(styleProp:String, newValue:*):void
     {
     	super.setStyle(styleProp, newValue);
@@ -39,7 +72,7 @@ package org.glomaker.shared.ui
 
 	private function creationCompleteHandler( evt:Event ):void
 	{
-		removeEventListener(FlexEvent.CREATION_COMPLETE, adjustHeightHandler);
+		removeEventListener(FlexEvent.CREATION_COMPLETE, creationCompleteHandler);
 		textField.mouseWheelEnabled = false;
 	}
 
@@ -97,7 +130,11 @@ package org.glomaker.shared.ui
     	}
 
 		// looks like we have reliable measurements    	
-    	var requiredHeight:Number = textField.numLines * textField.getLineMetrics(0).height + 4;
+		var numLines:int = textField.numLines;
+		if (numLines > 0 && ignoreEmptyLastLine && textField.getLineLength(numLines - 1) == 0)
+			numLines--;
+		
+    	var requiredHeight:Number = numLines * textField.getLineMetrics(0).height + 4;
     	return Math.max( minHeight, Math.min( maxHeight, requiredHeight ));
     }
 
