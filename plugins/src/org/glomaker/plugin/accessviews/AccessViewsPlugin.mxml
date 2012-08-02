@@ -131,9 +131,6 @@
 
            		if(prop == _scriptSourceField)
 					scriptSource = _scriptSourceField.propValue;
-			   
-				if (prop == instructions)
-					instructionsTextArea.htmlText = instructions.propValue;
             }
            
             override public function prepareValuesForSave():void
@@ -226,8 +223,7 @@
 					disableDividers();
 					
 					// deselect text if switching out of edit mode
-					if(!f)
-						instructionsTextArea.selectionBeginIndex = instructionsTextArea.selectionEndIndex = 0;
+					instructionsTextArea.selectionBeginIndex = instructionsTextArea.selectionEndIndex = 0;
 				}
             }  
             
