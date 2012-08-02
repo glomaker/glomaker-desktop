@@ -30,7 +30,7 @@
 			
 			// component properties
 			protected var buttonLabel:StringProperty = new StringProperty("label", "Label", "Slide Link Button");
-			protected var slideNumber:IntegerProperty = new IntegerProperty("slide", "Target Slide Number (1, 2, ...)", -1);
+			protected var slideNumber:IntegerProperty = new IntegerProperty("slide", "Target Slide Number (1, 2, ...)", 1);
 
 			protected var navControl:ISlideshowNavigationController;
 			
