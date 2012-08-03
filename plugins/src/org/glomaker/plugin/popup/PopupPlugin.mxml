@@ -15,6 +15,7 @@
 	xmlns:editbutton="org.glomaker.shared.ui.editbutton.*"
 	horizontalScrollPolicy="off"
 	verticalScrollPolicy="off"
+	addedToStage="addedToStageHandler(event)"
 	>
 	
 	<mx:Script>
@@ -29,6 +30,10 @@
 			// component properties
 			protected var buttonLabel:StringProperty = new StringProperty("label", "Label", "Button Label");
 			protected var text:RichTextProperty = new RichTextProperty("text", "Text", "");
+			
+			//other
+			[Bindable]
+			protected var inEditor:Boolean = false;
 			
 			//--------------------------------------------------
 			// Overrides
@@ -65,10 +70,6 @@
 				super.setEditMode(value);
 				
 				button.isEditable = value;
-				
-				textWrapper.visible = value;
-				textWrapper.setStyle("borderStyle", value ? "solid" : "none");
-				
 				textArea.editable = value;
 				
 				// deselect text if switching out of edit mode
@@ -80,6 +81,25 @@
 			// Event handlers
 			//--------------------------------------------------
 			
+			protected function addedToStageHandler(event:Event):void
+			{
+				var value:Boolean = false;
+				var p:DisplayObjectContainer = parent;
+				
+				while (p)
+				{
+					if (/GloDrawingView$/.test(getQualifiedClassName(p)))
+					{
+						value = true;
+						break;
+					}
+					
+					p = p.parent;
+				}
+				
+				inEditor = value;
+			}
+			
 			protected function button_clickHandler(event:MouseEvent):void
 			{
 				textWrapper.visible = true;
@@ -90,8 +110,8 @@
 	<mx:VBox width="100%" height="100%" horizontalAlign="center">
 		<editbutton:EditableButton id="button" click="button_clickHandler(event)" />
 		<!-- Use a canvas for drawing the border around the text area because changing its border discards the html formatting -->
-		<mx:Canvas id="textWrapper" width="100%" height="100%" visible="false" borderStyle="none">
-			<mx:TextArea id="textArea" width="100%" height="100%" editable="false" backgroundAlpha="0" borderStyle="none" />
+		<mx:Canvas id="textWrapper" width="100%" height="100%" visible="{inEditor}" borderStyle="{inEditor ? 'solid' : 'none'}" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+			<mx:TextArea id="textArea" width="100%" height="100%" editable="false" backgroundAlpha="0" borderStyle="none" horizontalScrollPolicy="off" verticalScrollPolicy="off" />
 		</mx:Canvas>
 	</mx:VBox>
 	
