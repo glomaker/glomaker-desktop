@@ -7,6 +7,7 @@ package org.glomaker.plugin.matchingquiz
 	import flash.geom.Point;
 	
 	import mx.core.UIComponent;
+	import mx.events.FlexEvent;
 	import mx.events.PropertyChangeEvent;
 	
 	/**
@@ -33,6 +34,8 @@ package org.glomaker.plugin.matchingquiz
 		private var currentConnectionShape:Shape;
 		
 		private var currentSource:ListItem;
+		
+		private var itemLayoutUpdated:Boolean;
 		
 		//--------------------------------------------------
 		// Initialization
@@ -74,6 +77,8 @@ package org.glomaker.plugin.matchingquiz
 			{
 				if (item)
 				{
+					item.removeEventListener(FlexEvent.UPDATE_COMPLETE, item_updateCompleteHandler);
+					
 					item.removeEventListener(MouseEvent.MOUSE_OVER, source_mouseOverHandler);
 					item.removeEventListener(MouseEvent.MOUSE_OUT, source_mouseOutHandler);
 					item.removeEventListener(MouseEvent.MOUSE_DOWN, source_mouseDownHandler);
@@ -86,6 +91,8 @@ package org.glomaker.plugin.matchingquiz
 			{
 				if (item)
 				{
+					item.addEventListener(FlexEvent.UPDATE_COMPLETE, item_updateCompleteHandler);
+					
 					item.addEventListener(MouseEvent.MOUSE_OVER, source_mouseOverHandler);
 					item.addEventListener(MouseEvent.MOUSE_OUT, source_mouseOutHandler);
 					item.addEventListener(MouseEvent.MOUSE_DOWN, source_mouseDownHandler);
@@ -124,6 +131,8 @@ package org.glomaker.plugin.matchingquiz
 			{
 				if (item)
 				{
+					item.removeEventListener(FlexEvent.UPDATE_COMPLETE, item_updateCompleteHandler);
+					
 					item.removeEventListener(MouseEvent.MOUSE_OVER, destinations_mouseOverHandler);
 					item.removeEventListener(MouseEvent.MOUSE_OUT, destinations_mouseOutHandler);
 					item.removeEventListener(MouseEvent.MOUSE_UP, destinations_mouseUpHandler);
@@ -136,6 +145,8 @@ package org.glomaker.plugin.matchingquiz
 			{
 				if (item)
 				{
+					item.addEventListener(FlexEvent.UPDATE_COMPLETE, item_updateCompleteHandler);
+					
 					item.addEventListener(MouseEvent.MOUSE_OVER, destinations_mouseOverHandler);
 					item.addEventListener(MouseEvent.MOUSE_OUT, destinations_mouseOutHandler);
 					item.addEventListener(MouseEvent.MOUSE_UP, destinations_mouseUpHandler);
@@ -163,7 +174,7 @@ package org.glomaker.plugin.matchingquiz
 		}
 		
 		//--------------------------------------------------
-		// connectionCount
+		// count
 		//--------------------------------------------------
 		
 		private var _count:uint;
@@ -187,6 +198,37 @@ package org.glomaker.plugin.matchingquiz
 			
 			dispatchEvent(PropertyChangeEvent.createUpdateEvent(this, "count", old, value));
 		}
+		
+		//--------------------------------------------------
+		// showCorrect
+		//--------------------------------------------------
+		
+		private var _showCorrect:Boolean;
+		private var showCorrectChanged:Boolean;
+
+		/**
+		 * Defines whether to show the correct connections. If true, user interaction is disabled
+		 * and all user-created connections are lost.
+		 */
+		public function get showCorrect():Boolean
+		{
+			return _showCorrect;
+		}
+
+		/**
+		 * @private
+		 */
+		public function set showCorrect(value:Boolean):void
+		{
+			if (value == showCorrect)
+				return;
+			
+			_showCorrect = value;
+			
+			showCorrectChanged = true;
+			invalidateProperties();
+		}
+
 		
 		//--------------------------------------------------
 		// Protected functions
@@ -261,15 +303,21 @@ package org.glomaker.plugin.matchingquiz
 			g.lineStyle(2, getStyle("color"));
 			
 			var c:uint = 0;
+			var anchor1:Anchor;
+			var anchor2:Anchor;
+			var p1:Point;
+			var p2:Point;
 			for (var i:uint=0; i < connections.length; i++)
 			{
 				if (connections[i] >= 0)
 				{
-					var anchor:Anchor = sources[i].anchor;
-					var p1:Point = currentConnectionShape.globalToLocal(anchor.localToGlobal(new Point(anchor.width / 2, anchor.height / 2)));
+					anchor1 = sources[i].anchor;
+					anchor2 = destinations[connections[i]].anchor;
+					if (!anchor1.initialized || !anchor2.initialized)
+						continue;
 					
-					anchor = destinations[connections[i]].anchor;
-					var p2:Point = currentConnectionShape.globalToLocal(anchor.localToGlobal(new Point(anchor.width / 2, anchor.height / 2)));
+					p1 = currentConnectionShape.globalToLocal(anchor1.localToGlobal(new Point(anchor1.width / 2, anchor1.height / 2)));
+					p2 = currentConnectionShape.globalToLocal(anchor2.localToGlobal(new Point(anchor2.width / 2, anchor2.height / 2)));
 					
 					g.moveTo(p1.x, p1.y);
 					g.lineTo(p2.x, p2.y);
@@ -300,18 +348,42 @@ package org.glomaker.plugin.matchingquiz
 		{
 			super.commitProperties();
 			
-			if (sourcesChanged || destinationsChanged)
+			if (sourcesChanged || destinationsChanged || showCorrectChanged)
 			{
 				sourcesChanged = false;
 				destinationsChanged = false;
+				showCorrectChanged = false;
 				
 				resetConnections();
+				
+				if (showCorrect)
+				{
+					for (var i:uint=0; i < connections.length; i++)
+						connections[i] = i;
+				}
+				
+				callLater(updateConnections);
+				enabled = !showCorrect;
+			}
+			
+			if (itemLayoutUpdated)
+			{
+				itemLayoutUpdated = false;
+				
+				callLater(updateConnections);
 			}
 		}
 		
 		//--------------------------------------------------
 		// Event handlers
 		//--------------------------------------------------
+		
+		protected function item_updateCompleteHandler(event:FlexEvent):void
+		{
+			itemLayoutUpdated = true;
+			
+			invalidateProperties();
+		}
 		
 		protected function source_mouseOverHandler(event:MouseEvent):void
 		{

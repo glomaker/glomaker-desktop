@@ -36,8 +36,8 @@
 			//--------------------------------------------------
 			
 			// component properties
-			protected const list1:ArrayProperty = new ArrayProperty("list1", "", ["",""]);
-			protected const list2:ArrayProperty = new ArrayProperty("list2", "", ["",""]);
+			protected const list1:ArrayProperty = new ArrayProperty("list1", "", ["Item 1","Item 2"]);
+			protected const list2:ArrayProperty = new ArrayProperty("list2", "", ["Match 1","Match 2"]);
 			protected const submitLabel:StringProperty = new StringProperty("submit", "", "Submit");
 			protected const correctFeedback:StringProperty = new StringProperty("correct", "", "That is correct - well done!");
 			protected const wrongFeedback:StringProperty = new StringProperty("wrong", "", "Not quite - try again!");
@@ -217,8 +217,9 @@
 			
 			protected function addButton_clickHandler(event:MouseEvent):void
 			{
-				list1DP.addItem("");
-				list2DP.addItem("");
+				var nb:String = (list1DP.length + 1).toString();
+				list1DP.addItem("Item " + nb);
+				list2DP.addItem("Match " + nb);
 			}
 			
 			protected function deleteButton_clickHandler(event:MouseEvent):void
@@ -363,8 +364,7 @@
 		id="connectionLayer"
 		width="100%" height="100%"
 		color="{currentConnectionColour}"
-		enabled="{!editMode}"
-		visible="{!editMode}"
+		showCorrect="{editMode}"
 		sources="{sourceItems}"
 		destinations="{destinationItems}"
 		change="connectionLayer_changeHandler(event)"
