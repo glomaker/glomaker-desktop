@@ -102,13 +102,24 @@
 			
 			protected function button_clickHandler(event:MouseEvent):void
 			{
-				textWrapper.visible = true;
+				if (inEditor)
+					return;
+				
+				currentState = 'activated';
 			}
 		]]>
 	</mx:Script>
 	
+	<states>
+		<mx:State name="default" />
+		<mx:State name="activated">
+			<mx:SetStyle target="{button}" name="icon" value="@Embed('assets/activated.png')" />
+			<mx:SetProperty target="{textWrapper}" name="visible" value="{true}" />
+		</mx:State>
+	</states>
+	
 	<mx:VBox width="100%" height="100%" horizontalAlign="center">
-		<editbutton:EditableButton id="button" click="button_clickHandler(event)" />
+		<editbutton:EditableButton id="button" icon="@Embed('assets/default.png')" click="button_clickHandler(event)" />
 		<!-- Use a canvas for drawing the border around the text area because changing its border discards the html formatting -->
 		<mx:Canvas id="textWrapper" width="100%" height="100%" visible="{inEditor}" borderStyle="{inEditor ? 'solid' : 'none'}" horizontalScrollPolicy="off" verticalScrollPolicy="off">
 			<mx:TextArea id="textArea" width="100%" height="100%" editable="false" backgroundAlpha="0" borderStyle="none" horizontalScrollPolicy="off" verticalScrollPolicy="off" />
