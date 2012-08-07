@@ -43,5 +43,7 @@ package org.glomaker.interfaces.pattern
 		
 		function set isReceiver(value:Boolean):void;
 		function get isReceiver():Boolean;		
+		
+		function clone(id:String = null):IPatternNode;
 	}
 }

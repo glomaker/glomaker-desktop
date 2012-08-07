@@ -23,6 +23,7 @@ package org.glomaker.patternmaker.view
 	public class InteractiveNode extends Node {
 
 		public static const EXTRACT_NODE:String = "extractNode";
+		public static const DUPLICATE_NODE:String = "duplicateNode";
 		public static const DELETE_NODE:String = "deleteNode";
 		public static const DELETE_ALL:String = "deleteAll";
 		// public static const MAKE_ACTIVE_STRING:String = "makeActiveString";
@@ -174,10 +175,14 @@ package org.glomaker.patternmaker.view
 					dispatchEvent(new Event(EXTRACT_NODE));
 					break;
 					
+				case "Duplicate Node":
+					dispatchEvent(new Event(DUPLICATE_NODE));
+					break;
+					
 				case "Delete Node":
 					dispatchEvent(new Event(DELETE_NODE, true));
 					break;
-					
+				
 				case "Delete All":
 					dispatchEvent(new Event(DELETE_ALL, true));
 					break;

@@ -15,12 +15,11 @@
 
 package org.glomaker.patternmaker.model
 {
-	import org.glomaker.patternmaker.data.GlobalPoint;
-	
 	import flash.events.*;
 	
 	import org.glomaker.interfaces.pattern.IPatternFunction;
 	import org.glomaker.interfaces.pattern.IPatternNode;
+	import org.glomaker.patternmaker.data.GlobalPoint;
 
 	/**
 	 * @author USER
@@ -65,6 +64,8 @@ package org.glomaker.patternmaker.model
 		
 		function removeAllNodes():void;
 		
+		function duplicateNode(nodeID:String, loc:GlobalPoint):void;
+
 		function setConnection():void;
 		
 		function drawLine():void;

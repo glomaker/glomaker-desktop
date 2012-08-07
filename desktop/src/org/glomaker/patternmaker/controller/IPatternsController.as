@@ -15,10 +15,10 @@
 
 package org.glomaker.patternmaker.controller
 {
-	import org.glomaker.patternmaker.data.GlobalPoint;
-	
 	import flash.events.*;
 	import flash.geom.Point;
+	
+	import org.glomaker.patternmaker.data.GlobalPoint;
 
 	/**
 	 * @author USER
@@ -50,6 +50,8 @@ package org.glomaker.patternmaker.controller
 		function extractNode(nodeID:String):void;
 		
 		function removeAllNodes():void;
+		
+		function duplicateNode(nodeID:String, loc:GlobalPoint):void;
 		
 		function fileHandler(action:String, filePath:String = null):void;
 		

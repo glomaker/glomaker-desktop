@@ -15,17 +15,14 @@
 
 package org.glomaker.patternmaker.controller
 {
-	import org.glomaker.patternmaker.data.GlobalPoint;
-	
-	import org.glomaker.patternmaker.events.*;
-	
 	import flash.display.Stage;
 	import flash.events.*;
 	
-	import org.glomaker.patternmaker.view.*;
-	
+	import org.glomaker.patternmaker.data.GlobalPoint;
+	import org.glomaker.patternmaker.events.*;
 	import org.glomaker.patternmaker.model.IBaseModel;
 	import org.glomaker.patternmaker.model.IPatternsModel;
+	import org.glomaker.patternmaker.view.*;
 
 	/**
 	 * @author USER
@@ -111,6 +108,12 @@ package org.glomaker.patternmaker.controller
 		public function removeAllNodes():void{
 			(model as IPatternsModel).removeAllNodes();
 		}
+		
+		public function duplicateNode(nodeID:String, loc:GlobalPoint):void
+		{
+			(model as IPatternsModel).duplicateNode(nodeID, loc);
+		}
+		
 		public function makeActiveSequence(nodeID:String):void{
 			(model as IPatternsModel).setActiveSequence(nodeID);
 		}

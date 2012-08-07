@@ -194,5 +194,26 @@ package org.glomaker.interfaces.pattern
 			return _isReceiver;
 		}		
 		
+		// ------------------------------------------------------------------
+		// Functions (implement IPatternNode)
+		// ------------------------------------------------------------------
+		
+		/**
+		 * Creates and returns a new node with the specified <code>code</code> and with the following
+		 * properties copied from this node: <code>func</code>, <code>title</code>, <code>description</code>,
+		 * <code>loc</code> and <code>layoutId</code>.
+		 * 
+		 * @param id clone's id
+		 * @return created node
+		 */
+		public function clone(id:String = null):IPatternNode
+		{
+			var node:PatternNode = new PatternNode(id, func, title, description);
+			node.loc = new GlobalPoint(loc.x, loc.y);
+			node.layoutId = layoutId;
+			
+			return node;
+		}
+		
 	}
 }

@@ -34,8 +34,10 @@ package org.glomaker.patternmaker.view
 			var item2:ContextMenuItem = new ContextMenuItem("Delete Node");
 			var item3:ContextMenuItem = new ContextMenuItem("Delete All");
 			// var item4:ContextMenuItem = new ContextMenuItem("Make Active Sequence");
+			var item5:ContextMenuItem = new ContextMenuItem("Duplicate Node");
 
 			myContextMenu.customItems.push(item1);
+			myContextMenu.customItems.push(item5);
 			myContextMenu.customItems.push(item2);
 			myContextMenu.customItems.push(item3);
 			// myContextMenu.customItems.push(item4);
@@ -44,6 +46,7 @@ package org.glomaker.patternmaker.view
 			item2.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, dispatchMenuItemSelect2);
 			item3.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, dispatchMenuItemSelect3);
 			// item4.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, dispatchMenuItemSelect4);
+			item5.addEventListener(ContextMenuEvent.MENU_ITEM_SELECT, dispatchMenuItemSelect5);
 
 		}
 		private function dispatchMenuSelect(e:ContextMenuEvent):void {
@@ -65,6 +68,13 @@ package org.glomaker.patternmaker.view
 			var menu:MenuEvent = new MenuEvent(e.contextMenuOwner.parent.name+"_Make Active Sequence");
 			this.dispatchEvent(menu);
 		} */
+		
+		private function dispatchMenuItemSelect5(e:ContextMenuEvent):void
+		{
+			var menu:MenuEvent = new MenuEvent(e.contextMenuOwner.parent.name+"_Duplicate Node");
+			this.dispatchEvent(menu);
+		}
+
 		private function removeDefaultItems():void {
 			myContextMenu.hideBuiltInItems();
 			//If items are needed, they can be turned on as below.

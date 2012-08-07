@@ -336,6 +336,15 @@ package org.glomaker.patternmaker.model
 			update("removeAllNodes");
 		}
 		
+		public function duplicateNode(nodeID:String, loc:GlobalPoint):void
+		{
+			var node:IPatternNode = getNode(nodeID).clone(getNewNodeID());
+			node.loc = loc;
+			
+			nodeArray.push(node);
+			update("duplicateNode");
+		}
+		
 		public function setConnection():void
 		{
 			//Determines whether connection can be made and sets parent child relationships.

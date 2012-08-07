@@ -252,6 +252,8 @@ package org.glomaker.patternmaker.view
 
 				// we need to make sure these are removed...
 				nodeGroup.addEventListener(InteractiveNode.EXTRACT_NODE, onNodeRightClick);
+				nodeGroup.addEventListener(InteractiveNode.DUPLICATE_NODE, onNodeRightClick);
+				
 				// nodeGroup.addEventListener(InteractiveNode.MAKE_ACTIVE_STRING, onNodeRightClick);
 				nodeGroup.addEventListener(InteractiveNode.NODE_OVER, onNodeOver);
 				nodeGroup.addEventListener(InteractiveNode.NODE_OUT, onNodeOut);
@@ -296,9 +298,13 @@ package org.glomaker.patternmaker.view
 					nodeGroup.cleanUp();
 				
 					// remove any event listeners
-					nodeGroup.removeEventListener(InteractiveNode.DELETE_NODE, onNodeRightClick);
-					nodeGroup.removeEventListener(InteractiveNode.DELETE_ALL, onNodeRightClick);
+					
+					// these are now handled by PatternMaker class
+					//nodeGroup.removeEventListener(InteractiveNode.DELETE_NODE, onNodeRightClick);
+					//nodeGroup.removeEventListener(InteractiveNode.DELETE_ALL, onNodeRightClick);
+					
 					nodeGroup.removeEventListener(InteractiveNode.EXTRACT_NODE, onNodeRightClick);
+					nodeGroup.removeEventListener(InteractiveNode.DUPLICATE_NODE, onNodeRightClick);
 					// nodeGroup.removeEventListener(InteractiveNode.MAKE_ACTIVE_STRING, onNodeRightClick);
 					nodeGroup.removeEventListener(InteractiveNode.NODE_OVER, onNodeOver);
 					nodeGroup.removeEventListener(InteractiveNode.NODE_OUT, onNodeOut);
@@ -471,15 +477,21 @@ package org.glomaker.patternmaker.view
 		{
 			//Delegate to controller
 			var action:String = evt.type;
-			var targetName:String = (evt.target as Sprite).name;
+			var sprite:Sprite = evt.target as Sprite;
+			var targetName:String = sprite.name;
 	
 			switch(action)
 			{
 				case InteractiveNode.EXTRACT_NODE:
 					(controller  as  IPatternsController).extractNode(targetName);
-					(evt.target as Sprite).x += 20;
+					sprite.x += 20;
 					break;
 					
+				case InteractiveNode.DUPLICATE_NODE:
+					var loc:Point = sprite.localToGlobal(new Point(sprite.width + 20, 0));
+					(controller  as  IPatternsController).duplicateNode(targetName, new GlobalPoint(loc.x, loc.y));
+					break;
+				
 				case InteractiveNode.DELETE_NODE:
 					// this event is now handled by PatternMaker itself
 					// (controller  as  IPatternsController).removeNode(targetName);
@@ -754,6 +766,7 @@ package org.glomaker.patternmaker.view
 					_drawLayer.connect(_nodeContainer);
 					break;
 				case "createNode":
+				case "duplicateNode":
 					createNodes();
 					_drawLayer.connect(_nodeContainer);
 					break;
