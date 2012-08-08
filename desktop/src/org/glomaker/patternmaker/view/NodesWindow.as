@@ -488,8 +488,8 @@ package org.glomaker.patternmaker.view
 					break;
 					
 				case InteractiveNode.DUPLICATE_NODE:
-					var loc:Point = sprite.localToGlobal(new Point(sprite.width + 20, 0));
-					(controller  as  IPatternsController).duplicateNode(targetName, new GlobalPoint(loc.x, loc.y));
+					(controller  as  IPatternsController).duplicateNode(targetName);
+					alignNodes();
 					break;
 				
 				case InteractiveNode.DELETE_NODE:

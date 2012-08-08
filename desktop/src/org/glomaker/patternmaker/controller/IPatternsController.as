@@ -51,7 +51,7 @@ package org.glomaker.patternmaker.controller
 		
 		function removeAllNodes():void;
 		
-		function duplicateNode(nodeID:String, loc:GlobalPoint):void;
+		function duplicateNode(nodeID:String):void;
 		
 		function fileHandler(action:String, filePath:String = null):void;
 		

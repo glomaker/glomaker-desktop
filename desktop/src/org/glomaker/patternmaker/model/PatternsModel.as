@@ -336,10 +336,13 @@ package org.glomaker.patternmaker.model
 			update("removeAllNodes");
 		}
 		
-		public function duplicateNode(nodeID:String, loc:GlobalPoint):void
+		public function duplicateNode(nodeID:String):void
 		{
-			var node:IPatternNode = getNode(nodeID).clone(getNewNodeID());
-			node.loc = loc;
+			var original:IPatternNode = getNode(nodeID);
+			var node:IPatternNode = original.clone(getNewNodeID());
+			node.parentId = original.id;
+			node.childId = original.childId;
+			original.childId = node.id;
 			
 			nodeArray.push(node);
 			update("duplicateNode");

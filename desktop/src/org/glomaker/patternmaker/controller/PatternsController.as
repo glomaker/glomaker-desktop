@@ -109,9 +109,9 @@ package org.glomaker.patternmaker.controller
 			(model as IPatternsModel).removeAllNodes();
 		}
 		
-		public function duplicateNode(nodeID:String, loc:GlobalPoint):void
+		public function duplicateNode(nodeID:String):void
 		{
-			(model as IPatternsModel).duplicateNode(nodeID, loc);
+			(model as IPatternsModel).duplicateNode(nodeID);
 		}
 		
 		public function makeActiveSequence(nodeID:String):void{
