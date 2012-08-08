@@ -64,7 +64,7 @@ package org.glomaker.patternmaker.model
 		
 		function removeAllNodes():void;
 		
-		function duplicateNode(nodeID:String):void;
+		function duplicateNode(nodeID:String):IPatternNode;
 
 		function setConnection():void;
 		

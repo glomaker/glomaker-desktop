@@ -189,5 +189,19 @@ package org.glomaker.common.vo
 			// not implemented - only present so Bindings will function correctly
 		}
 		
+		/**
+		 * Creates and returns a copy of the page instance and set its node to specified one.
+		 */
+		public function clone(node:IPatternNode):PageInstanceVO
+		{
+			var page:PageInstanceVO = new PageInstanceVO(layout, node, 0, 0);
+			page.removeAllComponents();
+			for each (var comp:ComponentInstanceVO in components)
+			{
+				page.addComponentInstance(comp.clone() as ComponentInstanceVO);
+			}
+			
+			return page;
+		}
 	}
 }

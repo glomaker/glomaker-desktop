@@ -13,6 +13,7 @@ package org.glomaker.app.view.patternmaker
 	import org.glomaker.app.model.ProjectSettingsProxy;
 	import org.glomaker.common.vo.PatternVO;
 	import org.glomaker.interfaces.pattern.IPatternMakerBridge;
+	import org.glomaker.patternmaker.events.NodeDuplicatedEvent;
 	import org.puremvc.as3.multicore.interfaces.INotification;
 	import org.puremvc.as3.multicore.patterns.mediator.Mediator;
 	
@@ -69,6 +70,8 @@ package org.glomaker.app.view.patternmaker
 		 */		
 		override public function onRegister():void
 		{
+			viewRef.addEventListener(NodeDuplicatedEvent.NODE_DUPLICATED, nodeDuplicatedHandler);
+			
 			populatePatternMaker();
 		}
 		
@@ -77,6 +80,7 @@ package org.glomaker.app.view.patternmaker
 		 */		
 		override public function onRemove():void
 		{
+			viewRef.removeEventListener(NodeDuplicatedEvent.NODE_DUPLICATED, nodeDuplicatedHandler);
 		}		
 		
 
@@ -186,6 +190,14 @@ package org.glomaker.app.view.patternmaker
 			return facade.retrieveProxy(ProjectSettingsProxy.NAME) as ProjectSettingsProxy;
 		}				
 
+		// ------------------------------------------------------------------
+		// Event Handlers
+		// ------------------------------------------------------------------
 		
+		protected function nodeDuplicatedHandler(event:NodeDuplicatedEvent):void
+		{
+			// notify application
+			sendNotification(Notifications.APP_PATTERN_NODEDUPLICATED, [event.refNode, event.newNode]);
+		}
 	}
 }

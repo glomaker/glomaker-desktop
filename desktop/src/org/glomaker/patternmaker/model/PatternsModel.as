@@ -336,16 +336,18 @@ package org.glomaker.patternmaker.model
 			update("removeAllNodes");
 		}
 		
-		public function duplicateNode(nodeID:String):void
+		public function duplicateNode(nodeID:String):IPatternNode
 		{
-			var original:IPatternNode = getNode(nodeID);
-			var node:IPatternNode = original.clone(getNewNodeID());
-			node.parentId = original.id;
-			node.childId = original.childId;
-			original.childId = node.id;
+			var refNode:IPatternNode = getNode(nodeID);
+			var newNode:IPatternNode = refNode.clone(getNewNodeID());
+			newNode.parentId = refNode.id;
+			newNode.childId = refNode.childId;
+			refNode.childId = newNode.id;
 			
-			nodeArray.push(node);
+			nodeArray.push(newNode);
 			update("duplicateNode");
+			
+			return newNode;
 		}
 		
 		public function setConnection():void

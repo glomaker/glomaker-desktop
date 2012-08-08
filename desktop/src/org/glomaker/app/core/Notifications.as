@@ -377,6 +377,12 @@ package org.glomaker.app.core
 		public static const APP_PATTERN_CHANGE:String = "App.Pattern.Change";
 		
 		
+		/**
+		 * User has duplicated a node.
+		 * Body: Array of 2 IPatternNode instances, where the first is the reference node and the second is the duplicate.
+		 */		
+		public static const APP_PATTERN_NODEDUPLICATED:String = "App.Pattern.NodeDuplicated";
+		
 		// ------------------------------------------------------------------
 		// EDITOR MODULE
 		// ------------------------------------------------------------------

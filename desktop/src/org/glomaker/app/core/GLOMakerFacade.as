@@ -10,6 +10,7 @@ package org.glomaker.app.core
 	import mx.core.Application;
 	
 	import org.glomaker.app.controller.CleanupAfterEditorRemovalCommand;
+	import org.glomaker.app.controller.DuplicatePageCommand;
 	import org.glomaker.app.controller.HotDrawClearSelectionCommand;
 	import org.glomaker.app.controller.HotDrawFigureSelectedCommand;
 	import org.glomaker.app.controller.HotdrawViewCanvasCreated;
@@ -211,6 +212,7 @@ package org.glomaker.app.core
 			// Pattern Maker
 			registerCommand(Notifications.APP_PATTERN_STOREDATA, UpdateAndCreatePagesCommand);
 			registerCommand(Notifications.APP_PATTERN_CHANGE, SelectPatternCommand);
+			registerCommand(Notifications.APP_PATTERN_NODEDUPLICATED, DuplicatePageCommand);
 			
 			// HotDraw State Proxy Commands
 			registerCommand(Notifications.HOTDRAW_FIGURESELECTED, HotDrawFigureSelectedCommand);

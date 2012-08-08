@@ -488,8 +488,10 @@ package org.glomaker.patternmaker.view
 					break;
 					
 				case InteractiveNode.DUPLICATE_NODE:
-					(controller  as  IPatternsController).duplicateNode(targetName);
+					var refNode:IPatternNode = (model as IPatternsModel).getNode(targetName);
+					var newNode:IPatternNode = (controller  as  IPatternsController).duplicateNode(targetName);
 					alignNodes();
+					dispatchEvent(new NodeDuplicatedEvent(NodeDuplicatedEvent.NODE_DUPLICATED, true, false, refNode, newNode));
 					break;
 				
 				case InteractiveNode.DELETE_NODE:

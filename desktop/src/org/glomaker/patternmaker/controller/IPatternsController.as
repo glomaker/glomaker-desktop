@@ -18,6 +18,7 @@ package org.glomaker.patternmaker.controller
 	import flash.events.*;
 	import flash.geom.Point;
 	
+	import org.glomaker.interfaces.pattern.IPatternNode;
 	import org.glomaker.patternmaker.data.GlobalPoint;
 
 	/**
@@ -51,7 +52,7 @@ package org.glomaker.patternmaker.controller
 		
 		function removeAllNodes():void;
 		
-		function duplicateNode(nodeID:String):void;
+		function duplicateNode(nodeID:String):IPatternNode;
 		
 		function fileHandler(action:String, filePath:String = null):void;
 		

@@ -18,6 +18,7 @@ package org.glomaker.patternmaker.controller
 	import flash.display.Stage;
 	import flash.events.*;
 	
+	import org.glomaker.interfaces.pattern.IPatternNode;
 	import org.glomaker.patternmaker.data.GlobalPoint;
 	import org.glomaker.patternmaker.events.*;
 	import org.glomaker.patternmaker.model.IBaseModel;
@@ -109,9 +110,9 @@ package org.glomaker.patternmaker.controller
 			(model as IPatternsModel).removeAllNodes();
 		}
 		
-		public function duplicateNode(nodeID:String):void
+		public function duplicateNode(nodeID:String):IPatternNode
 		{
-			(model as IPatternsModel).duplicateNode(nodeID);
+			return (model as IPatternsModel).duplicateNode(nodeID);
 		}
 		
 		public function makeActiveSequence(nodeID:String):void{
