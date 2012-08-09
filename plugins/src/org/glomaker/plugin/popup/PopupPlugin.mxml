@@ -28,8 +28,8 @@
 			//--------------------------------------------------
 			
 			// component properties
-			protected var buttonLabel:StringProperty = new StringProperty("label", "Label", "Button Label");
-			protected var text:RichTextProperty = new RichTextProperty("text", "Text", "");
+			protected var buttonLabel:StringProperty = new StringProperty("label", "Label", "Info");
+			protected var text:RichTextProperty = new RichTextProperty("text", "Text", "Enter your Popup text, which will appear when the user clicks the button. You can style your text using the GLO Maker text toolbar.");
 			
 			//other
 			[Bindable]
