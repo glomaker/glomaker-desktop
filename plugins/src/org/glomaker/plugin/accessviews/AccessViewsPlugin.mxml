@@ -46,7 +46,7 @@
             
             protected var dividerWidth:IntegerProperty = new IntegerProperty("DividerWidth","",100);
 			
-			protected const instructions:RichTextProperty = new RichTextProperty("instructions", "Learner Instructions", "Select a topic from the list.\nThen click on one of the speakers to hear their thoughts.");
+			protected const instructions:RichTextProperty = new RichTextProperty("instructions", "Learner Instructions", "Click on the button to select the topic. Then click a speaker for their comments.");
 
             [Bindable]
             protected var isEditMode:Boolean = false;
