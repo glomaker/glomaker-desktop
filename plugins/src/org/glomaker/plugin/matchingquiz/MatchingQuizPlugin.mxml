@@ -354,7 +354,7 @@
 				isEditable="{editMode}"
 				click="submitButton_clickHandler(event)"
 				/>
-			<mx:Button styleName="addButton" visible="{editMode}" click="addButton_clickHandler(event)" />
+			<mx:Button styleName="addButton" label="Add New Item" visible="{editMode}" click="addButton_clickHandler(event)" />
 			<mx:Button styleName="correctFeedbackButton" label="Feedback" visible="{editMode}" click="correctFeedbackButton_clickHandler(event)" />
 			<mx:Button styleName="wrongFeedbackButton" label="Feedback" visible="{editMode}" click="wrongFeedbackButton_clickHandler(event)" />
 		</mx:HBox>
