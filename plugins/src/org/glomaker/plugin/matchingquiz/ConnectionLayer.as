@@ -229,12 +229,11 @@ package org.glomaker.plugin.matchingquiz
 			invalidateProperties();
 		}
 
-		
 		//--------------------------------------------------
-		// Protected functions
+		// Public functions
 		//--------------------------------------------------
 		
-		protected function resetConnections():void
+		public function resetConnections():void
 		{
 			var changed:Boolean = false;
 			
@@ -259,6 +258,10 @@ package org.glomaker.plugin.matchingquiz
 				dispatchEvent(new Event(Event.CHANGE));
 			}
 		}
+		
+		//--------------------------------------------------
+		// Protected functions
+		//--------------------------------------------------
 		
 		protected function setConnection(source:uint, destination:uint):void
 		{

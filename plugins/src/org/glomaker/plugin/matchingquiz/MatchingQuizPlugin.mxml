@@ -39,6 +39,7 @@
 			protected const list1:ArrayProperty = new ArrayProperty("list1", "", ["Item 1","Item 2"]);
 			protected const list2:ArrayProperty = new ArrayProperty("list2", "", ["Match 1","Match 2"]);
 			protected const submitLabel:StringProperty = new StringProperty("submit", "", "Submit");
+			protected const resetLabel:StringProperty = new StringProperty("reset", "", "Reset");
 			protected const correctFeedback:StringProperty = new StringProperty("correct", "", "That is correct - well done!");
 			protected const wrongFeedback:StringProperty = new StringProperty("wrong", "", "Not quite - try again!");
 			protected const connectionColour:ColourProperty = new ColourProperty("connections", "Colour for Connections", 0);
@@ -56,6 +57,9 @@
 			
 			[Bindable]
 			protected var canSubmit:Boolean;
+			
+			[Bindable]
+			protected var canReset:Boolean;
 			
 			[Bindable]
 			protected var currentConnectionColour:uint;
@@ -153,6 +157,7 @@
 				addSaveableProperty(list1);
 				addSaveableProperty(list2);
 				addSaveableProperty(submitLabel);
+				addSaveableProperty(resetLabel);
 				addSaveableProperty(correctFeedback);
 				addSaveableProperty(wrongFeedback);
 				
@@ -174,6 +179,7 @@
 				
 				// other
 				submitButton.label = submitLabel.propValue;
+				resetButton.label = resetLabel.propValue;
 				currentBorderColour = borderColour.propValue;
 				currentConnectionColour = connectionColour.propValue;
 				currentFontSize = fontSize.propValue;
@@ -194,6 +200,7 @@
 				super.prepareValuesForSave();
 				
 				submitLabel.propValue = submitButton.label;
+				resetLabel.propValue = resetButton.label;
 			}
 			
 			override public function setEditMode(value:Boolean):void
@@ -264,9 +271,18 @@
 				showResult(correct);
 			}
 			
+			protected function resetButton_clickHandler(event:MouseEvent):void
+			{
+				if (editMode)
+					return;
+				
+				connectionLayer.resetConnections();
+			}
+			
 			protected function connectionLayer_changeHandler(event:Event):void
 			{
 				canSubmit = correctAnswers && correctAnswers.length > 0 && connectionLayer.count == correctAnswers.length;
+				canReset = connectionLayer.count > 0;
 			}
 			
 		]]>
@@ -353,6 +369,13 @@
 				enabled="{editMode || canSubmit}"
 				isEditable="{editMode}"
 				click="submitButton_clickHandler(event)"
+				/>
+			<editbutton:EditableButton
+				id="resetButton"
+				width="100%" height="100%"
+				enabled="{editMode || canReset}"
+				isEditable="{editMode}"
+				click="resetButton_clickHandler(event)"
 				/>
 			<mx:Button styleName="addButton" label="Add New Item" visible="{editMode}" click="addButton_clickHandler(event)" />
 			<mx:Button styleName="correctFeedbackButton" label="Feedback" visible="{editMode}" click="correctFeedbackButton_clickHandler(event)" />
