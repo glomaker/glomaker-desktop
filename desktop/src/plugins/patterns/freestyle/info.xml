@@ -51,7 +51,7 @@
 	    	<func>
 	      	<id>freestyle_f4</id>
 	        <title>My function</title>
-			<description>Define as you please.</description>
+			<description>Add some text in the Planner to define what the function is doing.</description>
 			<defaultLayoutId>blankpage</defaultLayoutId>
 	      </func>
 	    </heading>	
