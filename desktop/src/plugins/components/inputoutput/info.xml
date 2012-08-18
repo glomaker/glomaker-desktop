@@ -5,7 +5,7 @@
 	<author>Matteo</author>
 	<version>1.0</version>
 	<glomaker>2.0</glomaker>	
-	<name>Text Input Output</name>
+	<name>User Text Input Output</name>
 	<description></description>
 	<swf>InputOutputPlugin.swf</swf>
 </plugin>
