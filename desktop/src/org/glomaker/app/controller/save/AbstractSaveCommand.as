@@ -12,6 +12,7 @@ package org.glomaker.app.controller.save
 	import org.glomaker.app.utils.AIRFileUtils;
 	import org.glomaker.app.utils.GLOProjectFileValidator;
 	import org.glomaker.common.data.ProjectSettingsVO;
+	import org.glomaker.common.data.serialiser.JourneySettingsSerialiser;
 	import org.glomaker.common.data.serialiser.PageInstanceSerialiser;
 	import org.glomaker.common.interfaces.ISerialiser;
 	import org.glomaker.common.vo.PageInstanceVO;
@@ -73,6 +74,10 @@ package org.glomaker.app.controller.save
 								<stageid>{settings.selectedStage.id}</stageid>
 							</props>;
 			
+			//journey
+			var serialiser:ISerialiser = new JourneySettingsSerialiser();
+			var journey:XML = settings.journey ? serialiser.serialise(settings.journey) : null;
+			
 			// pages
 			var nodes:XML = <nodes></nodes>;
 			
@@ -80,7 +85,7 @@ package org.glomaker.app.controller.save
 			var pageXML:XML;
 			var i:uint;
 			
-			var serialiser:ISerialiser = new PageInstanceSerialiser();
+			serialiser = new PageInstanceSerialiser();
 			
 			for(i=0; i < settings.pages.length ; i++)
 			{
@@ -92,6 +97,8 @@ package org.glomaker.app.controller.save
 			var out:XML = <glo version={configProxy.appVersion} hasFullFilePaths="true"></glo>;
 			
 			out.appendChild(props);
+			if (journey)
+				out.appendChild(journey);
 			out.appendChild(nodes);
 			
 			// add validation tag so document can be checked

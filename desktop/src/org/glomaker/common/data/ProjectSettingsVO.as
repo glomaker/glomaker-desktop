@@ -27,6 +27,8 @@ package org.glomaker.common.data
 		public var selectedStage:StageVO;
 		public var loadedPageIndex:int = 0;
 
+		public var journey:JourneySettingsVO;
+		
 		//Pages
 		
 		/**

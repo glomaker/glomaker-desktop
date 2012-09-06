@@ -16,10 +16,13 @@ package org.glomaker.app.controller.open
 	import org.glomaker.app.model.StateProxy;
 	import org.glomaker.app.utils.GLOProjectFileValidator;
 	import org.glomaker.app.utils.PropertySerialiser;
+	import org.glomaker.common.data.JourneySettingsVO;
 	import org.glomaker.common.data.ProjectSettingsVO;
 	import org.glomaker.common.data.StageVO;
+	import org.glomaker.common.data.serialiser.JourneySettingsSerialiser;
 	import org.glomaker.common.data.serialiser.NodeSerialiser;
 	import org.glomaker.common.data.serialiser.PageSerialiser;
+	import org.glomaker.common.interfaces.ISerialiser;
 	import org.glomaker.common.vo.ComponentInstanceVO;
 	import org.glomaker.common.vo.ComponentVO;
 	import org.glomaker.common.vo.PageInstanceVO;
@@ -219,6 +222,10 @@ package org.glomaker.app.controller.open
 			settings.stageWidth = projectXML.props.w;
 			settings.stageHeight = projectXML.props.h;
 			settings.stageColour = projectXML.props.rgb;
+			
+			// journey
+			var serialiser:ISerialiser = new JourneySettingsSerialiser();
+			settings.journey = projectXML.hasOwnProperty("journey") ? (serialiser.deserialise(projectXML.child("journey")[0]) as JourneySettingsVO) : null;
 			
 			// project pages
 			project.removeAllPages();
