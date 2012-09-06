@@ -35,6 +35,9 @@ package org.glomaker.app.controller.createnew
 			if(!selectedPattern)
 				throw new Error("Notification's body should contain the PatternVO to use for the new project.");
 
+			// init settings
+			project.settings.journey = null;
+			
 			// remove existing pages
 			project.removeAllPages();
 			
