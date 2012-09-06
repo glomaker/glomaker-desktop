@@ -214,6 +214,7 @@ package org.glomaker.app.view.nav
 			menuData.appendChild(child);
 			
 			child.appendChild(createItem("Edit Stage Settings...", Notifications.CONTROLS_SETTINGS_STAGE));
+			child.appendChild(createItem("Mobile Journey Settings...", Notifications.CONTROLS_SETTINGS_JOURNEY));
 
 			// about menu
 			child = createItem("About");

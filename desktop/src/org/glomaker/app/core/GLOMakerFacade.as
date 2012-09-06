@@ -29,6 +29,7 @@ package org.glomaker.app.core
 	import org.glomaker.app.controller.ShowAboutCommand;
 	import org.glomaker.app.controller.ShowComponentPopupCommand;
 	import org.glomaker.app.controller.ShowGlomakerLicenseCommand;
+	import org.glomaker.app.controller.ShowJourneySettingsPopup;
 	import org.glomaker.app.controller.ShowLayoutPopupCommand;
 	import org.glomaker.app.controller.ShowPageLayoutWarningCommand;
 	import org.glomaker.app.controller.ShowStagePropertyPopup;
@@ -172,6 +173,7 @@ package org.glomaker.app.core
 			
 			// settings menu
 			registerCommand(Notifications.CONTROLS_SETTINGS_STAGE, ShowStagePropertyPopup);
+			registerCommand(Notifications.CONTROLS_SETTINGS_JOURNEY, ShowJourneySettingsPopup);
 			
 			// about menu
 			registerCommand(Notifications.CONTROLS_ABOUT_GLOMAKER, ShowAboutCommand);

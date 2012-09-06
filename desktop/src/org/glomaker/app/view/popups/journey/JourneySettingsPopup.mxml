@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+/////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2007-09 LTRI, London Metropolitan Uni. All rights reserved.
+// An Open Source Release under the GPL v3 licence  (see http://www.gnu.org/licenses/).
+// Authors: Tom Boyle, Nils Millahn, Musbah Sagar, Martin Agombar.
+// See http://www.glomaker.org for full details
+/////////////////////////////////////////////////////////////////////////
+-->
+
+<mx:TitleWindow
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	width="400"
+	layout="vertical"
+	paddingBottom="10"
+	paddingLeft="10"
+	paddingRight="10"
+	paddingTop="10"
+	verticalGap="10"
+	title="Mobile Journey Settings"
+	>
+	
+	<mx:Script>
+		<![CDATA[
+			private static const INSTRUCTIONS:String = "GLOs playing on mobile devices can form part of a student journey, triggered by GPS coordinates or QR codes.<br>Find out more: <a href='http://glomaker.org/mobilejourney'>http://glomaker.org/mobilejourney</a>";
+		]]>
+	</mx:Script>
+	
+	<mx:Style>
+		.block
+		{
+			paddingLeft: 6;
+			paddingRight: 6;
+			paddingTop: 6;
+			paddingBottom: 6;
+			verticalGap: 6;
+			backgroundColor: #f3f3f3;
+			borderStyle: solid;
+			borderColor: #b7babc;
+		}
+		
+		.title
+		{
+			fontWeight: bold;
+		}
+	</mx:Style>
+	
+	<mx:Text width="100%" htmlText="{INSTRUCTIONS}" />
+	
+	<mx:VBox styleName="block" width="100%">
+		<mx:Label styleName="title" text="Journey Details" />
+		<mx:HBox>
+			<mx:Label text="Journey Name:" width="120" />
+			<mx:Spacer width="100%"/>
+			<mx:TextInput id="nameInput" />
+		</mx:HBox>
+		<mx:HBox>
+			<mx:Label text="GLO Name:" width="120" />
+			<mx:Spacer width="100%"/>
+			<mx:TextInput id="locationInput" />
+		</mx:HBox>
+		<mx:HBox>
+			<mx:Label text="Journey step of this GLO (1,2,3,...):" />
+			<mx:Spacer width="100%"/>
+			<mx:NumericStepper id="indexInput" minimum="1" maximum="100" stepSize="1" />
+		</mx:HBox>
+	</mx:VBox>
+	
+	<mx:HBox width="100%" horizontalAlign="center">
+		<mx:Button label="Cancel" id="cancelButton"/>
+		<mx:Button label="OK" id="okButton"/>
+	</mx:HBox>
+	
+</mx:TitleWindow>

@@ -217,6 +217,12 @@ package org.glomaker.app.core
 		public static const CONTROLS_SETTINGS_STAGE:String = "Controls.Settings.Stage";
 		
 		/**
+		 * App menu controls - show the journey settings dialog.
+		 * Body: None. 
+		 */		
+		public static const CONTROLS_SETTINGS_JOURNEY:String = "Controls.Settings.Journey";
+
+		/**
 		 * App menu controls - show the About GLOMaker popup.
 		 * Body: None. 
 		 */		
