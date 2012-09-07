@@ -19,11 +19,30 @@
 	paddingTop="10"
 	verticalGap="10"
 	title="Mobile Journey Settings"
+	initialize="initializeHandler(event)"
 	>
 	
 	<mx:Script>
 		<![CDATA[
+			import mx.core.mx_internal;
+			import mx.events.FlexEvent;
+			
+			private static const STYLES:String = "a { color: #0000ff; text-decoration: underline; }";
 			private static const INSTRUCTIONS:String = "GLOs playing on mobile devices can form part of a student journey, triggered by GPS coordinates or QR codes.<br>Find out more: <a href='http://glomaker.org/mobilejourney'>http://glomaker.org/mobilejourney</a>";
+			private static const GPS_COPY:String = "<i>Copy these from <a href='http://maps.google.com'>Google Maps</a></i>";
+			private static const GPS_GUIDE:String = "<i>Need help? Read <a href='http://glomaker.org'>full guide</a>.</i>";
+			
+			private static const styleSheet:StyleSheet = new StyleSheet();
+			
+			protected function initializeHandler(event:FlexEvent):void
+			{
+				styleSheet.parseCSS(STYLES);
+			}
+			
+			protected function htmlText_initializeHandler(event:FlexEvent):void
+			{
+				(event.currentTarget as Label).mx_internal::styleSheet = styleSheet;
+			}
 		]]>
 	</mx:Script>
 	
@@ -46,7 +65,7 @@
 		}
 	</mx:Style>
 	
-	<mx:Text width="100%" htmlText="{INSTRUCTIONS}" />
+	<mx:Text id="instructionsText" width="100%" htmlText="{INSTRUCTIONS}" initialize="htmlText_initializeHandler(event)" />
 	
 	<mx:VBox styleName="block" width="100%">
 		<mx:Label styleName="title" text="Journey Details" />
@@ -64,6 +83,25 @@
 			<mx:Label text="Journey step of this GLO (1,2,3,...):" />
 			<mx:Spacer width="100%"/>
 			<mx:NumericStepper id="indexInput" minimum="1" maximum="100" stepSize="1" />
+		</mx:HBox>
+	</mx:VBox>
+	
+	<mx:VBox styleName="block" width="100%">
+		<mx:HBox width="100%">
+			<mx:Label styleName="title" text="GPS Launch Coordinates" />
+			<mx:Spacer width="100%" />
+			<mx:CheckBox id="gpsEnabledCheck" label="enable" />
+		</mx:HBox>
+		<mx:HBox>
+			<mx:Label text="Lat/Long:" width="120" />
+			<mx:Spacer width="100%"/>
+			<mx:TextInput id="gpsLatLongInput" />
+			<mx:Button id="gpsMapButton" icon="@Embed('assets/map_go.png')" />
+		</mx:HBox>
+		<mx:HBox width="100%">
+			<mx:Label id="gpsCopyText" htmlText="{GPS_COPY}" initialize="htmlText_initializeHandler(event)" />
+			<mx:Spacer width="100%"/>
+			<mx:Label id="gpsGuideText" htmlText="{GPS_GUIDE}" initialize="htmlText_initializeHandler(event)" />
 		</mx:HBox>
 	</mx:VBox>
 	

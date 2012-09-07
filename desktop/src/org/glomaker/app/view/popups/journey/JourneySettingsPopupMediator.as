@@ -8,10 +8,14 @@
 package org.glomaker.app.view.popups.journey
 {
 	import flash.events.MouseEvent;
+	import flash.geom.Point;
+	import flash.net.URLRequest;
+	import flash.net.navigateToURL;
+	
+	import mx.validators.RegExpValidator;
 	
 	import org.glomaker.app.model.ProjectSettingsProxy;
 	import org.glomaker.app.view.popups.PopupMediator;
-	import org.glomaker.app.view.popups.journey.JourneySettingsPopup;
 	import org.glomaker.common.data.JourneySettingsVO;
 
 	
@@ -31,6 +35,11 @@ package org.glomaker.app.view.popups.journey
 		 */
 		public static const NAME:String = "JourneySettingsPopupMediator";
 		
+		/**
+		 * Format of the input for lat/long.
+		 */
+		protected static const LAT_LONG_PATTERN:RegExp = /(-?\d+(\.\d+)?)\s*,\s*(-?\d+(\.\d+)?)/;
+		
 		// ------------------------------------------------------------------
 		// INSTANCE PROPERTIES
 		// ------------------------------------------------------------------
@@ -39,6 +48,11 @@ package org.glomaker.app.view.popups.journey
 		 * Journey settings to work on.
 		 */
 		protected var settings:JourneySettingsVO;
+		
+		/**
+		 * Validator for the lat/long input field.
+		 */
+		protected var gpsLatLongValidator:RegExpValidator;
 
 		// ------------------------------------------------------------------
 		// CONSTRUCTOR
@@ -47,6 +61,11 @@ package org.glomaker.app.view.popups.journey
 		public function JourneySettingsPopupMediator(viewComponent:JourneySettingsPopup)
 		{
 			super(NAME, viewComponent);
+			
+			gpsLatLongValidator = new RegExpValidator();
+			gpsLatLongValidator.required = false;
+			gpsLatLongValidator.expression = LAT_LONG_PATTERN.source;
+			gpsLatLongValidator.noMatchError = "Please enter the coordinates in the format: latitude,longitude. Example: 36.800145,10.186165";
 		}
 
 		// ------------------------------------------------------------------
@@ -58,7 +77,12 @@ package org.glomaker.app.view.popups.journey
 			super.onRegister();
 			populateFromProxy();
 			
+			// Configure validators
+			gpsLatLongValidator.source = viewRef.gpsLatLongInput;
+			gpsLatLongValidator.property = "text";
+			
 			// Add event listeners
+			viewRef.gpsMapButton.addEventListener(MouseEvent.CLICK, gpsMapButton_clickHandler);
 			viewRef.okButton.addEventListener(MouseEvent.CLICK, onOKClick);
 			viewRef.cancelButton.addEventListener(MouseEvent.CLICK, onCancelClick);
 		}
@@ -66,6 +90,9 @@ package org.glomaker.app.view.popups.journey
 		override public function onRemove():void
 		{
 			super.onRemove();
+			
+			// Release validators
+			gpsLatLongValidator.source = null;
 			
 			// Remove events listeners
 			viewRef.okButton.removeEventListener(MouseEvent.CLICK, onOKClick);
@@ -86,6 +113,19 @@ package org.glomaker.app.view.popups.journey
 		}
 
 		/**
+		 * Parses the content of the gps lat/long field.
+		 * 
+		 * @return a point with the latitude in "x" and longitude in "y" if valid, null otherwise.
+		 * 
+		 */
+		protected function parseGpsLatLong():Point
+		{
+			var result:Object = LAT_LONG_PATTERN.exec(viewRef.gpsLatLongInput.text);
+			
+			return result ? new Point(parseFloat(result[1]), parseFloat(result[3])) : null;
+		}
+		
+		/**
 		 * Populate the view component from data stored in the model layer. 
 		 */
 		protected function populateFromProxy():void
@@ -96,6 +136,9 @@ package org.glomaker.app.view.popups.journey
 			viewRef.nameInput.text = settings.name;
 			viewRef.locationInput.text = settings.location;
 			viewRef.indexInput.value = settings.index;
+			
+			viewRef.gpsEnabledCheck.selected = settings.gpsEnabled;
+			viewRef.gpsLatLongInput.text = !isNaN(settings.gpsLat) && !isNaN(settings.gpsLong) ? (settings.gpsLat + "," + settings.gpsLong) : "";
 		}
 		
 		/**
@@ -106,11 +149,26 @@ package org.glomaker.app.view.popups.journey
 			settings.name = viewRef.nameInput.text;
 			settings.location = viewRef.locationInput.text;
 			settings.index = viewRef.indexInput.value;
+			
+			settings.gpsEnabled = viewRef.gpsEnabledCheck.selected;
+			
+			var latLong:Point = parseGpsLatLong();
+			settings.gpsLat = latLong ? latLong.x : NaN;
+			settings.gpsLong = latLong ? latLong.y : NaN;
 		}
 		
 		// ------------------------------------------------------------------
 		// EVENT HANDLERS
 		// ------------------------------------------------------------------
+		
+		protected function gpsMapButton_clickHandler(event:MouseEvent):void
+		{
+			var latLong:Point = parseGpsLatLong();
+			if (!latLong)
+				return;
+			
+			navigateToURL(new URLRequest("http://maps.google.com?q=" + latLong.x + "," + latLong.y));
+		}
 
 		protected function onOKClick(evt:MouseEvent):void
 		{
