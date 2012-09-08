@@ -31,6 +31,8 @@
 			private static const INSTRUCTIONS:String = "GLOs playing on mobile devices can form part of a student journey, triggered by GPS coordinates or QR codes.<br>Find out more: <a href='http://glomaker.org/mobilejourney'>http://glomaker.org/mobilejourney</a>";
 			private static const GPS_COPY:String = "<i>Copy these from <a href='http://maps.google.com'>Google Maps</a></i>";
 			private static const GPS_GUIDE:String = "<i>Need help? Read <a href='http://glomaker.org'>full guide</a>.</i>";
+			private static const QR_INFO:String = "The QR code you can see here will launch the GLO on mobile devices, if the feature is enabled.";
+			private static const QR_WARNING:String = "The QR code has updated to reflect your changes. Please reprint.";
 			
 			private static const styleSheet:StyleSheet = new StyleSheet();
 			
@@ -49,14 +51,31 @@
 	<mx:Style>
 		.block
 		{
+			verticalGap: 6;
+			backgroundColor: #f3f3f3;
+			borderStyle: solid;
+			borderColor: #b7babc;
+		}
+		
+		.blockContent
+		{
 			paddingLeft: 6;
 			paddingRight: 6;
 			paddingTop: 6;
 			paddingBottom: 6;
 			verticalGap: 6;
-			backgroundColor: #f3f3f3;
-			borderStyle: solid;
-			borderColor: #b7babc;
+		}
+		
+		.warning
+		{
+			fontSize: 8;
+			fontWeight: bold;
+			paddingLeft: 4;
+			paddingRight: 4;
+			paddingTop: 4;
+			paddingBottom: 4;
+			horizontalGap: 4;
+			backgroundColor: #ffe08b;
 		}
 		
 		.title
@@ -65,43 +84,68 @@
 		}
 	</mx:Style>
 	
-	<mx:Text id="instructionsText" width="100%" htmlText="{INSTRUCTIONS}" initialize="htmlText_initializeHandler(event)" />
+	<mx:Text width="100%" htmlText="{INSTRUCTIONS}" initialize="htmlText_initializeHandler(event)" />
 	
 	<mx:VBox styleName="block" width="100%">
-		<mx:Label styleName="title" text="Journey Details" />
-		<mx:HBox>
-			<mx:Label text="Journey Name:" width="120" />
-			<mx:Spacer width="100%"/>
-			<mx:TextInput id="nameInput" />
-		</mx:HBox>
-		<mx:HBox>
-			<mx:Label text="GLO Name:" width="120" />
-			<mx:Spacer width="100%"/>
-			<mx:TextInput id="locationInput" />
-		</mx:HBox>
-		<mx:HBox>
-			<mx:Label text="Journey step of this GLO (1,2,3,...):" />
-			<mx:Spacer width="100%"/>
-			<mx:NumericStepper id="indexInput" minimum="1" maximum="100" stepSize="1" />
-		</mx:HBox>
+		<mx:VBox styleName="blockContent" width="100%">
+			<mx:Label styleName="title" text="Journey Details" />
+			<mx:HBox>
+				<mx:Label text="Journey Name:" width="120" />
+				<mx:Spacer width="100%"/>
+				<mx:TextInput id="nameInput" />
+			</mx:HBox>
+			<mx:HBox>
+				<mx:Label text="GLO Name:" width="120" />
+				<mx:Spacer width="100%"/>
+				<mx:TextInput id="locationInput" />
+			</mx:HBox>
+			<mx:HBox>
+				<mx:Label text="Journey step of this GLO (1,2,3,...):" />
+				<mx:Spacer width="100%"/>
+				<mx:NumericStepper id="indexInput" minimum="0" maximum="100" stepSize="1" />
+			</mx:HBox>
+		</mx:VBox>
 	</mx:VBox>
 	
 	<mx:VBox styleName="block" width="100%">
-		<mx:HBox width="100%">
-			<mx:Label styleName="title" text="GPS Launch Coordinates" />
-			<mx:Spacer width="100%" />
-			<mx:CheckBox id="gpsEnabledCheck" label="enable" />
-		</mx:HBox>
-		<mx:HBox>
-			<mx:Label text="Lat/Long:" width="120" />
-			<mx:Spacer width="100%"/>
-			<mx:TextInput id="gpsLatLongInput" />
-			<mx:Button id="gpsMapButton" icon="@Embed('assets/map_go.png')" />
-		</mx:HBox>
-		<mx:HBox width="100%">
-			<mx:Label id="gpsCopyText" htmlText="{GPS_COPY}" initialize="htmlText_initializeHandler(event)" />
-			<mx:Spacer width="100%"/>
-			<mx:Label id="gpsGuideText" htmlText="{GPS_GUIDE}" initialize="htmlText_initializeHandler(event)" />
+		<mx:VBox styleName="blockContent" width="100%">
+			<mx:HBox width="100%">
+				<mx:Label styleName="title" text="GPS Launch Coordinates" />
+				<mx:Spacer width="100%" />
+				<mx:CheckBox id="gpsEnabledCheck" label="enable" />
+			</mx:HBox>
+			<mx:HBox>
+				<mx:Label text="Lat/Long:" width="120" />
+				<mx:Spacer width="100%"/>
+				<mx:TextInput id="gpsLatLongInput" />
+				<mx:Button id="gpsMapButton" icon="@Embed('assets/map_go.png')" />
+			</mx:HBox>
+			<mx:HBox width="100%">
+				<mx:Label htmlText="{GPS_COPY}" initialize="htmlText_initializeHandler(event)" />
+				<mx:Spacer width="100%"/>
+				<mx:Label htmlText="{GPS_GUIDE}" initialize="htmlText_initializeHandler(event)" />
+			</mx:HBox>
+		</mx:VBox>
+	</mx:VBox>
+	
+	<mx:VBox styleName="block" width="100%">
+		<mx:VBox styleName="blockContent" width="100%">
+			<mx:HBox width="100%">
+				<mx:Label styleName="title" text="QR Code Launch Information" />
+				<mx:Spacer width="100%" />
+				<mx:CheckBox id="qrEnabledCheck" label="enable" />
+			</mx:HBox>
+			<mx:HBox width="100%" verticalAlign="middle">
+				<mx:Image id="qrImage" />
+				<mx:VBox width="100%" verticalGap="6">
+					<mx:Text width="100%" htmlText="{QR_INFO}" initialize="htmlText_initializeHandler(event)" />
+					<mx:Button id="qrSaveButton" label="Save as an image for printing" icon="@Embed('assets/picture_save.png')" />
+				</mx:VBox>
+			</mx:HBox>
+		</mx:VBox>
+		<mx:HBox id="qrWarning" styleName="warning" width="100%" verticalAlign="middle">
+			<mx:Image source="@Embed('assets/exclamation.png')" />
+			<mx:Label width="100%" text="{QR_WARNING}" initialize="htmlText_initializeHandler(event)" />
 		</mx:HBox>
 	</mx:VBox>
 	

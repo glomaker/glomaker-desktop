@@ -7,11 +7,25 @@
 
 package org.glomaker.app.view.popups.journey
 {
+	import com.google.zxing.BarcodeFormat;
+	import com.google.zxing.MultiFormatWriter;
+	import com.google.zxing.common.BitMatrix;
+	
+	import flash.display.Bitmap;
+	import flash.display.BitmapData;
+	import flash.events.Event;
+	import flash.events.FocusEvent;
 	import flash.events.MouseEvent;
+	import flash.filesystem.File;
+	import flash.filesystem.FileMode;
+	import flash.filesystem.FileStream;
 	import flash.geom.Point;
 	import flash.net.URLRequest;
 	import flash.net.navigateToURL;
+	import flash.utils.ByteArray;
 	
+	import mx.events.NumericStepperEvent;
+	import mx.graphics.codec.PNGEncoder;
 	import mx.validators.RegExpValidator;
 	
 	import org.glomaker.app.model.ProjectSettingsProxy;
@@ -40,6 +54,16 @@ package org.glomaker.app.view.popups.journey
 		 */
 		protected static const LAT_LONG_PATTERN:RegExp = /(-?\d+(\.\d+)?)\s*,\s*(-?\d+(\.\d+)?)/;
 		
+		/**
+		 * Size of an edge of the QR code image displayed in the popup.
+		 */
+		protected static const QR_IMAGE_SIZE:uint = 78;
+		
+		/**
+		 * Size of an edge of the QR code image for printing.
+		 */
+		protected static const QR_PRINT_SIZE:uint = 900;
+		
 		// ------------------------------------------------------------------
 		// INSTANCE PROPERTIES
 		// ------------------------------------------------------------------
@@ -53,6 +77,17 @@ package org.glomaker.app.view.popups.journey
 		 * Validator for the lat/long input field.
 		 */
 		protected var gpsLatLongValidator:RegExpValidator;
+		
+		/**
+		 * Holds the last displayed QR code.
+		 */
+		protected var lastQrCode:String;
+		
+		/**
+		 * Directory for saving QR code images. Updated on every save operation to hold
+		 * the last used directory.
+		 */
+		protected var qrSaveDirectory:File = File.userDirectory;
 
 		// ------------------------------------------------------------------
 		// CONSTRUCTOR
@@ -81,8 +116,14 @@ package org.glomaker.app.view.popups.journey
 			gpsLatLongValidator.source = viewRef.gpsLatLongInput;
 			gpsLatLongValidator.property = "text";
 			
+			viewRef.qrImage.width = QR_IMAGE_SIZE;
+			viewRef.qrImage.height = QR_IMAGE_SIZE;
+			
 			// Add event listeners
+			viewRef.nameInput.addEventListener(FocusEvent.FOCUS_OUT, nameInput_focusOutHandler);
+			viewRef.indexInput.addEventListener(NumericStepperEvent.CHANGE, indexInput_changeHandler);
 			viewRef.gpsMapButton.addEventListener(MouseEvent.CLICK, gpsMapButton_clickHandler);
+			viewRef.qrSaveButton.addEventListener(MouseEvent.CLICK, qrSaveButton_clickHandler);
 			viewRef.okButton.addEventListener(MouseEvent.CLICK, onOKClick);
 			viewRef.cancelButton.addEventListener(MouseEvent.CLICK, onCancelClick);
 		}
@@ -95,6 +136,10 @@ package org.glomaker.app.view.popups.journey
 			gpsLatLongValidator.source = null;
 			
 			// Remove events listeners
+			viewRef.nameInput.removeEventListener(FocusEvent.FOCUS_OUT, nameInput_focusOutHandler);
+			viewRef.indexInput.removeEventListener(NumericStepperEvent.CHANGE, indexInput_changeHandler);
+			viewRef.gpsMapButton.removeEventListener(MouseEvent.CLICK, gpsMapButton_clickHandler);
+			viewRef.qrSaveButton.removeEventListener(MouseEvent.CLICK, qrSaveButton_clickHandler);
 			viewRef.okButton.removeEventListener(MouseEvent.CLICK, onOKClick);
 			viewRef.cancelButton.removeEventListener(MouseEvent.CLICK, onCancelClick);
 		}
@@ -139,6 +184,11 @@ package org.glomaker.app.view.popups.journey
 			
 			viewRef.gpsEnabledCheck.selected = settings.gpsEnabled;
 			viewRef.gpsLatLongInput.text = !isNaN(settings.gpsLat) && !isNaN(settings.gpsLong) ? (settings.gpsLat + "," + settings.gpsLong) : "";
+			
+			viewRef.qrEnabledCheck.selected = settings.qrEnabled;
+			viewRef.qrWarning.visible = false;
+			
+			updateQrImage(false);
 		}
 		
 		/**
@@ -155,11 +205,72 @@ package org.glomaker.app.view.popups.journey
 			var latLong:Point = parseGpsLatLong();
 			settings.gpsLat = latLong ? latLong.x : NaN;
 			settings.gpsLong = latLong ? latLong.y : NaN;
+			
+			settings.qrEnabled = viewRef.qrEnabledCheck.selected;
+			settings.qrCode = qrCode;
+		}
+		
+		/**
+		 * Returns the QR code based on the current content of the name and index input fields.
+		 */
+		protected function get qrCode():String
+		{
+			return viewRef.nameInput.text + " " + viewRef.indexInput.value.toString();
+		}
+		
+		/**
+		 * Creates a BitmapData with the image of the current QR code.
+		 */
+		protected function createQrImage(size:uint):BitmapData
+		{
+			var bmpd:BitmapData = new BitmapData(size, size, false, 0xFFFFFF);
+			var content:String = qrCode;
+			
+			if (content)
+			{
+				var writer:MultiFormatWriter = new MultiFormatWriter();
+				var result:BitMatrix = writer.encode(content, BarcodeFormat.QR_CODE, size, size) as BitMatrix;
+				
+				for (var x:uint=0; x < size; x++)
+				{
+					for (var y:uint=0; y < size; y++)
+					{
+						if (result._get(x ,y))
+							bmpd.setPixel(x, y, 0x000000);
+					}
+				}
+			}
+			
+			return bmpd;
+		}
+		
+		/**
+		 * Updates the displayed QR code image.
+		 */
+		protected function updateQrImage(warn:Boolean=true):void
+		{
+			if (lastQrCode != qrCode)
+			{
+				viewRef.qrImage.source = new Bitmap(createQrImage(QR_IMAGE_SIZE));
+				lastQrCode = qrCode;
+				if (warn)
+					viewRef.qrWarning.visible = true;
+			}
 		}
 		
 		// ------------------------------------------------------------------
 		// EVENT HANDLERS
 		// ------------------------------------------------------------------
+		
+		protected function nameInput_focusOutHandler(event:FocusEvent):void
+		{
+			updateQrImage();
+		}
+		
+		protected function indexInput_changeHandler(event:NumericStepperEvent):void
+		{
+			updateQrImage();
+		}
 		
 		protected function gpsMapButton_clickHandler(event:MouseEvent):void
 		{
@@ -169,7 +280,31 @@ package org.glomaker.app.view.popups.journey
 			
 			navigateToURL(new URLRequest("http://maps.google.com?q=" + latLong.x + "," + latLong.y));
 		}
-
+		
+		protected function qrSaveButton_clickHandler(event:MouseEvent):void
+		{
+			var fileName:String = "qr-code_" + qrCode + ".png";
+			var qrSave:File = qrSaveDirectory.resolvePath(fileName.replace(/\s/g, "-").toLowerCase());
+			qrSave.browseForSave("Save QR Code Image...");
+			qrSave.addEventListener(Event.SELECT, qrSave_selectHandler);
+		}
+		
+		protected function qrSave_selectHandler(event:Event):void
+		{
+			var file:File = event.target as File;
+			qrSaveDirectory = new File(file.parent.url);
+			
+			var encoder:PNGEncoder = new PNGEncoder();
+			var data:ByteArray = encoder.encode(createQrImage(QR_PRINT_SIZE));
+			
+			var stream:FileStream = new FileStream();
+			stream.open(file, FileMode.WRITE);
+			stream.writeBytes(data);
+			stream.close();
+			
+			viewRef.qrWarning.visible = false;
+		}
+		
 		protected function onOKClick(evt:MouseEvent):void
 		{
 			var projectProxy:ProjectSettingsProxy = (facade.retrieveProxy(ProjectSettingsProxy.NAME) as ProjectSettingsProxy);
