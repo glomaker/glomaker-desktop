@@ -115,7 +115,7 @@
 				<mx:CheckBox id="gpsEnabledCheck" label="enable" />
 			</mx:HBox>
 			<mx:HBox>
-				<mx:Label text="Lat/Long:" width="120" />
+				<mx:Label text="Lat,Long:" width="120" />
 				<mx:Spacer width="100%"/>
 				<mx:TextInput id="gpsLatLongInput" />
 				<mx:Button id="gpsMapButton" icon="@Embed('assets/map_go.png')" />

@@ -24,9 +24,12 @@ package org.glomaker.app.view.popups.journey
 	import flash.net.navigateToURL;
 	import flash.utils.ByteArray;
 	
+	import mx.controls.Alert;
 	import mx.events.NumericStepperEvent;
 	import mx.graphics.codec.PNGEncoder;
+	import mx.validators.NumberValidator;
 	import mx.validators.RegExpValidator;
+	import mx.validators.Validator;
 	
 	import org.glomaker.app.model.ProjectSettingsProxy;
 	import org.glomaker.app.view.popups.PopupMediator;
@@ -74,6 +77,16 @@ package org.glomaker.app.view.popups.journey
 		protected var settings:JourneySettingsVO;
 		
 		/**
+		 * Validator for the name field (required field).
+		 */
+		protected var nameValidator:Validator;
+		
+		/**
+		 * Validator for the index field.
+		 */
+		protected var indexValidator:NumberValidator;
+		
+		/**
 		 * Validator for the lat/long input field.
 		 */
 		protected var gpsLatLongValidator:RegExpValidator;
@@ -97,6 +110,12 @@ package org.glomaker.app.view.popups.journey
 		{
 			super(NAME, viewComponent);
 			
+			nameValidator = new Validator();
+			
+			indexValidator = new NumberValidator();
+			indexValidator.domain = "int";
+			indexValidator.minValue = 1;
+			
 			gpsLatLongValidator = new RegExpValidator();
 			gpsLatLongValidator.required = false;
 			gpsLatLongValidator.expression = LAT_LONG_PATTERN.source;
@@ -110,12 +129,21 @@ package org.glomaker.app.view.popups.journey
 		override public function onRegister():void
 		{
 			super.onRegister();
-			populateFromProxy();
 			
 			// Configure validators
+			nameValidator.source = viewRef.nameInput;
+			nameValidator.property = "text";
+			
+			indexValidator.source = viewRef.indexInput;
+			indexValidator.property = "value";
+			
 			gpsLatLongValidator.source = viewRef.gpsLatLongInput;
 			gpsLatLongValidator.property = "text";
 			
+			// Fill form
+			populateFromProxy();
+			
+			// Configure components
 			viewRef.qrImage.width = QR_IMAGE_SIZE;
 			viewRef.qrImage.height = QR_IMAGE_SIZE;
 			
@@ -133,6 +161,8 @@ package org.glomaker.app.view.popups.journey
 			super.onRemove();
 			
 			// Release validators
+			nameValidator.source = null;
+			indexValidator.source = null;
 			gpsLatLongValidator.source = null;
 			
 			// Remove events listeners
@@ -307,14 +337,23 @@ package org.glomaker.app.view.popups.journey
 		
 		protected function onOKClick(evt:MouseEvent):void
 		{
+			if (Validator.validateAll([nameValidator, indexValidator, gpsLatLongValidator]).length > 0)
+			{
+				Alert.show("Please fix the errors.", "Error", 4, viewRef);
+				return;
+			}
+			
 			var projectProxy:ProjectSettingsProxy = (facade.retrieveProxy(ProjectSettingsProxy.NAME) as ProjectSettingsProxy);
 			projectProxy.settings.journey = settings;
 			updateSettingsFromView();
+			
+			settings = null;
 			removePopup();
 		}
 		
 		protected function onCancelClick(evt:MouseEvent):void
 		{
+			settings = null;
 			removePopup();
 		}
 		
