@@ -29,8 +29,6 @@
 			
 			private static const STYLES:String = "a { color: #0000ff; text-decoration: underline; }";
 			private static const INSTRUCTIONS:String = "GLOs playing on mobile devices can form part of a student journey, triggered by GPS coordinates or QR codes.<br>Find out more: <a href='http://glomaker.org/mobilejourney'>http://glomaker.org/mobilejourney</a>";
-			private static const GPS_COPY:String = "<i>Copy these from <a href='http://maps.google.com'>Google Maps</a></i>";
-			private static const GPS_GUIDE:String = "<i>Need help? Read <a href='http://glomaker.org'>full guide</a>.</i>";
 			private static const QR_INFO:String = "The QR code you can see here will launch the GLO on mobile devices, if the feature is enabled.";
 			private static const QR_WARNING:String = "The QR code has updated to reflect your changes. Please reprint.";
 			
@@ -119,11 +117,6 @@
 				<mx:Spacer width="100%"/>
 				<mx:TextInput id="gpsLatLongInput" />
 				<mx:Button id="gpsMapButton" icon="@Embed('assets/map_go.png')" />
-			</mx:HBox>
-			<mx:HBox width="100%">
-				<mx:Label htmlText="{GPS_COPY}" initialize="htmlText_initializeHandler(event)" />
-				<mx:Spacer width="100%"/>
-				<mx:Label htmlText="{GPS_GUIDE}" initialize="htmlText_initializeHandler(event)" />
 			</mx:HBox>
 		</mx:VBox>
 	</mx:VBox>

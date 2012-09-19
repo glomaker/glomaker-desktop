@@ -304,11 +304,9 @@ package org.glomaker.app.view.popups.journey
 		
 		protected function gpsMapButton_clickHandler(event:MouseEvent):void
 		{
-			var latLong:Point = parseGpsLatLong();
-			if (!latLong)
-				return;
+			var query:String = viewRef.gpsLatLongInput.text ? ("?q=" + viewRef.gpsLatLongInput.text) : "";
 			
-			navigateToURL(new URLRequest("http://maps.google.com?q=" + latLong.x + "," + latLong.y));
+			navigateToURL(new URLRequest("http://maps.google.com" + query));
 		}
 		
 		protected function qrSaveButton_clickHandler(event:MouseEvent):void
