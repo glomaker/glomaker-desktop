@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:ui="org.glomaker.shared.ui.*"
+	horizontalScrollPolicy="off" verticalScrollPolicy="off"
+	mouseChildren="{editMode}"
+	mouseDown="mouseDownHandler(event)" xmlns:dragdrop="org.glomaker.plugin.dragdrop.*" 
+	>
+	
+	<mx:Script>
+		<![CDATA[
+			//--------------------------------------------------
+			// Public vars
+			//--------------------------------------------------
+			
+			[Bindable]
+			public var editMode:Boolean;
+			
+			[Bindable]
+			/**
+			 * Defines whether this item is a source (true) or destination (false) in a match. Sources
+			 * lie on the left side and can be used to start a dragging operation, while destinations
+			 * lie on the right side and can only be used as destinations for dragging operations.
+			 */
+			public var isSource:Boolean = true;
+			
+			[Bindable]
+			public var borderColour:uint;
+			
+			[Bindable]
+			public var connectionColour:uint;
+			
+			[Bindable]
+			/**
+			 * Used by the internal background animation effect.
+			 */
+			public var boxBGAlpha:Number = 0;
+			
+			//--------------------------------------------------
+			// Protected vars
+			//--------------------------------------------------
+			
+			protected var sourceUpdated:Boolean;
+			
+			[Bindable]
+			protected var text:String;
+			
+			//--------------------------------------------------
+			// list
+			//--------------------------------------------------
+			
+			private var _list:Array;
+
+			[Bindable]
+			/**
+			 * The list property that coontains the item managed by this <code>ListItem</code>.
+			 */		
+			public function get list():Array
+			{
+				return _list;
+			}
+
+			public function set list(value:Array):void
+			{
+				if (value == list)
+					return;
+				
+				_list = value;
+				
+				sourceUpdated = true;
+				invalidateProperties();
+			}
+			
+			//--------------------------------------------------
+			// index
+			//--------------------------------------------------
+			
+			private var _index:int = -1;
+
+			[Bindable]
+			/**
+			 * Index of the item in <code>list</code>.
+			 */		
+			public function get index():int
+			{
+				return _index;
+			}
+
+			public function set index(value:int):void
+			{
+				if (value == index)
+					return;
+				
+				_index = value;
+				
+				sourceUpdated = true;
+				invalidateProperties();
+			}
+			
+			//--------------------------------------------------
+			// highlighted
+			//--------------------------------------------------
+			
+			private var _highlighted:Boolean;
+
+			/**
+			 * Defines whther the item should be highlighted (darker background + hand mouse cursor).
+			 */
+			public function get highlighted():Boolean
+			{
+				return _highlighted;
+			}
+
+			/**
+			 * @private
+			 */
+			public function set highlighted(value:Boolean):void
+			{
+				if (value == highlighted)
+					return;
+				
+				_highlighted = value;
+				
+				buttonMode = highlighted;
+				
+				boxBGAnim.end();
+				boxBGAnim.toValue = highlighted ? 0.2 : 0;
+				boxBGAnim.play();
+			}
+			
+			//--------------------------------------------------
+			// Overrides
+			//--------------------------------------------------
+			
+			override protected function commitProperties():void
+			{
+				super.commitProperties();
+				
+				if (sourceUpdated)
+				{
+					sourceUpdated = false;
+					
+					text = list && index >= 0 && index < list.length ? list[index] : "";
+				}
+			}
+			
+			//--------------------------------------------------
+			// Event handlers
+			//--------------------------------------------------
+			
+			protected function mouseDownHandler(event:MouseEvent):void
+			{
+				if (editMode)
+					textArea.setFocus();
+			}
+			
+			protected function textArea_changeHandler(event:Event):void
+			{
+				if (list && index >= 0 && index < list.length)
+					list[index] = textArea.text;
+			}
+		]]>
+	</mx:Script>
+
+	<mx:Style>
+		.editInput {
+			border-style: none;
+			background-alpha: 0;
+			theme-color: #333333;
+			focus-thickness: 1;
+		}
+	</mx:Style>
+	
+	<mx:AnimateProperty id="boxBGAnim" target="{this}" property="boxBGAlpha" duration="100" />
+	
+	<mx:Canvas
+		top="0" bottom="0"
+		left="{isSource ? 0 : 9}" right="{isSource ? 9 : 0}"
+		backgroundColor="#FFFFFF"
+		>
+		<mx:Canvas
+			left="0" right="0" top="0" bottom="0"
+			borderStyle="solid"
+			borderColor="{borderColour}"
+			backgroundColor="{borderColour}"
+			backgroundAlpha="{boxBGAlpha}"
+			/>
+		<ui:DynamicTextArea
+			id="textArea"
+			styleName="editInput"
+			left="12" right="12" minHeight="0" maxHeight="{height}"
+			verticalCenter="0"
+			text="{text}"
+			editable="{editMode}"
+			selectable="{editMode}"
+			change="textArea_changeHandler(event)"
+			/>
+	</mx:Canvas>
+	
+	<dragdrop:Anchor
+		id="anchor"
+		width="18" height="18"
+		verticalCenter="0"
+		left="{isSource ? NaN : 0}" right="{isSource ? 0 : NaN}"
+		color="{connectionColour}"
+		borderColor="{borderColour}"
+		backgroundColor="{borderColour}"
+		backgroundAlpha="{boxBGAlpha}"
+		/>
+</mx:Canvas>

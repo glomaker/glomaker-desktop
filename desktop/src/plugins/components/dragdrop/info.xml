@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<plugin>
+	<id>dragdrop</id>
+	<author>DN Digital</author>
+	<version>1.0</version>
+	<glomaker>2.0</glomaker>	
+	<name>Drag and Drop</name>
+	<description>Allows words or phrases to be dragged on to an image.</description>
+	<swf>DragDrop.swf</swf>
+</plugin>
