@@ -19,8 +19,8 @@
 	<mx:Script>
 		<![CDATA[
 			import mx.collections.ArrayCollection;
-			import mx.managers.PopUpManager;
 			import mx.core.Repeater;
+			import mx.managers.PopUpManager;
 			
 			import org.glomaker.shared.properties.ArrayProperty;
 			import org.glomaker.shared.properties.ColourProperty;
@@ -154,6 +154,22 @@
 			protected function addHotspot():void
 			{
 				itemLabels.addItem( "Item " + (itemLabels.length + 1) );
+				
+				// new hotspot
+				var hotspot:Hotspot = new Hotspot();
+				hotspot.labelText = "Click to Edit";
+				hotspot.width = Math.max( 110, targetRegionContainer.width/5 );
+				hotspot.height = targetRegionContainer.height/5;
+				hotspot.x = Math.random() * targetRegionContainer.width * 4/5;
+				hotspot.y = Math.random() * targetRegionContainer.height * 4/5;
+				
+				// TODO: need to figure out proper sizing
+				// and resizing if component is resized!
+				targetRegionContainer.addChild( hotspot );
+				
+				// fade in
+				hotspotFadeIn.target = hotspot;
+				hotspotFadeIn.play();
 			}
 			
 		]]>
@@ -223,6 +239,8 @@
 		}
 	</mx:Style>
 	
+	<mx:Fade id="hotspotFadeIn" duration="300" alphaFrom="0.0" alphaTo="1.0" />
+	
 	<mx:HBox width="100%" height="100%" horizontalGap="0" horizontalScrollPolicy="off" verticalScrollPolicy="off">
 		<mx:Canvas
 			backgroundColor="#f2f2f2"
@@ -246,6 +264,7 @@
 			 x="163"
 			 y="0"
 			 styleName="targetRegion"
+			 id="targetRegionContainer"
 		/>
 	</mx:HBox>
 	
