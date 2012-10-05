@@ -7,7 +7,8 @@
 	backgroundAlpha="0.5"
 	rollOver="over()"
 	rollOut="out()"
-	buttonMode="true">
+	buttonMode="true"
+	mouseChildren="false">
 	
 	<mx:Script>
 		<![CDATA[

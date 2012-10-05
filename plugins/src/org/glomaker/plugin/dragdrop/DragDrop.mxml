@@ -20,6 +20,7 @@
 		<![CDATA[
 			import mx.collections.ArrayCollection;
 			import mx.core.Repeater;
+			import mx.events.FlexEvent;
 			import mx.managers.PopUpManager;
 			
 			import org.glomaker.shared.properties.ArrayProperty;
@@ -163,13 +164,31 @@
 				hotspot.x = Math.random() * targetRegionContainer.width * 4/5;
 				hotspot.y = Math.random() * targetRegionContainer.height * 4/5;
 				
+				hotspot.addEventListener( FlexEvent.CREATION_COMPLETE, onHotspotCreationComplete );
+				
 				// TODO: need to figure out proper sizing
-				// and resizing if component is resized!
+				// and resizing if overall component has been resized!
 				targetRegionContainer.addChild( hotspot );
 				
 				// fade in
 				hotspotFadeIn.target = hotspot;
 				hotspotFadeIn.play();
+			}
+			
+			protected function onHotspotCreationComplete( e:FlexEvent ):void
+			{
+				Hotspot( e.target ).removeEventListener( FlexEvent.CREATION_COMPLETE, onHotspotCreationComplete );
+				Hotspot( e.target ).deleteCorner.addEventListener( MouseEvent.CLICK, onDeleteHotspot, false, 0, true );
+			}
+
+			/**
+			 * Event handler - hotspot delete was clicked.
+			**/
+			protected function onDeleteHotspot( e:MouseEvent ):void
+			{
+				var hotspot:Hotspot = Hotspot( DisplayObject( e.target ).parent );
+				hotspot.deleteCorner.removeEventListener( MouseEvent.CLICK, onDeleteHotspot );
+				hotspot.remove();
 			}
 			
 		]]>
@@ -228,8 +247,8 @@
 			paddingRight: 8;
 			fontSize: 16;
 			borderStyle: solid;
-			borderThickness: 5;
-			borderColor: #000000;
+			borderThickness: 2;
+			borderColor: #bfbfbf;
 		}
 		
 		.addButton {

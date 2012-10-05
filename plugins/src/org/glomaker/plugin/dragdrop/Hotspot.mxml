@@ -16,6 +16,20 @@
 			
 			protected var dragOffset:Point;
 			
+			// ---------------
+			// PUBLIC METHODS
+			// ---------------
+
+			/**
+			 * Fades out and, on completion, removes the Hotspot component instance from the display list.
+			**/
+			public function remove():void
+			{
+				mouseEnabled = false;
+				fadeBeforeRemove.target = this;
+				fadeBeforeRemove.play();
+			}
+			
 			
 			// ---------------
 			// MOVING CODE
@@ -25,8 +39,6 @@
 				// record distance of mouse to top-left corner of the component
 				// used to calculate correct new position while dragging
 				dragOffset = new Point( e.localX, e.localY );
-				
-				trace("move d");
 				
 				// start listening to drag events
 				stage.addEventListener( MouseEvent.MOUSE_UP, moveStageUp );
@@ -85,6 +97,22 @@
 		]]>
 	</mx:Script>
 	
+	<mx:Style>
+		.textAreaStyle {
+			backgroundColor: #ffffff;
+			color: #000000;
+			paddingBottom: 8;
+			paddingTop: 8;
+			paddingLeft: 8;
+			paddingRight: 8;
+			fontSize: 16;
+			borderStyle: solid;
+			borderThickness: 2;
+			borderColor: #000000;
+		}
+	</mx:Style>
+	
+	<mx:Fade id="fadeBeforeRemove" alphaFrom="1.0" alphaTo="0.0" duration="300" effectEnd="parent.removeChild( this )" />
 	
 	<mx:Canvas
 		width="100%"
@@ -114,6 +142,7 @@
 		x="{(width - textLabelComponent.width)/2}"
 		y="{(height - textLabelComponent.height)/2}"
 		text="{labelText}"
+		styleName="textAreaStyle"
 	/>
 	
 	
