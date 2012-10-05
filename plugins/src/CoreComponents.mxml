@@ -65,9 +65,10 @@
 
 <mx:SWFLoader id="plugin" width="100%" height="100%"/>
 -->
+		<londonmet:LondonMetNavBar id="navBar" width="100%" height="50"/>
+
 </mx:VBox>
 
 
-<londonmet:LondonMetNavBar/>
 
 </mx:Application>

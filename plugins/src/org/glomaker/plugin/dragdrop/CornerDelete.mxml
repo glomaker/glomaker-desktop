@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	width="14"
+	height="14"
+	backgroundColor="#ffffff"
+	backgroundAlpha="0.5"
+	rollOver="over()"
+	rollOut="out()"
+	buttonMode="true">
+	
+	<mx:Script>
+		<![CDATA[
+			
+			[Embed(source="assets/cross.png")]
+			[Bindable]
+			public var imgCls:Class;
+	
+			protected function over():void
+			{
+				setStyle("backgroundAlpha", 0.8);
+			}
+			protected function out():void
+			{
+				setStyle("backgroundAlpha", 0.5);
+			}
+			
+			
+		]]>
+	</mx:Script>
+	<mx:Image source="{imgCls}" width="9" height="9" x="2.5" y="2.5" />
+	
+</mx:Canvas>

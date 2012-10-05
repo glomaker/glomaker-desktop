@@ -246,7 +246,8 @@
 			backgroundColor="#f2f2f2"
 			width="163"
 			height="100%"
-			styleName="listRegion">
+			styleName="listRegion"
+			horizontalScrollPolicy="off">
 			<mx:VBox verticalGap="11" width="163" x="0" y="0" styleName="itemList" horizontalScrollPolicy="off">
 				<mx:Repeater dataProvider="{itemLabels}" id="dragRep">
 					<dragdrop:DraggableItem

@@ -9,9 +9,78 @@
 
 	<mx:Script>
 		<![CDATA[
+			import mx.events.DragEvent;
 			
 			[Bindable]
 			public var labelText:String;
+			
+			protected var dragOffset:Point;
+			
+			
+			// ---------------
+			// MOVING CODE
+			// ---------------
+			protected function moveDown( e:MouseEvent ):void
+			{
+				// record distance of mouse to top-left corner of the component
+				// used to calculate correct new position while dragging
+				dragOffset = new Point( e.localX, e.localY );
+				
+				trace("move d");
+				
+				// start listening to drag events
+				stage.addEventListener( MouseEvent.MOUSE_UP, moveStageUp );
+				stage.addEventListener( MouseEvent.MOUSE_MOVE, moveStageMove );
+			}
+			
+			protected function moveStageUp( e:MouseEvent ):void
+			{
+				stage.removeEventListener( MouseEvent.MOUSE_UP, moveStageUp );
+				stage.removeEventListener( MouseEvent.MOUSE_MOVE, moveStageMove );
+			}
+			
+			protected function moveStageMove( e:MouseEvent ):void
+			{
+				// convert to local coordinates
+				// note: x, y measured in parent's coordinate system
+				var coords:Point = parent.globalToLocal( new Point( e.stageX, e.stageY ) );
+				
+				// move, keeping mouse at the same location
+				// and keeping the entire hotspot within the boundary area
+				x = Math.max( 0, Math.min( parent.width - width, coords.x - dragOffset.x ) );
+				y = Math.max( 0, Math.min( parent.height - height, coords.y - dragOffset.y ) );
+			}
+			
+			// ---------------
+			// RESIZING CODE
+			// ---------------
+			protected function resizeDown( e:MouseEvent ):void
+			{
+				// record distance of mouse to edge of the component
+				// this will be kept constant while resizing so that the user effectively ends up dragging the corner
+				// relies on the fact that resizeCorner is in bottom right corner of component
+				dragOffset = new Point( resizeCorner.width - e.localX, resizeCorner.height - e.localY );
+				
+				// start listening for drag events
+				stage.addEventListener( MouseEvent.MOUSE_UP, resizeStageUp );
+				stage.addEventListener( MouseEvent.MOUSE_MOVE, resizeStageMove );
+			}
+			
+			protected function resizeStageUp( e:MouseEvent ):void
+			{
+				stage.removeEventListener( MouseEvent.MOUSE_UP, resizeStageUp );
+				stage.removeEventListener( MouseEvent.MOUSE_MOVE, resizeStageMove );
+			}
+			
+			protected function resizeStageMove( e:MouseEvent ):void
+			{
+				// convert to local coordinates
+				var coords:Point = globalToLocal( new Point( e.stageX, e.stageY ) );
+				
+				// resize
+				width = coords.x + dragOffset.x;
+				height = coords.y + dragOffset.y;
+			}
 			
 		]]>
 	</mx:Script>
@@ -23,8 +92,22 @@
 		id="background"
 		backgroundColor="#ff0000"
 		alpha="0.2"
+		buttonMode="true"
+		mouseDown="moveDown(event)"
 		/>
 
+	<dragdrop:CornerDelete
+		top="0"
+		right="0"
+		id="deleteCorner"
+	/>
+	<dragdrop:CornerResize
+		bottom="0"
+		right="0"
+		id="resizeCorner"
+		mouseDown="resizeDown(event)"
+	/>
+	
 	<dragdrop:SelfAdjustingTextArea
 		id="textLabelComponent"
 		width="95"
@@ -32,5 +115,7 @@
 		y="{(height - textLabelComponent.height)/2}"
 		text="{labelText}"
 	/>
+	
+	
 	
 </mx:Canvas>
