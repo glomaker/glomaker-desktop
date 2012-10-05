@@ -184,8 +184,19 @@
 			skin: Embed("assets/delete.png");
 		}
 		
-		.itemListBox {
+		.listRegion {
 			backgroundColor: #f2f2f2;
+			borderColor: #858585;
+			borderStyle: solid;
+			borderThickness: 1;
+			borderSides: "right";
+			
+		}
+		.targetRegion{
+			backgroundColor: #f9f9f9;
+		}
+		
+		.itemList {
 			paddingBottom: 30;
 			paddingLeft: 30;
 			paddingTop: 30;
@@ -200,6 +211,9 @@
 			paddingLeft: 8;
 			paddingRight: 8;
 			fontSize: 16;
+			borderStyle: solid;
+			borderThickness: 5;
+			borderColor: #000000;
 		}
 		
 		.addButton {
@@ -210,8 +224,12 @@
 	</mx:Style>
 	
 	<mx:HBox width="100%" height="100%" horizontalGap="0" horizontalScrollPolicy="off" verticalScrollPolicy="off">
-		<mx:Canvas backgroundColor="#f2f2f2" width="163" height="100%">
-			<mx:VBox verticalGap="11" width="163" x="0" y="0" styleName="itemListBox" horizontalScrollPolicy="off">
+		<mx:Canvas
+			backgroundColor="#f2f2f2"
+			width="163"
+			height="100%"
+			styleName="listRegion">
+			<mx:VBox verticalGap="11" width="163" x="0" y="0" styleName="itemList" horizontalScrollPolicy="off">
 				<mx:Repeater dataProvider="{itemLabels}" id="dragRep">
 					<dragdrop:DraggableItem
 						text="{dragRep.currentItem}"
@@ -222,8 +240,14 @@
 				</mx:Repeater>
 			</mx:VBox>		
 		</mx:Canvas>
-		<mx:Canvas width="100%" height="100%" backgroundColor="#ff0000" x="163" y="0" />
+		<mx:Canvas
+			 width="100%"
+			 height="100%"
+			 x="163"
+			 y="0"
+			 styleName="targetRegion"
+		/>
 	</mx:HBox>
 	
-	<mx:Button click="addHotspot()" label="Add New Hotspot" styleName="addButton" />
+	<mx:Button click="addHotspot()" visible="{editMode}" label="Add New Hotspot" styleName="addButton" />
 </BaseComponent>

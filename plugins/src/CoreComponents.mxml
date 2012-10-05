@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" 
+				creationComplete="init()"
 	xmlns:mediaLoader="org.glomaker.plugin.mediaLoader.*" 
 	xmlns:plugin="org.glomaker.plugin.*" 
 	xmlns:medialoaders="org.glomaker.plugin.medialoaders.*" 
@@ -12,7 +13,7 @@
 	xmlns:videoplayer="org.glomaker.plugin.videoplayer.*" 
 	xmlns:rectangle="org.glomaker.plugin.rectangle.*" 
 	xmlns:londonmet="org.glomaker.stage.londonmet.*" 
-	xmlns:wordassembly="org.glomaker.plugin.wordassembly.*" xmlns:stepthrough="org.glomaker.plugin.stepthrough.*" xmlns:accessviews="org.glomaker.plugin.accessviews.*" xmlns:imagemagnifier="org.glomaker.plugin.imagemagnifier.*" xmlns:mp3player="org.glomaker.plugin.mp3player.*">
+	xmlns:wordassembly="org.glomaker.plugin.wordassembly.*" xmlns:stepthrough="org.glomaker.plugin.stepthrough.*" xmlns:accessviews="org.glomaker.plugin.accessviews.*" xmlns:imagemagnifier="org.glomaker.plugin.imagemagnifier.*" xmlns:mp3player="org.glomaker.plugin.mp3player.*" xmlns:dragdrop="org.glomaker.plugin.dragdrop.*">
 	 
 	<mx:Script>
 		<![CDATA[
@@ -27,6 +28,7 @@
 			
 			protected function init():void
 			{
+				plugin.fakeInit();
 			}
 			
 			
@@ -47,8 +49,7 @@
 	
 		<mx:Button label="Toggle" click="onToggleViewState(event)"/>
 		
-		
-		<textarea:TextAreaPlugin id="plugin" width="100%" height="50%"/>
+		<dragdrop:DragDrop id="plugin" width="100%" height="100%"/>
 
 
 <!--		
