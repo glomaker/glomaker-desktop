@@ -113,7 +113,10 @@
 				
 				editMode = value;
 				
-				// update display
+				// any dragging should be cleared
+				resetDragItems();
+				
+				// update display (also updates list item alpha values etc)
 				updateList();
 				
 				var obj:DisplayObject;
@@ -301,12 +304,40 @@
 				
 				return item;
 			}
-
+			
+			/**
+			 * Resets all draggable items + placeholders back to their original position.
+			**/
+			protected function resetDragItems():void
+			{
+				droppedItemContainer.removeAllChildren();
+				
+				var item:DraggableItem;
+				for(var i:uint = 0;i< dragItemList.numChildren;i++)
+				{
+					item = DraggableItem(dragItemList.getChildAt(i));
+					item.alpha = 1;
+					item.mouseEnabled = true;
+				}
+			}
 			
 			//--------------------------------------------------
 			// Event handlers
 			//--------------------------------------------------
-			
+
+
+			/**
+			 * Event handler - Reset button was clicked.
+			**/
+			protected function onResetClick():void
+			{
+				// ignore in edit mode - it's an editable button
+				if( editMode )
+				{
+					return;
+				}
+				resetDragItems();
+			}
 			
 			/**
 			 * Event handler - hotspot delete was clicked.
@@ -561,5 +592,5 @@
 	/>
 	
 	<mx:Button id="addButton" click="addHotspot()" visible="{editMode}" label="Add New Hotspot" styleName="addButton" bottom="10" x="{targetRegionContainer.x + (targetRegionContainer.width - addButton.width)/2}" />
-	<editbutton:EditableButton id="resetButton" isEditable="{editMode}" label="Reset" bottom="10" x="{(listRegionContainer.width - resetButton.width)/2}"/>
+	<editbutton:EditableButton id="resetButton" isEditable="{editMode}" label="Reset" click="onResetClick()" bottom="10" x="{(listRegionContainer.width - resetButton.width)/2}"/>
 </BaseComponent>
