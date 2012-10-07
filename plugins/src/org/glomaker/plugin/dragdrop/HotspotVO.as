@@ -4,7 +4,6 @@ package org.glomaker.plugin.dragdrop
 	 * Value object storing information about a hotspot. 
 	 * @author Nils
 	 */
-	[Bindable]
 	public class HotspotVO
 	{
 		public var text:String;
