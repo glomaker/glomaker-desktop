@@ -349,6 +349,83 @@
 				}
 			}
 			
+			// ------------------------------
+			// DRAGGING CODE
+			// ------------------------------
+			
+			protected var sourceItem:DraggableItem;
+			protected var draggedItem:DraggableItem;
+			protected var draggedHotspotVO:HotspotVO;
+			protected var dragOffset:Point;
+			protected var localSourceCoords:Point;
+			
+			protected function startItemDrag( e:MouseEvent ):void
+			{
+				sourceItem = DraggableItem( e.target );
+				
+				// create a copy
+				if( draggedItem == null )
+				{
+					draggedItem = new DraggableItem();
+				}
+				
+				draggedItem.alpha = 0.6;
+				draggedItem.width = sourceItem.width;
+				draggedItem.styleName = sourceItem.styleName;
+				draggedItem.text = sourceItem.text;
+				
+				// coordinates need converting
+				localSourceCoords = new Point( sourceItem.x, sourceItem.y );
+				localSourceCoords = sourceItem.parent.localToGlobal( localSourceCoords );
+				localSourceCoords = globalToLocal( localSourceCoords );
+				
+				draggedItem.x = localSourceCoords.x;
+				draggedItem.y = localSourceCoords.y;
+				
+				// add to display list
+				addChild( draggedItem );
+				
+				// start dragging
+				dragOffset = new Point( e.localX, e.localY );
+				stage.addEventListener( MouseEvent.MOUSE_MOVE, onDragMove );
+				stage.addEventListener( MouseEvent.MOUSE_UP, onDragUp );
+			}
+			
+			protected function onDragMove( e:MouseEvent ):void
+			{
+				var coords:Point = draggedItem.parent.globalToLocal( new Point( e.stageX, e.stageY ) );
+				draggedItem.x = coords.x - dragOffset.x;
+				draggedItem.y = coords.y - dragOffset.y;
+			}
+			
+			protected function onDragUp( e:MouseEvent ):void
+			{
+				if( draggedItem )
+				{
+					noDropMove.target = draggedItem;
+					noDropMove.xFrom = draggedItem.x;
+					noDropMove.xTo = localSourceCoords.x;
+					noDropMove.yFrom = draggedItem.y;
+					noDropMove.yTo = localSourceCoords.y;
+					noDropMove.play();
+				}
+				if( sourceItem )
+				{
+					sourceItem = null;
+				}
+				stage.removeEventListener( MouseEvent.MOUSE_MOVE, onDragMove );
+				stage.removeEventListener( MouseEvent.MOUSE_UP, onDragUp );
+			}
+			
+			protected function onNoDropMoveComplete():void
+			{
+				if( draggedItem )
+				{
+					draggedItem.parent.removeChild( draggedItem );
+					draggedItem = null;
+				}
+			}
+			
 		]]>
 	</mx:Script>
 	
@@ -417,6 +494,7 @@
 	</mx:Style>
 	
 	<mx:Fade id="hotspotFadeIn" duration="300" alphaFrom="0.0" alphaTo="1.0" />
+	<mx:Move id="noDropMove" duration="300" effectEnd="onNoDropMoveComplete()" />
 	
 	<mx:HBox width="100%" height="100%" horizontalGap="0" horizontalScrollPolicy="off" verticalScrollPolicy="off">
 		<mx:Canvas
@@ -433,6 +511,9 @@
 						styleName="listItem"
 						width="95"
 						alpha="{editMode?0.3:1.0}"
+						buttonMode="true"
+						mouseEnabled="{!editMode}"
+						mouseDown="startItemDrag(event)"
 					/>
 				</mx:Repeater>
 			</mx:VBox>		

@@ -4,6 +4,7 @@ package org.glomaker.plugin.dragdrop
 	
 	import mx.controls.TextArea;
 	import mx.core.ScrollPolicy;
+	import mx.events.FlexEvent;
 	
 	/**
 	 * An extension of TextArea that automatically adjusts height to fit its content.
@@ -22,6 +23,7 @@ package org.glomaker.plugin.dragdrop
 			verticalScrollPolicy = ScrollPolicy.OFF;
 			wordWrap = true;
 			addEventListener( Event.ADDED_TO_STAGE, onAddedToStage, false, 0, true );
+			addEventListener( FlexEvent.CREATION_COMPLETE, onCreationComplete, false, 0, true );
 		}
 		
 		override public function set editable(value:Boolean):void
@@ -62,6 +64,9 @@ package org.glomaker.plugin.dragdrop
 		 */		
 		protected function adjustHeight():void
 		{
+			if( textField == null )
+				return;
+			
 			// weird glitch when editing 2-line textfields
 			// and if using exact linemetrics height text will get cut off
 			var adjustment:uint = ( textField.numLines == 2 ? 2 : 1 );
@@ -108,6 +113,12 @@ package org.glomaker.plugin.dragdrop
 		// ---------------------
 		// EVENT HANDLERS
 		// ---------------------
+		
+		protected function onCreationComplete( e:FlexEvent ):void
+		{
+			removeEventListener( FlexEvent.CREATION_COMPLETE, onCreationComplete );
+			adjustHeight();
+		}
 		
 		protected function onAddedToStage( e:Event ):void
 		{
