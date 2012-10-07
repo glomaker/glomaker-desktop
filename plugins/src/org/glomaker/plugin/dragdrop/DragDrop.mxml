@@ -23,6 +23,9 @@
 			
 			import org.glomaker.plugin.dragdrop.events.HotspotDeleteEvent;
 			import org.glomaker.plugin.dragdrop.events.HotspotTextChangeEvent;
+			import org.glomaker.shared.properties.ArrayProperty;
+			import org.glomaker.shared.properties.BooleanProperty;
+			import org.glomaker.shared.properties.ColourProperty;
 			import org.glomaker.shared.properties.IComponentProperty;
 			import org.glomaker.shared.properties.StringProperty;
 			
@@ -31,17 +34,10 @@
 			//--------------------------------------------------
 			
 			// component properties
-			/*
-			protected const list1:ArrayProperty = new ArrayProperty("list1", "", ["Item 1","Item 2"]);
-			protected const list2:ArrayProperty = new ArrayProperty("list2", "", ["Match 1","Match 2"]);
-			protected const submitLabel:StringProperty = new StringProperty("submit", "", "Submit");
-			protected const resetLabel:StringProperty = new StringProperty("reset", "", "Reset");
-			protected const correctFeedback:StringProperty = new StringProperty("correct", "", "That is correct - well done!");
-			protected const wrongFeedback:StringProperty = new StringProperty("wrong", "", "Not quite - try again!");
-			protected const connectionColour:ColourProperty = new ColourProperty("connections", "Colour for Connections", 0);
-			protected const borderColour:ColourProperty = new ColourProperty("borders", "Colour for Borders of Boxes", 0xB7BABC);
-			protected const fontSize:NumericStepperProperty = new NumericStepperProperty("fontSize", "Font Size", 15);
-			*/
+			protected var encodedRawData:ArrayProperty = new ArrayProperty( "encodedRawData", "", [] );
+			protected var resetLabel:StringProperty = new StringProperty("resetLabel", "", "Reset");
+			protected var hotspotColour:ColourProperty = new ColourProperty("hotspotColour", "Hotspot Colour", 0xff0000);
+			protected var showHotspots:BooleanProperty = new BooleanProperty("showHotspots", "Show Hotspots?", true);
 			
 			// other
 			[Bindable]
@@ -86,12 +82,17 @@
 			
 			override protected function defineProperties():void
 			{
-				//addSaveableProperty(list1);				
-				// addProperty(connectionColour);
+				addSaveableProperty( encodedRawData );
+				addSaveableProperty( hotspotColour );
+				addSaveableProperty( showHotspots );
+				addSaveableProperty( resetLabel );
 			}
 			
 			override protected function componentInitComplete():void
 			{
+				resetButton.label = resetLabel.propValue;
+				
+				// apply data
 			}
 			
 			override public function editablePropertyUpdated(prop:IComponentProperty):void
@@ -128,6 +129,11 @@
 						Hotspot( obj ).showControls = editMode;
 					}
 				}
+			}
+			
+			override public function destroy():void
+			{
+				super.destroy();
 			}
 
 			
