@@ -9,6 +9,8 @@
 
 	<mx:Script>
 		<![CDATA[
+			import org.glomaker.plugin.dragdrop.events.HotspotDeleteEvent;
+			import org.glomaker.plugin.dragdrop.events.HotspotTextChangeEvent;
 
 			/**
 			 * The text value of the hotspots label.
@@ -105,6 +107,24 @@
 				height = Math.max( 2*resizeCorner.height, coords.y + dragOffset.y);
 			}
 			
+			// ---------------
+			// DELETE HANDLER
+			// ---------------
+			
+			protected function deleteClick():void
+			{
+				dispatchEvent( new HotspotDeleteEvent( this ) );
+			}
+			
+			// ---------------
+			// TEXT CHANGE HANDLER
+			// ---------------
+
+			protected function textChange():void
+			{
+				dispatchEvent( new HotspotTextChangeEvent( textLabelComponent.text ) );
+			}
+			
 		]]>
 	</mx:Script>
 	
@@ -139,6 +159,7 @@
 		top="0"
 		right="0"
 		id="deleteCorner"
+		click="deleteClick()"
 	/>
 	<dragdrop:CornerResize
 		bottom="0"
@@ -154,6 +175,7 @@
 		y="{(height - textLabelComponent.height)/2}"
 		text="{labelText}"
 		styleName="textAreaStyle"
+		change="textChange()"
 	/>
 	
 	

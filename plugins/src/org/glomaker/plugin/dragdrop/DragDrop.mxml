@@ -25,6 +25,8 @@
 			import mx.events.FlexEvent;
 			import mx.managers.PopUpManager;
 			
+			import org.glomaker.plugin.dragdrop.events.HotspotDeleteEvent;
+			import org.glomaker.plugin.dragdrop.events.HotspotTextChangeEvent;
 			import org.glomaker.shared.properties.ArrayProperty;
 			import org.glomaker.shared.properties.ColourProperty;
 			import org.glomaker.shared.properties.IComponentProperty;
@@ -75,7 +77,7 @@
 				itemLabels = new ArrayCollection();
 				
 				// show
-				shuffle();
+				updateList();
 				displayHotspots();
 			}
 			
@@ -101,7 +103,6 @@
 				for each( var vo:HotspotVO in hotspotData )
 				{
 					hotspot = createHotspotFromVO( vo );
-					hotspot.addEventListener( FlexEvent.CREATION_COMPLETE, onHotspotCreationComplete );
 					targetRegionContainer.addChild( hotspot );
 					
 					// fade in
@@ -110,6 +111,16 @@
 				}
 			}
 			
+			
+			/**
+			 * Updates the item list.
+			 * Shuffles or not, depending on edit mode.
+			 * Use this method rather than calling shuffle / unshuffle directly.
+			**/
+			protected function updateList():void
+			{
+				editMode ? unshuffle() : shuffle();
+			}
 			
 			/**
 			 * Shuffles the list of draggable labels.
@@ -191,7 +202,39 @@
 				hotspot.y = vo.y;
 				hotspot.width = vo.w;
 				hotspot.height = vo.h;
+				
+				// event listeners
+				hotspot.addEventListener( HotspotTextChangeEvent.CHANGE, onHotspotTextChange, false, 0, true );
+				hotspot.addEventListener( HotspotDeleteEvent.DELETE, onHotspotDelete, false, 0, true );
+				
+				// add to display list
+				targetRegionContainer.addChild( hotspot );
+				
+				// remember mapping
+				hotspotToVOMap[hotspot] = vo;
+
+				// return for further processing
 				return hotspot;
+			}
+			
+			/**
+			 * Removes hotspot references + data structures and calls its 'remove' function.
+			**/
+			protected function removeHotspot( hotspot:Hotspot ):void
+			{
+				// event listeners
+				hotspot.removeEventListener( HotspotTextChangeEvent.CHANGE, onHotspotTextChange );
+				hotspot.removeEventListener( HotspotDeleteEvent.DELETE, onHotspotDelete );
+				
+				// data structures
+				var vo:HotspotVO = hotspotToVOMap[ hotspot ];
+				delete hotspotToVOMap[ hotspot ];
+				
+				hotspotData.splice( hotspotData.indexOf( vo ), 1 );
+				updateList();
+				
+				// tell the hotspot to remove itself (will animate etc)
+				hotspot.remove();
 			}
 
 			
@@ -227,11 +270,7 @@
 					return;
 				
 				editMode = value;
-				
-				if (editMode)
-					unshuffle();
-				else
-					shuffle();
+				updateList();
 			}
 			
 			//--------------------------------------------------
@@ -240,8 +279,6 @@
 			
 			protected function addHotspot():void
 			{
-				itemLabels.addItem( "Item " + (itemLabels.length + 1) );
-				
 				// new hotspot data object
 				var vo:HotspotVO = new HotspotVO(
 					"Click to edit",
@@ -256,31 +293,29 @@
 				
 				// display object
 				var hotspot:Hotspot = createHotspotFromVO( vo );
-				hotspot.addEventListener( FlexEvent.CREATION_COMPLETE, onHotspotCreationComplete );
-				
-				// TODO: need to figure out proper sizing
-				// and resizing if overall component has been resized!
-				targetRegionContainer.addChild( hotspot );
-				
+								
 				// fade in
 				hotspotFadeIn.target = hotspot;
 				hotspotFadeIn.play();
+				
+				// list
+				updateList();
 			}
 			
-			protected function onHotspotCreationComplete( e:FlexEvent ):void
-			{
-				Hotspot( e.target ).removeEventListener( FlexEvent.CREATION_COMPLETE, onHotspotCreationComplete );
-				Hotspot( e.target ).deleteCorner.addEventListener( MouseEvent.CLICK, onDeleteHotspot, false, 0, true );
-			}
-
 			/**
 			 * Event handler - hotspot delete was clicked.
 			**/
-			protected function onDeleteHotspot( e:MouseEvent ):void
+			protected function onHotspotDelete( e:HotspotDeleteEvent ):void
 			{
-				var hotspot:Hotspot = Hotspot( DisplayObject( e.target ).parent );
-				hotspot.deleteCorner.removeEventListener( MouseEvent.CLICK, onDeleteHotspot );
-				hotspot.remove();
+				removeHotspot( e.hotspot );
+			}
+			
+			/**
+			 * Event handler - hotspot text has changed.
+			**/
+			protected function onHotspotTextChange( e:HotspotTextChangeEvent ):void
+			{
+				
 			}
 			
 		]]>
