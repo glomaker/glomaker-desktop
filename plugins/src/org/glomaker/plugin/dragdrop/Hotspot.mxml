@@ -9,12 +9,18 @@
 
 	<mx:Script>
 		<![CDATA[
-			import mx.events.DragEvent;
-			
+
+			/**
+			 * The text value of the hotspots label.
+			**/
 			[Bindable]
 			public var labelText:String;
 			
+			/**
+			 * Helper variable used during dragging/resize operations.
+			**/
 			protected var dragOffset:Point;
+			
 			
 			// ---------------
 			// PUBLIC METHODS
@@ -39,6 +45,9 @@
 				// record distance of mouse to top-left corner of the component
 				// used to calculate correct new position while dragging
 				dragOffset = new Point( e.localX, e.localY );
+				
+				// move to top of display list so it doesn't underlap other hotspots
+				parent.addChild( this );
 				
 				// start listening to drag events
 				stage.addEventListener( MouseEvent.MOUSE_UP, moveStageUp );
@@ -89,9 +98,11 @@
 				// convert to local coordinates
 				var coords:Point = globalToLocal( new Point( e.stageX, e.stageY ) );
 				
-				// resize
-				width = coords.x + dragOffset.x;
-				height = coords.y + dragOffset.y;
+				// resize - not smaller than the corner elements
+				// NB: this is still not ideal as the user can make the element smaller than the enclosed text area and effectively hide the control corners
+				// this isn't really something that should happen in normal use though, as the visual feedback makes it obvious that this will occur
+				width = Math.max( 2*resizeCorner.width, coords.x + dragOffset.x );
+				height = Math.max( 2*resizeCorner.height, coords.y + dragOffset.y);
 			}
 			
 		]]>

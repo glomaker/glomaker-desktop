@@ -18,6 +18,8 @@
 >
 	<mx:Script>
 		<![CDATA[
+			import com.hotdraw.java.util.VectorEnumerator;
+			
 			import mx.collections.ArrayCollection;
 			import mx.core.Repeater;
 			import mx.events.FlexEvent;
@@ -53,35 +55,104 @@
 			[Bindable]
 			protected var itemLabels:ArrayCollection;
 			
+			// Array of HotspotVO instances describing hotspot data
+			protected var hotspotData:Array;
+			
+			// Dictionary mapping Hotspot display objects to HotspotVO instances dict[:Hotspot] = :HotspotVO
+			protected var hotspotToVOMap:Dictionary;
+			
 			
 			
 			public function fakeInit():void
 			{
-				itemLabels = new ArrayCollection(["Item 1 and much longer text to see what happens", "Item 2", "Item 3"]);
+				// data structures
+				hotspotData = new Array();
+				hotspotData.push( new HotspotVO( "Item 0 and much longer text to see what happens", 10, 10, 130, 200 ) );
+				hotspotData.push( new HotspotVO( "Item 1", 200, 200, 400, 100 ) );
+				
+				// auxiliary structures
+				hotspotToVOMap = new Dictionary(true);
+				itemLabels = new ArrayCollection();
+				
+				// show
+				shuffle();
+				displayHotspots();
 			}
 			
 			
+			// data structure
+			// each hotspot:
+			// index
+			// label
+			// hotspot x, y, w, h relative to target region
+			// general:
+			// array of labels for list (shuffled, non shuffled)
+			// image url
+			// show/hide hotspots during use
 			
 			
 			//--------------------------------------------------
 			// Protected functions
 			//--------------------------------------------------
 			
+			protected function displayHotspots():void
+			{
+				var hotspot:Hotspot;
+				for each( var vo:HotspotVO in hotspotData )
+				{
+					hotspot = createHotspotFromVO( vo );
+					hotspot.addEventListener( FlexEvent.CREATION_COMPLETE, onHotspotCreationComplete );
+					targetRegionContainer.addChild( hotspot );
+					
+					// fade in
+					// hotspotFadeIn.target = hotspot;
+					// hotspotFadeIn.play();
+				}
+			}
+			
+			
 			/**
-			 * Shuffles the second list and updates the correct answers accordingly.
+			 * Shuffles the list of draggable labels.
+			 * This is achieved by setting the itemLabels property.
 			 */
 			protected function shuffle():void
 			{
+				var raw:Array = [];
+				var data:Array = hotspotData.concat(); // quick copy for random extraction
+				
+				// random loop through hotspot array
+				var r:int;
+				var vo:HotspotVO;
+				
+				while( data.length > 0 )
+				{
+					r = Math.floor( Math.random()*data.length );
+					vo = data[r];
+					data.splice( r, 1 );
+					raw.push( vo.text );
+				}
+				
+				// update data provider for list
+				itemLabels.source = raw;
 			}
 			
 			/**
-			 * Sets the items of the second list in the correct order and clears the correct answers as
-			 * the unshuffled list is used only in the edit mode where the answers are not needed.
+			 * Sets the list of draggable labels to the order they were created in.
+			 * This is achieved by setting teh itemLabels property.
 			 */
 			protected function unshuffle():void
 			{
+				var raw:Array = [];
+				for each( var vo:HotspotVO in hotspotData )
+				{
+					raw.push( vo.text );
+				}
+				itemLabels.source = raw;
 			}
 
+			
+			// 
+			
 			protected var feedback:Feedback;
 			protected var result:Result;
 			
@@ -108,6 +179,21 @@
 				PopUpManager.addPopUp(result, this, true);
 				PopUpManager.centerPopUp(result); 
 			}
+			
+			/**
+			 * Creates a Hotspot display object instance for a specified HotspotVO data object.
+			**/
+			protected function createHotspotFromVO(vo:HotspotVO):Hotspot
+			{
+				var hotspot:Hotspot = new Hotspot();
+				hotspot.labelText = vo.text;
+				hotspot.x = vo.x;
+				hotspot.y = vo.y;
+				hotspot.width = vo.w;
+				hotspot.height = vo.h;
+				return hotspot;
+			}
+
 			
 			//--------------------------------------------------
 			// Overrides
@@ -156,14 +242,20 @@
 			{
 				itemLabels.addItem( "Item " + (itemLabels.length + 1) );
 				
-				// new hotspot
-				var hotspot:Hotspot = new Hotspot();
-				hotspot.labelText = "Click to Edit";
-				hotspot.width = Math.max( 110, targetRegionContainer.width/5 );
-				hotspot.height = targetRegionContainer.height/5;
-				hotspot.x = Math.random() * targetRegionContainer.width * 4/5;
-				hotspot.y = Math.random() * targetRegionContainer.height * 4/5;
+				// new hotspot data object
+				var vo:HotspotVO = new HotspotVO(
+					"Click to edit",
+					Math.random() * targetRegionContainer.width * 4/5,
+					Math.random() * targetRegionContainer.height * 4/5,
+					Math.max( 110, targetRegionContainer.width/5 ),
+					targetRegionContainer.height/5
+				);
 				
+				// add
+				hotspotData.push( vo );
+				
+				// display object
+				var hotspot:Hotspot = createHotspotFromVO( vo );
 				hotspot.addEventListener( FlexEvent.CREATION_COMPLETE, onHotspotCreationComplete );
 				
 				// TODO: need to figure out proper sizing
