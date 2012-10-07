@@ -18,6 +18,9 @@
 			[Bindable]
 			public var labelText:String;
 			
+			[Bindable]
+			public var showControls:Boolean = true;
+			
 			/**
 			 * Helper variable used during dragging/resize operations.
 			**/
@@ -113,7 +116,7 @@
 			
 			protected function deleteClick():void
 			{
-				dispatchEvent( new HotspotDeleteEvent( this ) );
+				dispatchEvent( new HotspotDeleteEvent() );
 			}
 			
 			// ---------------
@@ -151,6 +154,8 @@
 		id="background"
 		backgroundColor="#ff0000"
 		alpha="0.2"
+		
+		mouseEnabled="{showControls}"
 		buttonMode="true"
 		mouseDown="moveDown(event)"
 		/>
@@ -159,17 +164,20 @@
 		top="0"
 		right="0"
 		id="deleteCorner"
+		visible="{showControls}"
 		click="deleteClick()"
 	/>
 	<dragdrop:CornerResize
 		bottom="0"
 		right="0"
 		id="resizeCorner"
+		visible="{showControls}"
 		mouseDown="resizeDown(event)"
 	/>
 	
 	<dragdrop:SelfAdjustingTextArea
 		id="textLabelComponent"
+		visible="{showControls}"
 		width="95"
 		x="{(width - textLabelComponent.width)/2}"
 		y="{(height - textLabelComponent.height)/2}"

@@ -16,6 +16,7 @@ package org.glomaker.plugin.dragdrop.events
 		public function HotspotTextChangeEvent(newText:String, type:String = HotspotTextChangeEvent.CHANGE, bubbles:Boolean=false, cancelable:Boolean=false)
 		{
 			super(type, bubbles, cancelable);
+			this.newText = newText;
 		}
 		
 		override public function clone():Event

@@ -18,6 +18,7 @@ package org.glomaker.plugin.dragdrop
 			super();
 			editable = false;
 			selectable = false;
+			blendMode = BlendMode.LAYER;
 		}
 	}
 }
