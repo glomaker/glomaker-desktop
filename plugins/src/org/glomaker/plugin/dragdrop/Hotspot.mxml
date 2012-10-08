@@ -10,6 +10,8 @@
 	<mx:Script>
 		<![CDATA[
 			import org.glomaker.plugin.dragdrop.events.HotspotDeleteEvent;
+			import org.glomaker.plugin.dragdrop.events.HotspotPositionChangeEvent;
+			import org.glomaker.plugin.dragdrop.events.HotspotSizeChangeEvent;
 			import org.glomaker.plugin.dragdrop.events.HotspotTextChangeEvent;
 
 			/**
@@ -65,6 +67,8 @@
 			{
 				stage.removeEventListener( MouseEvent.MOUSE_UP, moveStageUp );
 				stage.removeEventListener( MouseEvent.MOUSE_MOVE, moveStageMove );
+				
+				dispatchEvent( new HotspotPositionChangeEvent( x, y ) );
 			}
 			
 			protected function moveStageMove( e:MouseEvent ):void
@@ -98,6 +102,8 @@
 			{
 				stage.removeEventListener( MouseEvent.MOUSE_UP, resizeStageUp );
 				stage.removeEventListener( MouseEvent.MOUSE_MOVE, resizeStageMove );
+				
+				dispatchEvent( new HotspotSizeChangeEvent( width, height ) );
 			}
 			
 			protected function resizeStageMove( e:MouseEvent ):void

@@ -22,6 +22,8 @@
 			import mx.managers.PopUpManager;
 			
 			import org.glomaker.plugin.dragdrop.events.HotspotDeleteEvent;
+			import org.glomaker.plugin.dragdrop.events.HotspotPositionChangeEvent;
+			import org.glomaker.plugin.dragdrop.events.HotspotSizeChangeEvent;
 			import org.glomaker.plugin.dragdrop.events.HotspotTextChangeEvent;
 			import org.glomaker.shared.properties.ArrayProperty;
 			import org.glomaker.shared.properties.BooleanProperty;
@@ -34,7 +36,7 @@
 			//--------------------------------------------------
 			
 			// component properties
-			protected var encodedRawData:ArrayProperty = new ArrayProperty( "encodedRawData", "", [] );
+			protected var encodedRawData:ArrayProperty = new ArrayProperty( "encodedRawData", "", [] ); // stores comma-separate string with x,y,w,h,text properties for each hotspot
 			protected var resetLabel:StringProperty = new StringProperty("resetLabel", "", "Reset");
 			protected var hotspotColour:ColourProperty = new ColourProperty("hotspotColour", "Hotspot Colour", 0xff0000);
 			protected var showHotspots:BooleanProperty = new BooleanProperty("showHotspots", "Show Hotspots?", true);
@@ -95,9 +97,14 @@
 				resetButton.label = resetLabel.propValue;
 				
 				// apply data
+				var values:Array;
 				hotspotData = new Array();
-				hotspotData.push( new HotspotVO( "Item 0 and much longer text to see what happens", 10, 10, 130, 200 ) );
-				hotspotData.push( new HotspotVO( "Item 1", 200, 200, 400, 100 ) );
+				for each(var str:String in encodedRawData.propValue )
+				{
+					values = str.split(",");
+					trace("hotspot ", hotspotData.length, unescape(values[4]));
+					hotspotData.push( new HotspotVO( unescape(values[4]), values[0], values[1], values[2], values[3] ) );
+				}
 
 				// initialise data structures
 				mapHotspotToVO = new Dictionary(true);
@@ -127,7 +134,16 @@
 			override public function prepareValuesForSave():void
 			{
 				super.prepareValuesForSave();
+				
 				resetLabel.propValue = resetButton.label;
+				
+				// serialise hotspot data
+				var asString:Array = [];
+				for each( var vo:HotspotVO in hotspotData )
+				{
+					asString.push( vo.x + "," + vo.y + "," + vo.w + "," + vo.h + "," + escape(vo.text) );
+				}
+				encodedRawData.propValue = asString;
 			}
 			
 			override public function setEditMode(value:Boolean):void
@@ -290,7 +306,9 @@
 				hotspot.showControls = editMode;
 				
 				// event listeners
-				hotspot.addEventListener( HotspotTextChangeEvent.CHANGE, onHotspotTextChange, false, 0, true );
+				hotspot.addEventListener( HotspotPositionChangeEvent.CHANGE, onHotspotChange, false, 0, true );
+				hotspot.addEventListener( HotspotSizeChangeEvent.CHANGE, onHotspotChange, false, 0, true );
+				hotspot.addEventListener( HotspotTextChangeEvent.CHANGE, onHotspotChange, false, 0, true );
 				hotspot.addEventListener( HotspotDeleteEvent.DELETE, onHotspotDelete, false, 0, true );
 				
 				// add to display list
@@ -310,7 +328,9 @@
 			protected function removeHotspot( hotspot:Hotspot ):void
 			{
 				// event listeners
-				hotspot.removeEventListener( HotspotTextChangeEvent.CHANGE, onHotspotTextChange );
+				hotspot.removeEventListener( HotspotPositionChangeEvent.CHANGE, onHotspotChange );
+				hotspot.removeEventListener( HotspotSizeChangeEvent.CHANGE, onHotspotChange );
+				hotspot.removeEventListener( HotspotTextChangeEvent.CHANGE, onHotspotChange );
 				hotspot.removeEventListener( HotspotDeleteEvent.DELETE, onHotspotDelete );
 				
 				// data structures
@@ -336,7 +356,7 @@
 					"Click to edit",
 					Math.random() * hotspotContainer.width * 4/5,
 					Math.random() * hotspotContainer.height * 4/5,
-					Math.max( 110, hotspotContainer.width/5 ),
+					Math.max( 130, hotspotContainer.width/5 ),
 					hotspotContainer.height/5
 				);
 				
@@ -418,14 +438,19 @@
 			/**
 			 * Event handler - hotspot text has changed.
 			**/
-			protected function onHotspotTextChange( e:HotspotTextChangeEvent ):void
+			protected function onHotspotChange( e:Event ):void
 			{
 				// update the relevant hotspot data VO
 				var hotspot:Hotspot = Hotspot( e.target );
 				var vo:HotspotVO = mapHotspotToVO[ hotspot ];
-				vo.text = e.newText;
 				
-				// update the appropriate list item
+				vo.text = hotspot.textLabelComponent.text;
+				vo.x = hotspot.x;
+				vo.y = hotspot.y;
+				vo.w = hotspot.width;
+				vo.h = hotspot.height;
+				
+				// update the corresponding list item
 				findListItemForVO( vo ).text = vo.text;
 			}
 			
@@ -518,15 +543,6 @@
 					// no hit - return to source
 					draggedItem.setStyle( "moveEffect", noDropMove );
 					draggedItem.move( localSourceCoords.x, localSourceCoords.y );
-					
-					/*
-					noDropMove.target = draggedItem;
-					noDropMove.xFrom = draggedItem.x;
-					noDropMove.xTo = localSourceCoords.x;
-					noDropMove.yFrom = draggedItem.y;
-					noDropMove.yTo = localSourceCoords.y;
-					noDropMove.play();
-					*/
 				}
 				
 				// cleanup
