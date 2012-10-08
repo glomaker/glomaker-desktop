@@ -21,6 +21,9 @@
 			[Bindable]
 			public var showControls:Boolean = true;
 			
+			[Bindable]
+			public var bgColour:uint = 0xff0000;
+			
 			/**
 			 * Helper variable used during dragging/resize operations.
 			**/
@@ -151,7 +154,7 @@
 		width="100%"
 		height="100%"
 		id="background"
-		backgroundColor="#ff0000"
+		backgroundColor="{bgColour}"
 		alpha="0.2"
 		
 		mouseEnabled="{showControls}"

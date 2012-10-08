@@ -72,6 +72,8 @@
 				
 				// show
 				updateList();
+				updateHotspotControlsVisibility();
+				updateHotspotContainerVisibility();
 				displayHotspots();
 			}
 
@@ -83,9 +85,9 @@
 			override protected function defineProperties():void
 			{
 				addSaveableProperty( encodedRawData );
-				addSaveableProperty( hotspotColour );
-				addSaveableProperty( showHotspots );
 				addSaveableProperty( resetLabel );
+				addProperty( hotspotColour );
+				addProperty( showHotspots );
 			}
 			
 			override protected function componentInitComplete():void
@@ -93,16 +95,39 @@
 				resetButton.label = resetLabel.propValue;
 				
 				// apply data
+				hotspotData = new Array();
+				hotspotData.push( new HotspotVO( "Item 0 and much longer text to see what happens", 10, 10, 130, 200 ) );
+				hotspotData.push( new HotspotVO( "Item 1", 200, 200, 400, 100 ) );
+
+				// initialise data structures
+				mapHotspotToVO = new Dictionary(true);
+				mapVOToHotspot = new Dictionary(true);
+				listData = new ArrayCollection();
+				
+				// show
+				updateList();
+				updateHotspotContainerVisibility();
+				updateHotspotControlsVisibility();
+				displayHotspots();
 			}
 			
 			override public function editablePropertyUpdated(prop:IComponentProperty):void
 			{
 				super.editablePropertyUpdated(prop);
+
+				// propagate changes
+				if( prop == showHotspots )
+				{
+					updateHotspotContainerVisibility();
+				}else if( prop == hotspotColour ){
+					updateHotspotColours();
+				}
 			}
 			
 			override public function prepareValuesForSave():void
 			{
 				super.prepareValuesForSave();
+				resetLabel.propValue = resetButton.label;
 			}
 			
 			override public function setEditMode(value:Boolean):void
@@ -119,16 +144,8 @@
 				
 				// update display (also updates list item alpha values etc)
 				updateList();
-				
-				var obj:DisplayObject;
-				for(var i:uint = 0;i<targetRegionContainer.numChildren;i++)
-				{
-					obj = targetRegionContainer.getChildAt( i );
-					if( obj is Hotspot )
-					{
-						Hotspot( obj ).showControls = editMode;
-					}
-				}
+				updateHotspotContainerVisibility();
+				updateHotspotControlsVisibility();
 			}
 			
 			override public function destroy():void
@@ -159,7 +176,7 @@
 				for each( var vo:HotspotVO in hotspotData )
 				{
 					hotspot = createHotspotFromVO( vo );
-					targetRegionContainer.addChild( hotspot );
+					hotspotContainer.addChild( hotspot );
 					all.push( hotspot );
 				}
 				
@@ -176,6 +193,48 @@
 			protected function updateList():void
 			{
 				editMode ? unshuffle() : shuffle();
+			}
+			
+			/**
+			 * Sets the hotspot bg colour.
+			**/
+			protected function updateHotspotColours():void
+			{
+				// each hotspot
+				var hs:Hotspot;
+				for(var i:uint = 0 ; i < hotspotContainer.numChildren ; i++)
+				{
+					hs = Hotspot(hotspotContainer.getChildAt( i ));
+					if( hs )
+					{
+						hs.bgColour = hotspotColour.propValue;
+					}
+				}
+			}
+			
+			/**
+			 * Sets the hotspot container visibility to match settings and editMode value.
+			**/
+			protected function updateHotspotContainerVisibility():void
+			{
+				// generic
+				hotspotContainer.visible = ( editMode || showHotspots.propValue );
+			}
+			
+			/**
+			 * Updates individual hotspot visibility to match editMode settings
+			**/
+			protected function updateHotspotControlsVisibility():void
+			{
+				var hs:Hotspot;
+				for(var i:uint = 0;i<hotspotContainer.numChildren;i++)
+				{
+					hs = Hotspot(hotspotContainer.getChildAt( i ));
+					if( hs )
+					{
+						hs.showControls = editMode;
+					}
+				}
 			}
 			
 			/**
@@ -224,6 +283,9 @@
 				hotspot.width = vo.w;
 				hotspot.height = vo.h;
 				
+				// background colour from property
+				hotspot.bgColour = hotspotColour.propValue;
+				
 				// only show controls if in edit mode
 				hotspot.showControls = editMode;
 				
@@ -232,7 +294,7 @@
 				hotspot.addEventListener( HotspotDeleteEvent.DELETE, onHotspotDelete, false, 0, true );
 				
 				// add to display list
-				targetRegionContainer.addChild( hotspot );
+				hotspotContainer.addChild( hotspot );
 				
 				// remember mapping
 				mapHotspotToVO[hotspot] = vo;
@@ -272,10 +334,10 @@
 				// new hotspot data object
 				var vo:HotspotVO = new HotspotVO(
 					"Click to edit",
-					Math.random() * targetRegionContainer.width * 4/5,
-					Math.random() * targetRegionContainer.height * 4/5,
-					Math.max( 110, targetRegionContainer.width/5 ),
-					targetRegionContainer.height/5
+					Math.random() * hotspotContainer.width * 4/5,
+					Math.random() * hotspotContainer.height * 4/5,
+					Math.max( 110, hotspotContainer.width/5 ),
+					hotspotContainer.height/5
 				);
 				
 				// add
@@ -383,7 +445,7 @@
 				
 				// find the corresponding Hotspot display object (this is the target)
 				targetHotspot = mapVOToHotspot[ sourceItem.hotspotData ];
-				
+
 				// create a copy to drag around
 				draggedItem = new DraggableItem();
 				draggedItem.alpha = 0.6;
@@ -581,22 +643,31 @@
 		</mx:VBox>		
 	</mx:Canvas>
 	<mx:Canvas
-		 width="{width - listRegionContainer.width}"
-		 height="100%"
-		 x="{listRegionContainer.width}"
-		 y="0"
-		 styleName="targetRegion"
-		 id="targetRegionContainer"
-	/>
-	<mx:Canvas
-		width="{targetRegionContainer.width}"
+		id="activeRegion"
+		width="{width - listRegionContainer.width}"
 		height="100%"
-		x="{targetRegionContainer.x}"
+		x="{listRegionContainer.width}"
 		y="0"
-		visible="{!editMode}"
-		id="droppedItemContainer"
-	/>
+		styleName="targetRegion"
+		clipContent="false"
+	>
+		<mx:Canvas
+			 id="hotspotContainer"
+			 width="100%"
+			 height="100%"
+			 horizontalScrollPolicy="off"
+			 verticalScrollPolicy="off"
+		/>
+		<mx:Canvas
+			width="100%"
+			height="100%"
+			visible="{!editMode}"
+			id="droppedItemContainer"
+			horizontalScrollPolicy="off"
+			verticalScrollPolicy="off"
+		/>
+	</mx:Canvas>
 	
-	<mx:Button id="addButton" click="addHotspot()" visible="{editMode}" label="Add New Hotspot" styleName="addButton" bottom="10" x="{targetRegionContainer.x + (targetRegionContainer.width - addButton.width)/2}" />
+	<mx:Button id="addButton" click="addHotspot()" visible="{editMode}" label="Add New Hotspot" styleName="addButton" bottom="10" x="{activeRegion.x + (activeRegion.width - addButton.width)/2}" />
 	<editbutton:EditableButton id="resetButton" isEditable="{editMode}" label="Reset" click="onResetClick()" bottom="10" x="{(listRegionContainer.width - resetButton.width)/2}"/>
 </BaseComponent>
