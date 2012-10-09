@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:dragdrop="org.glomaker.plugin.dragdrop.*"
+	visible="false"
+>
+
+	<mx:Script>
+		<![CDATA[
+			
+			protected var _imageSource:String;
+			
+			[Bindable]
+			public function set imageSource(value:String):void
+			{
+				if( value != _imageSource )
+				{
+					_imageSource = value;
+					visible = (_imageSource != null && _imageSource != "");
+				}
+			}
+			public function get imageSource():String
+			{
+				return _imageSource;
+			}
+			
+			
+			protected function imageLoadComplete():void
+			{
+			}
+			protected function imageLoadError( e:IOErrorEvent ):void
+			{
+				visible = false;
+			}
+			
+			protected function deleteClick():void
+			{
+			}
+			
+			
+			//-------------------------------------
+			// RESIZE LOGIC
+			//-------------------------------------
+			
+			protected function resizeDown( e:MouseEvent ):void
+			{
+				stage.addEventListener( MouseEvent.MOUSE_MOVE, stageResizeMove );
+				stage.addEventListener( MouseEvent.MOUSE_UP, stageResizeUp );
+			}
+			
+			protected function stageResizeMove( e:MouseEvent ):void
+			{
+			}
+			
+			protected function stageResizeUp( e:MouseEvent ):void
+			{
+				stage.removeEventListener( MouseEvent.MOUSE_MOVE, stageResizeMove );
+				stage.removeEventListener( MouseEvent.MOUSE_UP, stageResizeUp );
+			}
+			
+		]]>
+	</mx:Script>
+	
+	
+	<mx:Image
+		id="img"
+		x="{(width - img.width)/2}"
+		y="{(height - img.height)/2}"
+		maxWidth="{width}"
+		maxHeight="{height}"
+		maintainAspectRatio="true"
+		source="{imageSource}"
+		complete="imageLoadComplete()"
+		ioError="imageLoadError(event)"
+	/>
+	
+	<!---
+	<dragdrop:CornerDelete
+		top="0"
+		right="0"
+		click="deleteClick()"
+		/>
+	<dragdrop:CornerResize
+		bottom="0"
+		right="0"
+		mouseDown="resizeDown(event)"
+	/>
+	-->
+</mx:Canvas>

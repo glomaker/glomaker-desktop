@@ -19,7 +19,6 @@
 	<mx:Script>
 		<![CDATA[
 			import mx.collections.ArrayCollection;
-			import mx.managers.PopUpManager;
 			
 			import org.glomaker.plugin.dragdrop.events.HotspotDeleteEvent;
 			import org.glomaker.plugin.dragdrop.events.HotspotPositionChangeEvent;
@@ -28,6 +27,7 @@
 			import org.glomaker.shared.properties.ArrayProperty;
 			import org.glomaker.shared.properties.BooleanProperty;
 			import org.glomaker.shared.properties.ColourProperty;
+			import org.glomaker.shared.properties.FilePathProperty;
 			import org.glomaker.shared.properties.IComponentProperty;
 			import org.glomaker.shared.properties.StringProperty;
 			
@@ -40,6 +40,7 @@
 			protected var resetLabel:StringProperty = new StringProperty("resetLabel", "", "Reset");
 			protected var hotspotColour:ColourProperty = new ColourProperty("hotspotColour", "Hotspot Colour", 0xff0000);
 			protected var showHotspots:BooleanProperty = new BooleanProperty("showHotspots", "Show Hotspots?", true);
+			protected var imageSource:FilePathProperty = new FilePathProperty("imageSource", "Background Image (optional)" );
 			
 			// other
 			[Bindable]
@@ -90,6 +91,7 @@
 				addSaveableProperty( resetLabel );
 				addProperty( hotspotColour );
 				addProperty( showHotspots );
+				addProperty( imageSource );
 			}
 			
 			override protected function componentInitComplete():void
@@ -102,7 +104,6 @@
 				for each(var str:String in encodedRawData.propValue )
 				{
 					values = str.split(",");
-					trace("hotspot ", hotspotData.length, unescape(values[4]));
 					hotspotData.push( new HotspotVO( unescape(values[4]), values[0], values[1], values[2], values[3] ) );
 				}
 
@@ -115,6 +116,7 @@
 				updateList();
 				updateHotspotContainerVisibility();
 				updateHotspotControlsVisibility();
+				updateImageSource();
 				displayHotspots();
 			}
 			
@@ -125,9 +127,17 @@
 				// propagate changes
 				if( prop == showHotspots )
 				{
+					
 					updateHotspotContainerVisibility();
+					
 				}else if( prop == hotspotColour ){
+					
 					updateHotspotColours();
+					
+				}else if( prop == imageSource ){
+					
+					updateImageSource();
+					
 				}
 			}
 			
@@ -225,6 +235,19 @@
 					{
 						hs.bgColour = hotspotColour.propValue;
 					}
+				}
+			}
+			
+			/**
+			 * Updates the source property of the imageContainer to match imageSource.
+			**/
+			protected function updateImageSource():void
+			{
+				if( imageSource.propValue == FilePathProperty.NO_URL_VALUE )
+				{
+					imageContainer.imageSource = null;
+				}else{
+					imageContainer.imageSource = imageSource.propValue;
 				}
 			}
 			
@@ -667,6 +690,13 @@
 		styleName="targetRegion"
 		clipContent="false"
 	>
+		<dragdrop:ImageHolder
+			id="imageContainer"
+			width="100%"
+			height="100%"
+			horizontalScrollPolicy="off"
+			verticalScrollPolicy="off"
+		/>
 		<mx:Canvas
 			 id="hotspotContainer"
 			 width="100%"
