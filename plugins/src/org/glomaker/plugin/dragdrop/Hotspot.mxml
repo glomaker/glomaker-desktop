@@ -5,7 +5,8 @@
 	verticalScrollPolicy="off"
 	xmlns:dragdrop="org.glomaker.plugin.dragdrop.*"
 	clipContent="false"
-	blendMode="layer">
+	blendMode="layer"
+>
 
 	<mx:Script>
 		<![CDATA[
@@ -151,6 +152,8 @@
 			borderStyle: solid;
 			borderThickness: 2;
 			borderColor: #000000;
+			focusThickness: 0;
+			focusAlpha: 0.0;
 		}
 	</mx:Style>
 	
@@ -161,8 +164,7 @@
 		height="100%"
 		id="background"
 		backgroundColor="{bgColour}"
-		alpha="0.2"
-		
+		alpha="0.4"
 		mouseEnabled="{showControls}"
 		buttonMode="true"
 		mouseDown="moveDown(event)"
@@ -183,12 +185,13 @@
 		mouseDown="resizeDown(event)"
 	/>
 	
+	
 	<dragdrop:SelfAdjustingTextArea
 		id="textLabelComponent"
 		visible="{showControls}"
 		width="95"
-		x="{(width - textLabelComponent.width)/2}"
-		y="{(height - textLabelComponent.height)/2}"
+		verticalCenter="0"
+		horizontalCenter="0"
 		text="{labelText}"
 		styleName="textAreaStyle"
 		change="textChange()"

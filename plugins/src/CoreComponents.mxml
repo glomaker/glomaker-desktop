@@ -28,7 +28,6 @@
 			
 			protected function init():void
 			{
-				plugin.fakeInit();
 			}
 			
 			

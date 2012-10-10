@@ -16,6 +16,8 @@ package org.glomaker.plugin.dragdrop
 	public class SelfAdjustingTextArea extends TextArea
 	{
 		
+		protected var lastCalculatedHeight:Number;
+		
 		public function SelfAdjustingTextArea()
 		{
 			super();
@@ -59,6 +61,17 @@ package org.glomaker.plugin.dragdrop
 			removeEventListener( Event.CHANGE, onTextChange );
 		}
 		
+		
+		override protected function measure():void
+		{
+			super.measure();
+			if( !isNaN( lastCalculatedHeight ) )
+			{
+				measuredWidth = measuredMinWidth = width;
+				measuredHeight = measuredMinHeight = lastCalculatedHeight;
+			}
+		}
+		
 		/**
 		 * Adjusts the component's height so that the entire text will fit.
 		 */		
@@ -90,7 +103,9 @@ package org.glomaker.plugin.dragdrop
 			// apply
 			if( height != newHeight )
 			{
-				height = newHeight; 
+				lastCalculatedHeight = newHeight;
+				height = newHeight;
+				invalidateSize();
 			}
 		}
 
