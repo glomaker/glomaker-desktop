@@ -22,23 +22,19 @@
 		<![CDATA[
 			import mx.collections.ArrayCollection;
 			
-			import org.glomaker.shared.properties.ArrayProperty;
-			import org.glomaker.shared.properties.BooleanProperty;
-			import org.glomaker.shared.properties.ColourProperty;
+			import org.glomaker.shared.properties.FilePathArrayProperty;
 			import org.glomaker.shared.properties.FilePathProperty;
 			import org.glomaker.shared.properties.IComponentProperty;
-			import org.glomaker.shared.properties.StringProperty;
+			import org.glomaker.shared.properties.NumberProperty;
 			
 			//--------------------------------------------------
 			// Protected vars
 			//--------------------------------------------------
 			
 			// component properties
-			protected var encodedRawData:ArrayProperty = new ArrayProperty( "encodedRawData", "", [] ); // stores comma-separate string with x,y,w,h,text properties for each hotspot
-			protected var resetLabel:StringProperty = new StringProperty("resetLabel", "", "Reset");
-			protected var hotspotColour:ColourProperty = new ColourProperty("hotspotColour", "Hotspot Colour", 0xff0000);
-			protected var showHotspots:BooleanProperty = new BooleanProperty("showHotspots", "Show Hotspots?", true);
-			protected var imageSource:FilePathProperty = new FilePathProperty("imageSource", "Choose an image:" );
+			protected var imageSource:FilePathProperty = new FilePathProperty("imageSource", "Choose an image:" ); // internal use only, not persisted
+			protected var images:FilePathArrayProperty = new FilePathArrayProperty("images");
+			protected var northIndex:NumberProperty = new NumberProperty("northIndex" );
 			
 			// other
 			[Bindable]
@@ -66,12 +62,14 @@
 			
 			override protected function defineProperties():void
 			{
+				addSaveableProperty( images );
+				addSaveableProperty( northIndex );
 			}
 			
 			override protected function componentInitComplete():void
 			{
 				// data structures
-				imageListData = new ArrayCollection();
+				imageListData = new ArrayCollection( images.propValue );
 			}
 			
 			override public function editablePropertyUpdated(prop:IComponentProperty):void
@@ -88,8 +86,8 @@
 						var newIndex:uint = imageListData.length;
 						imageListData.addItem( prop.propValue );
 						
-						// switch to the large image preview for this image
-						showImagePanel( newIndex );						
+						// the 'add image' dialog is still open
+						closeImageAdd();
 					}else{
 						// currently viewing an existing image
 						// simply update the data model and the image shown
@@ -102,6 +100,7 @@
 			override public function prepareValuesForSave():void
 			{
 				super.prepareValuesForSave();
+				images.propValue = imageListData.source.concat();
 			}
 			
 			override public function setEditMode(value:Boolean):void
@@ -188,7 +187,7 @@
 				updateEditableProperties([]);
 			}
 			
-			protected function cancelImageAdd():void
+			protected function closeImageAdd():void
 			{
 				modalOverlay.visible = false;
 				addImageDialog.visible = false;
@@ -296,7 +295,7 @@
 	>
 		<mx:Label text="Add an image" fontWeight="bold"/>
 		<mx:Label text="Use the Browse button in the properties panel below to choose an image"/>
-		<mx:Button label="Cancel" click="cancelImageAdd()"/>
+		<mx:Button label="Cancel" click="closeImageAdd()"/>
 	</mx:VBox>
 	
 </BaseComponent>
