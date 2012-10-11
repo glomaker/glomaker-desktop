@@ -134,13 +134,22 @@
 				showImagePanel( Thumbnail( e.currentTarget ).listIndex );
 			}
 			
-			protected function remove( e:MouseEvent = null ):void
+			protected function remove():void
 			{
 				if( selectedIndex == -1 )
 					return;
+				
+				// remove from data model and deselect
+				imageListData.removeItemAt( selectedIndex );
+				selectedIndex = -1;
+				
+				// triggered from a button on the image panel
+				closeImagePanel();
+				
+				// todo - update the 'north' pointer
 			}
 			
-			protected function setNorth( e:MouseEvent = null ):void
+			protected function setNorth():void
 			{
 				if( selectedIndex == -1 )
 					return;
