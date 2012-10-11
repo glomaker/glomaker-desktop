@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+/////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2007-12 LTRI, London Metropolitan Uni. All rights reserved.
+// An Open Source Release under the GPL v3 licence  (see http://www.gnu.org/licenses/).
+// Authors: Tom Boyle, Nils Millahn, Musbah Sagar, Martin Agombar.
+// See http://www.glomaker.org for full details
+/////////////////////////////////////////////////////////////////////////
+-->
+
+<BaseComponent
+	xmlns="org.glomaker.shared.component.*" 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	layout="absolute"
+	horizontalScrollPolicy="off"
+	verticalScrollPolicy="off"
+	clipContent="true"
+	xmlns:dragdrop="org.glomaker.plugin.dragdrop.*" xmlns:editbutton="org.glomaker.shared.ui.editbutton.*" xmlns:panorama="org.glomaker.plugin.panorama.*"
+>
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			
+			import org.glomaker.shared.properties.ArrayProperty;
+			import org.glomaker.shared.properties.BooleanProperty;
+			import org.glomaker.shared.properties.ColourProperty;
+			import org.glomaker.shared.properties.FilePathProperty;
+			import org.glomaker.shared.properties.IComponentProperty;
+			import org.glomaker.shared.properties.StringProperty;
+			
+			//--------------------------------------------------
+			// Protected vars
+			//--------------------------------------------------
+			
+			// component properties
+			protected var encodedRawData:ArrayProperty = new ArrayProperty( "encodedRawData", "", [] ); // stores comma-separate string with x,y,w,h,text properties for each hotspot
+			protected var resetLabel:StringProperty = new StringProperty("resetLabel", "", "Reset");
+			protected var hotspotColour:ColourProperty = new ColourProperty("hotspotColour", "Hotspot Colour", 0xff0000);
+			protected var showHotspots:BooleanProperty = new BooleanProperty("showHotspots", "Show Hotspots?", true);
+			protected var imageSource:FilePathProperty = new FilePathProperty("imageSource", "Choose an image:" );
+			
+			// other
+			[Bindable]
+			protected var imageListData:ArrayCollection;
+			
+			[Bindable]
+			protected var editMode:Boolean;
+			
+			[Bindable]
+			protected var selectedImageSource:String;
+			
+			
+			protected var selectedIndex:int = -1;
+			
+			
+			public function fakeInit():void
+			{
+				imageListData = new ArrayCollection();
+			}
+			
+			
+			//--------------------------------------------------
+			// GLOMaker Component Lifecycle
+			//--------------------------------------------------
+			
+			override protected function defineProperties():void
+			{
+			}
+			
+			override protected function componentInitComplete():void
+			{
+				// data structures
+				imageListData = new ArrayCollection();
+			}
+			
+			override public function editablePropertyUpdated(prop:IComponentProperty):void
+			{
+				super.editablePropertyUpdated(prop);
+				
+				if( prop == imageSource )
+				{
+					// this happens if the user is adding an image or changing an existing image
+					// we can determine which by checking if selectedIndex is pointing to a valid value
+					if( selectedIndex == -1 )
+					{
+						// adding a new image
+						var newIndex:uint = imageListData.length;
+						imageListData.addItem( prop.propValue );
+						
+						// switch to the large image preview for this image
+						showImagePanel( newIndex );						
+					}else{
+						// currently viewing an existing image
+						// simply update the data model and the image shown
+						selectedImageSource = prop.propValue;
+						imageListData.setItemAt( prop.propValue, selectedIndex );
+					}
+				}
+			}
+			
+			override public function prepareValuesForSave():void
+			{
+				super.prepareValuesForSave();
+			}
+			
+			override public function setEditMode(value:Boolean):void
+			{
+				super.setEditMode(value);
+				
+				if (value == editMode)
+					return;
+				
+				editMode = value;
+			}
+			
+			override public function destroy():void
+			{
+				super.destroy();
+			}
+
+			
+			//--------------------------------------------------
+			// Protected functions
+			//--------------------------------------------------
+			
+			protected function add():void
+			{
+				showAddImage();
+			}
+			
+			protected function select( e:MouseEvent ):void
+			{
+				showImagePanel( Thumbnail( e.currentTarget ).listIndex );
+			}
+			
+			protected function remove( e:MouseEvent = null ):void
+			{
+				if( selectedIndex == -1 )
+					return;
+			}
+			
+			protected function setNorth( e:MouseEvent = null ):void
+			{
+				if( selectedIndex == -1 )
+					return;
+			}
+			
+			protected function showAddImage():void
+			{
+				selectedIndex = -1;
+				updateEditableProperties([imageSource]);
+
+				imagePanel.visible = false;
+				modalOverlay.visible = true;
+				addImageDialog.visible = true;
+			}
+			
+			protected function showImagePanel( index:int ):void
+			{
+				selectedIndex = index;
+				updateEditableProperties([imageSource]);
+
+				if( selectedIndex != -1 )
+				{
+					selectedImageSource = String(imageListData.getItemAt( selectedIndex ));
+				}
+
+				addImageDialog.visible = false;
+				imagePanel.visible = true;
+				modalOverlay.visible = true;
+			}
+			
+			protected function closeImagePanel():void
+			{
+				modalOverlay.visible = false;
+				imagePanel.visible = false;
+				selectedIndex = -1;
+				updateEditableProperties([]);
+			}
+			
+			protected function cancelImageAdd():void
+			{
+				modalOverlay.visible = false;
+				addImageDialog.visible = false;
+				selectedIndex = -1;
+				updateEditableProperties([]);
+			}
+			
+			
+		]]>
+	</mx:Script>
+	
+	<mx:Style>
+		.imageContainer{
+			backgroundColor: #f9f9f9;
+		}
+		.popup {
+			backgroundColor: #ffffff;
+			borderColor: #004890;
+			borderThickness: 1;
+			borderStyle: solid;
+			paddingLeft: 10;
+			paddingRight: 10;
+			paddingTop: 10;
+			paddingBottom: 10;
+		}
+		.modalOverlay {
+			backgroundColor: #000000;
+		}
+		.addButton {
+			font-size: 9;
+			font-weight: normal;
+			icon: Embed("assets/add.png");
+		}
+	</mx:Style>
+	
+	<mx:Fade id="fadeIn" duration="300" alphaFrom="0.0" alphaTo="1.0" />
+
+	<mx:HBox
+		id="imageContainer"
+		styleName="imageContainer"
+		width="100%"
+		height="100%">
+		<mx:Repeater dataProvider="{imageListData}" id="imgRp">
+			<panorama:Thumbnail
+				source="{imgRp.currentItem}"
+				width="50"
+				height="50"
+				listIndex="{imgRp.currentIndex}"
+				scaleContent="true"
+				maintainAspectRatio="true"
+				click="select(event)"
+				buttonMode="true"
+			/>
+		</mx:Repeater>
+	</mx:HBox>
+	<mx:Button id="addButton" click="add()" showEffect="{fadeIn}" visible="{editMode}" label="Add Panorama Image" styleName="addButton" bottom="10" horizontalCenter="0" />
+	
+	<mx:Canvas
+		visible="false"
+		id="modalOverlay"
+		styleName="modalOverlay"
+		alpha="0.4"
+		width="100%"
+		height="100%"
+		/>
+	
+	<mx:VBox
+		visible="false"
+		id="imagePanel"
+		styleName="popup"
+		verticalScrollPolicy="off"
+		horizontalScrollPolicy="off"
+		width="70%"
+		height="70%"
+		verticalCenter="0"
+		horizontalCenter="0"
+		horizontalAlign="center"
+		showEffect="{fadeIn}"
+	>
+		<mx:Image
+			width="100%"
+			height="100%"
+			verticalAlign="middle"
+			horizontalAlign="center"
+			source="{selectedImageSource}"/>
+		<mx:HBox>
+			<mx:Button click="setNorth()" label="Set as North" />
+			<mx:Button click="remove()" label="Remove Image" />
+			<mx:Spacer width="20" />
+			<mx:Button click="closeImagePanel()" label="Close" />
+		</mx:HBox>
+		<mx:Label fontWeight="bold" text="Use the properties panel to change the image"/>
+	</mx:VBox>
+
+	<mx:VBox
+		visible="false"
+		id="addImageDialog"
+		styleName="popup"
+		verticalScrollPolicy="off"
+		horizontalScrollPolicy="off"
+		verticalCenter="0"
+		horizontalCenter="0"
+		horizontalAlign="center"
+		showEffect="{fadeIn}"
+	>
+		<mx:Label text="Add an image" fontWeight="bold"/>
+		<mx:Label text="Use the Browse button in the properties panel below to choose an image"/>
+		<mx:Button label="Cancel" click="cancelImageAdd()"/>
+	</mx:VBox>
+	
+</BaseComponent>

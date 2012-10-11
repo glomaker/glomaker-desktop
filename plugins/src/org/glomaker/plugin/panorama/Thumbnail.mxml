@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Image xmlns:mx="http://www.adobe.com/2006/mxml">
+	
+	<mx:Script>
+		<![CDATA[
+			
+			public var listIndex:uint = 0;
+			
+		]]>
+	</mx:Script>
+	
+</mx:Image>

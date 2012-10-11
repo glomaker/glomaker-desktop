@@ -37,6 +37,7 @@
     <module application="src/PluginOptimiserApp.mxml" destPath="org/glomaker/plugin/stepthrough/StepThroughPlugin.swf" optimize="true" sourcePath="src/org/glomaker/plugin/stepthrough/StepThroughPlugin.mxml"/>
     <module application="src/PluginOptimiserApp.mxml" destPath="org/glomaker/plugin/matchingquiz/MatchingQuizPlugin.swf" optimize="true" sourcePath="src/org/glomaker/plugin/matchingquiz/MatchingQuizPlugin.mxml"/>
     <module application="src/PluginOptimiserApp.mxml" destPath="org/glomaker/plugin/dragdrop/DragDrop.swf" optimize="true" sourcePath="src/org/glomaker/plugin/dragdrop/DragDrop.mxml"/>
+    <module application="src/PluginOptimiserApp.mxml" destPath="org/glomaker/plugin/panorama/Panorama.swf" optimize="true" sourcePath="src/org/glomaker/plugin/panorama/Panorama.mxml"/>
   </modules>
   <buildCSSFiles/>
   <flashCatalyst validateFlashCatalystCompatibility="false"/>
