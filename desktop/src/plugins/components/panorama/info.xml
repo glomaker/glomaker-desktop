@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<plugin>
+	<id>panorama</id>
+	<author>DN Digital</author>
+	<version>1.0</version>
+	<glomaker>2.0</glomaker>	
+	<name>Compass Panorama</name>
+	<description>Creates a 360 degree, compass controlled panorama for mobile devices.</description>
+	<swf>Panorama.swf</swf>
+</plugin>

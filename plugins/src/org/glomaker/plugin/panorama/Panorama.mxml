@@ -38,22 +38,19 @@
 			
 			// other
 			[Bindable]
-			protected var imageListData:ArrayCollection;
+			protected var imageListData:ArrayCollection; // image 0 is pointing north
 			
 			[Bindable]
 			protected var editMode:Boolean;
 			
 			[Bindable]
 			protected var selectedImageSource:String;
-			
-			protected var northIndex:int = -1;			
+
+			/**
+			 * Index into imageListData of the image that the user has clicked on.
+			 * Holds the value -1 when no image is selected.
+			**/
 			protected var selectedIndex:int = -1;
-			
-			
-			public function fakeInit():void
-			{
-				imageListData = new ArrayCollection();
-			}
 			
 			
 			//--------------------------------------------------
@@ -152,7 +149,13 @@
 				if( selectedIndex == -1 )
 					return;
 				
-				northIndex = selectedIndex;
+				// the 'north' image is always at the beginning of the array
+				// we reorganise accordingly
+				var newList:Array = imageListData.source.slice( selectedIndex ).concat( imageListData.source.slice( 0, selectedIndex ) );
+				imageListData.source = newList;
+				
+				// close the popup
+				closeImagePanel();
 			}
 			
 			protected function showAddImage():void
@@ -175,6 +178,8 @@
 					selectedImageSource = String(imageListData.getItemAt( selectedIndex ));
 				}
 
+				setNorthButton.enabled = (selectedIndex > 0); // because image 0 is already north
+				
 				addImageDialog.visible = false;
 				imagePanel.visible = true;
 				modalOverlay.visible = true;
@@ -204,6 +209,14 @@
 		.imageContainer{
 			backgroundColor: #004890;
 		}
+		
+		.thumbnailBox
+		{
+			paddingTop: 10;
+			paddingBottom: 26;
+			paddingLeft: 10;
+			paddingRight: 10;
+		}
 		.popup {
 			backgroundColor: #ffffff;
 			borderColor: #004890;
@@ -222,30 +235,52 @@
 			font-weight: normal;
 			icon: Embed("assets/add.png");
 		}
+		.thumbnail
+		{
+			backgroundColor: #ffffff;
+		}
 	</mx:Style>
 	
 	<mx:Fade id="fadeIn" duration="300" alphaFrom="0.0" alphaTo="1.0" />
-
-	<mx:HBox
+	
+	<mx:Glow id="glowThumb" duration="100"
+			 alphaFrom="0" alphaTo="0.8"
+			 blurXFrom="0.0" blurXTo="15.0" 
+			 blurYFrom="0.0" blurYTo="15.0"  strength="1"
+			 color="0xffffff"/>
+	
+	<mx:Glow id="unglowThumb" duration="100"  
+			 alphaFrom="0.8" alphaTo="0"
+			 blurXFrom="15.0" blurXTo="0.0"
+			 blurYFrom="15.0" blurYTo="0.0"  strength="1"
+			 color="0xffffff"/>
+		
+	<mx:Canvas
 		id="imageContainer"
 		styleName="imageContainer"
 		height="50%"
 		width="100%"
 		verticalCenter="0"
-		verticalAlign="middle">
-		<mx:Repeater dataProvider="{imageListData}" id="imgRp">
-			<panorama:Thumbnail
-				source="{imgRp.currentItem}"
-				height="50"
-				width="50"
-				listIndex="{imgRp.currentIndex}"
-				scaleContent="true"
-				maintainAspectRatio="true"
-				click="select(event)"
-				buttonMode="true"
-			/>
-		</mx:Repeater>
-	</mx:HBox>
+		verticalScrollPolicy="off"
+	>
+		<mx:HBox height="100%" styleName="thumbnailBox" horizontalCenter="0">
+			<mx:Repeater dataProvider="{imageListData}" id="imgRp">
+				<panorama:Thumbnail
+					source="{imgRp.currentItem}"
+					styleName="thumbnail"
+					listIndex="{imgRp.currentIndex}"
+					degrees="{Math.round(imgRp.currentIndex*360/imageListData.length) + '°'}"
+					height="100%"
+					width="100"
+					buttonMode="true"
+					click="select(event)"
+					rollOverEffect="{glowThumb}"
+					rollOutEffect="{unglowThumb}"
+				/>
+			</mx:Repeater>
+		</mx:HBox>
+	</mx:Canvas>
+	
 	<mx:Button id="addButton" click="add()" showEffect="{fadeIn}" visible="{editMode}" label="Add Panorama Image" styleName="addButton" bottom="10" horizontalCenter="0" />
 	
 	<mx:Canvas
@@ -263,8 +298,8 @@
 		styleName="popup"
 		verticalScrollPolicy="off"
 		horizontalScrollPolicy="off"
-		width="70%"
-		height="70%"
+		width="85%"
+		height="85%"
 		verticalCenter="0"
 		horizontalCenter="0"
 		horizontalAlign="center"
@@ -277,12 +312,12 @@
 			horizontalAlign="center"
 			source="{selectedImageSource}"/>
 		<mx:HBox>
-			<mx:Button click="setNorth()" label="Set as North" />
-			<mx:Button click="remove()" label="Remove Image" />
-			<mx:Spacer width="20" />
+			<mx:Button id="setNorthButton" click="setNorth()" label="Set as North" visible="{editMode}" includeInLayout="{editMode}" />
+			<mx:Button click="remove()" label="Remove Image" visible="{editMode}" includeInLayout="{editMode}" />
+			<mx:Spacer width="20" visible="{editMode}" includeInLayout="{editMode}" />
 			<mx:Button click="closeImagePanel()" label="Close" />
 		</mx:HBox>
-		<mx:Label fontWeight="bold" text="Use the properties panel to change the image"/>
+		<mx:Label fontWeight="bold" text="Use the properties panel to change the image" visible="{editMode}" includeInLayout="{editMode}"/>
 	</mx:VBox>
 
 	<mx:VBox

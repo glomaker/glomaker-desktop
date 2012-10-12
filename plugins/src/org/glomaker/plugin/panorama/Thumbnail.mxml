@@ -1,12 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Image xmlns:mx="http://www.adobe.com/2006/mxml">
+<mx:VBox
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	mouseChildren="false">
 	
 	<mx:Script>
 		<![CDATA[
 			
 			public var listIndex:uint = 0;
 			
+			[Bindable]
+			public var degrees:String = "0";
+			
+			[Bindable]
+			public var source:String;
+			
 		]]>
 	</mx:Script>
-	
-</mx:Image>
+
+	<mx:Image source="{source}" width="100%" height="100%"/>
+	<mx:Label text="{degrees}" width="100%" textAlign="center"/>
+</mx:VBox>
