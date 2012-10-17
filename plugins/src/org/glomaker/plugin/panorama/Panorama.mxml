@@ -263,7 +263,7 @@
 		verticalCenter="0"
 		verticalScrollPolicy="off"
 	>
-		<mx:HBox height="100%" styleName="thumbnailBox" horizontalCenter="0">
+		<mx:HBox height="100%" styleName="thumbnailBox">
 			<mx:Repeater dataProvider="{imageListData}" id="imgRp">
 				<panorama:Thumbnail
 					source="{imgRp.currentItem}"
