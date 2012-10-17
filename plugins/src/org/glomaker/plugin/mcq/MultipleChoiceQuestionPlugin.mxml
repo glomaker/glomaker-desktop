@@ -18,18 +18,20 @@
     
 	<mx:Script>
 		<![CDATA[
-			import mx.controls.Alert;
-			import mx.messaging.SubscriptionInfo;
-			import org.glomaker.shared.properties.NumericStepperProperty;
-			import org.glomaker.shared.properties.ArrayProperty;
-			import org.glomaker.shared.properties.IntegerProperty;
-			import org.glomaker.shared.properties.IComponentProperty;
-			import mx.core.UIComponent;
-			import mx.collections.ArrayCollection;
-			import org.glomaker.shared.properties.StringProperty;
-			import mx.controls.RadioButton;
 			import flash.events.FocusEvent;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.controls.RadioButton;
+			import mx.core.UIComponent;
 			import mx.managers.PopUpManager;
+			import mx.messaging.SubscriptionInfo;
+			
+			import org.glomaker.shared.properties.ArrayProperty;
+			import org.glomaker.shared.properties.IComponentProperty;
+			import org.glomaker.shared.properties.IntegerProperty;
+			import org.glomaker.shared.properties.NumericStepperProperty;
+			import org.glomaker.shared.properties.StringProperty;
 
 			/**
 			 * Default images embed
@@ -248,12 +250,25 @@
 			}
 
 			
-			
+			/**
+			 * Saves answer text field values back to the answerCollection array
+			**/
+			protected function saveAnswers():void
+			{
+				var field:AnswerField;
+				var values:Array = [];
+				for each( field in editAnswerArray )
+				{
+					values[field.listIndex] = field.text;
+				}
+				
+				answerCollection.source = values;
+			}
 		 	
-			// Add new line of Answer (option) including the feedback!
 			protected function onAddAnswer(evt:MouseEvent):void
 			{
 				// save correct answer before the repeater's dataprovider is updated
+				saveAnswers();
 				saveCorrectAnswer();
 				
 				// add a new answer and a new feedback item
@@ -261,10 +276,8 @@
 				
 				answerCollection.addItem("Answer " + index);
 				feedbackCollection.addItem("Feedback " + index);
-				
- 				// the repeater will have updated its values - update the 
 			}
-
+			
             // Submit an answer and recieve the feedback
 			protected function onSubmitFeedback(evt:MouseEvent):void
 			{
@@ -329,6 +342,7 @@
 			{ 
 				// save selected answer before changing repeater dataprovider
 				saveCorrectAnswer();
+				saveAnswers();
 				
 				// update
 				var index:int = Button(event.target).data as int;
@@ -430,11 +444,12 @@
 				<mx:Repeater id="answerRP" dataProvider="{answerCollection}" repeatEnd="onRepeatEnd()">
 					<mx:HBox verticalAlign="top" height="100%" width="100%">
 						<mx:RadioButton fontSize="{currentFontSize}" groupName="answerGroup" value="{answerRP.currentIndex}"/>
-						<ui:DynamicTextArea
+						<mcq:AnswerField
 							id="editAnswerArray"
 							styleName="editInput"
 							fontSize="{currentFontSize}"
 							text="{String(answerRP.currentItem)}"
+							listIndex="{answerRP.currentIndex}"
 							width="100%"
 							minHeight="25"
 							height="25"
