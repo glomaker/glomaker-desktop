@@ -26,7 +26,6 @@
     <module application="src/PluginOptimiserApp.mxml" destPath="org/glomaker/stage/swirl/SwirlNavBar.swf" optimize="true" sourcePath="src/org/glomaker/stage/swirl/SwirlNavBar.mxml"/>
     <module application="src/PluginOptimiserApp.mxml" destPath="org/glomaker/stage/londonmet/LondonMetNavBar.swf" optimize="true" sourcePath="src/org/glomaker/stage/londonmet/LondonMetNavBar.mxml"/>
     <module application="src/PluginOptimiserApp.mxml" destPath="org/glomaker/plugin/imagemagnifier/ImageMagnifierPlugin.swf" optimize="true" sourcePath="src/org/glomaker/plugin/imagemagnifier/ImageMagnifierPlugin.mxml"/>
-    <module application="src/PluginOptimiserApp.mxml" destPath="org/glomaker/stage/grad/GradNavBar.swf" optimize="true" sourcePath="src/org/glomaker/stage/grad/GradNavBar.mxml"/>
     <module application="src/PluginOptimiserApp.mxml" destPath="org/glomaker/plugin/mcq/MultipleChoiceQuestionPlugin.swf" optimize="true" sourcePath="src/org/glomaker/plugin/mcq/MultipleChoiceQuestionPlugin.mxml"/>
     <module application="src/PluginOptimiserApp.mxml" destPath="org/glomaker/plugin/medialoaders/ImageLoaderPlugin.swf" optimize="true" sourcePath="src/org/glomaker/plugin/medialoaders/ImageLoaderPlugin.mxml"/>
     <module application="src/PluginOptimiserApp.mxml" destPath="org/glomaker/plugin/mp3player/Mp3PlayerPlugin.swf" optimize="true" sourcePath="src/org/glomaker/plugin/mp3player/Mp3PlayerPlugin.mxml"/>
