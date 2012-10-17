@@ -688,7 +688,14 @@
 		/>
 	</mx:Canvas>
 	
-	<mx:Button id="addButton" click="addHotspot()" visible="{editMode}" label="Add New Hotspot" styleName="addButton" y="{deleteImageButton.y - addButton.height - 10}" x="{activeRegion.x + (activeRegion.width - addButton.width)/2}" />
-	<mx:Button id="deleteImageButton" click="deleteImage()" enabled="false" visible="{editMode}" label="Remove Image" styleName="removeImageButton" bottom="10" x="{activeRegion.x + (activeRegion.width - deleteImageButton.width)/2}" />
+	<mx:HBox
+		id="editorButtonGroup"
+		verticalScrollPolicy="off"
+		horizontalScrollPolicy="off"
+		x="{(listRegionContainer.width - editorButtonGroup.width)/2}"
+		y="{resetButton.y - editorButtonGroup.height - 10}">
+		<mx:Button id="addButton" click="addHotspot()" visible="{editMode}" label="" styleName="addButton"/>
+		<mx:Button id="deleteImageButton" click="deleteImage()" enabled="false" visible="{editMode}" label="No Image" styleName="removeImageButton"/>
+	</mx:HBox>
 	<editbutton:EditableButton id="resetButton" isEditable="{editMode}" label="Reset" click="onResetClick()" bottom="10" x="{(listRegionContainer.width - resetButton.width)/2}"/>
 </BaseComponent>
