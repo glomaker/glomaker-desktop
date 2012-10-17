@@ -576,11 +576,17 @@
 					
 					// move into position over hotspot
 					pt = targetHotspot.textLabelComponent.getBounds( droppedItemContainer ).topLeft;
-					draggedItem.setStyle("moveEffect", "dropEffect");
-					Move(dropEffect.children[0]).xFrom = draggedItem.x;
-					Move(dropEffect.children[0]).yFrom = draggedItem.y;
-					Fade(dropEffect.children[1]).alphaFrom = draggedItem.alpha;
-					draggedItem.move( pt.x, pt.y );
+					
+					dropMove.end();
+					dropMove.target = draggedItem;
+					dropMove.xTo = pt.x;
+					dropMove.yTo = pt.y;
+					dropMove.play();
+					
+					dropFade.end();
+					dropFade.target = draggedItem;
+					dropFade.alphaFrom = draggedItem.alpha;
+					dropFade.play();
 					
 					// add to new container's display list
 					droppedItemContainer.addChild( draggedItem );
@@ -696,10 +702,8 @@
 	<mx:Fade id="hotspotFadeIn" duration="300" alphaFrom="0.0" alphaTo="1.0" />
 	<mx:Move id="noDropMove" duration="300" effectEnd="onNoDropMoveComplete()" />
 	
-	<mx:Parallel id="dropEffect">
-		<mx:Move duration="300"/>
-		<mx:Fade duration="300" alphaTo="1.0"/>
-	</mx:Parallel>
+	<mx:Move id="dropMove" duration="300"/>
+	<mx:Fade id="dropFade" duration="300" alphaTo="1.0"/>
 
 	<mx:Canvas
 		id="listRegionContainer"
