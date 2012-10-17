@@ -25,7 +25,7 @@
 			public var showControls:Boolean = true;
 			
 			[Bindable]
-			public var bgColour:uint = 0xff0000;
+			public var bgColour:uint = 0x82a6e8;
 			
 			[Bindable]
 			public var fontSize:int = 16;

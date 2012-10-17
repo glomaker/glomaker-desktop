@@ -42,7 +42,7 @@
 			// component properties
 			protected var encodedRawData:ArrayProperty = new ArrayProperty( "encodedRawData", "", [] ); // stores comma-separate string with x,y,w,h,text properties for each hotspot
 			protected var resetLabel:StringProperty = new StringProperty("resetLabel", "", "Reset");
-			protected var hotspotColour:ColourProperty = new ColourProperty("hotspotColour", "Hotspot Colour", 0xff0000);
+			protected var hotspotColour:ColourProperty = new ColourProperty("hotspotColour", "Hotspot Colour", 0x82a6e8);
 			protected var fontSizeProp:NumericStepperProperty = new NumericStepperProperty("fontSizeProp", "Font Size", 16);
 			protected var showHotspots:BooleanProperty = new BooleanProperty("showHotspots", "Show Hotspots?", true);
 			protected var imageSource:FilePathProperty = new FilePathProperty("imageSource", "Background Image (optional)" );
