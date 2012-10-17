@@ -488,7 +488,7 @@
 				draggedItem = new DraggableItem();
 				draggedItem.alpha = 0.6;
 				draggedItem.width = sourceItem.width;
-				draggedItem.styleName = sourceItem.styleName;
+				draggedItem.styleName = "draggedItem";
 				draggedItem.hotspotData = sourceItem.hotspotData;
 				
 				// sanity check
@@ -545,6 +545,9 @@
 					// add to new container's display list
 					droppedItemContainer.addChild( draggedItem );
 
+					// switch the style back
+					draggedItem.styleName = "droppedItem";
+					
 					// the source item is no longer draggable
 					sourceItem.alpha = 0.3;
 					sourceItem.mouseEnabled = false;
@@ -609,6 +612,35 @@
 			borderStyle: solid;
 			borderThickness: 2;
 			borderColor: #bfbfbf;
+		}
+		
+		.draggedItem {
+			backgroundColor: #bfbfbf;
+			backgroundAlpha: 0.0;
+			color: #000000;
+			paddingBottom: 8;
+			paddingTop: 8;
+			paddingLeft: 8;
+			paddingRight: 8;
+			fontSize: 16;
+			borderStyle: solid;
+			borderThickness: 2;
+			borderColor: #bfbfbf;
+		}
+		
+		.droppedItem {
+			backgroundColor: #ffffff;
+			color: #000000;
+			paddingBottom: 8;
+			paddingTop: 8;
+			paddingLeft: 8;
+			paddingRight: 8;
+			fontSize: 16;
+			borderStyle: solid;
+			borderThickness: 2;
+			borderColor: #000000;
+			focusThickness: 0;
+			focusAlpha: 0.0;
 		}
 		
 		.addButton {
