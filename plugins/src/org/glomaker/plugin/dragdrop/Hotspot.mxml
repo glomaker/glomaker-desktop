@@ -27,6 +27,9 @@
 			[Bindable]
 			public var bgColour:uint = 0xff0000;
 			
+			[Bindable]
+			public var fontSize:int = 16;
+			
 			/**
 			 * Helper variable used during dragging/resize operations.
 			**/
@@ -148,7 +151,6 @@
 			paddingTop: 8;
 			paddingLeft: 8;
 			paddingRight: 8;
-			fontSize: 16;
 			borderStyle: solid;
 			borderThickness: 2;
 			borderColor: #000000;
@@ -194,6 +196,7 @@
 		horizontalCenter="0"
 		text="{labelText}"
 		styleName="textAreaStyle"
+		fontSize="{fontSize}"
 		change="textChange()"
 	/>
 	

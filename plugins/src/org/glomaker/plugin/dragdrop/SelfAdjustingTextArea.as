@@ -1,6 +1,7 @@
 package org.glomaker.plugin.dragdrop
 {
 	import flash.events.Event;
+	import flash.text.TextFormat;
 	
 	import mx.controls.TextArea;
 	import mx.core.ScrollPolicy;
@@ -37,6 +38,12 @@ package org.glomaker.plugin.dragdrop
 		override public function set text(value:String):void
 		{
 			super.text = value;
+			adjustHeight();
+		}
+		
+		override public function setStyle(styleProp:String, newValue:*):void
+		{
+			super.setStyle( styleProp, newValue);
 			adjustHeight();
 		}
 
@@ -86,6 +93,14 @@ package org.glomaker.plugin.dragdrop
 
 			// ensure all pending changes have been accounted for
 			validateNow();
+			
+			// make sure fontSize has been applied
+			if( !isNaN( getStyle( "fontSize" ) ) )
+			{
+				var f:TextFormat = textField.getTextFormat();
+				f.size = getStyle("fontSize");
+				textField.setTextFormat(f);
+			}
 			
 			// iterate through lines and calculate required height
 			var newHeight:Number = 0;

@@ -33,6 +33,7 @@ package org.glomaker.plugin.dragdrop
 			}else{
 				text = "";
 			}
+			trace("hotspot data", getStyle("fontSize"));
 		}
 		
 		public function get hotspotData():HotspotVO

@@ -21,6 +21,7 @@
 	<mx:Script>
 		<![CDATA[
 			import mx.collections.ArrayCollection;
+			import mx.core.UIComponent;
 			
 			import org.glomaker.plugin.dragdrop.events.HotspotDeleteEvent;
 			import org.glomaker.plugin.dragdrop.events.HotspotPositionChangeEvent;
@@ -31,6 +32,7 @@
 			import org.glomaker.shared.properties.ColourProperty;
 			import org.glomaker.shared.properties.FilePathProperty;
 			import org.glomaker.shared.properties.IComponentProperty;
+			import org.glomaker.shared.properties.NumericStepperProperty;
 			import org.glomaker.shared.properties.StringProperty;
 			
 			//--------------------------------------------------
@@ -41,6 +43,7 @@
 			protected var encodedRawData:ArrayProperty = new ArrayProperty( "encodedRawData", "", [] ); // stores comma-separate string with x,y,w,h,text properties for each hotspot
 			protected var resetLabel:StringProperty = new StringProperty("resetLabel", "", "Reset");
 			protected var hotspotColour:ColourProperty = new ColourProperty("hotspotColour", "Hotspot Colour", 0xff0000);
+			protected var fontSizeProp:NumericStepperProperty = new NumericStepperProperty("fontSizeProp", "Font Size", 16);
 			protected var showHotspots:BooleanProperty = new BooleanProperty("showHotspots", "Show Hotspots?", true);
 			protected var imageSource:FilePathProperty = new FilePathProperty("imageSource", "Background Image (optional)" );
 			
@@ -50,6 +53,9 @@
 			
 			[Bindable]
 			protected var listData:ArrayCollection;
+			
+			[Bindable]
+			protected var fontSize:int = 16;
 			
 			// Array of HotspotVO instances describing hotspot data
 			protected var hotspotData:Array;
@@ -71,6 +77,7 @@
 				addSaveableProperty( encodedRawData );
 				addSaveableProperty( resetLabel );
 				addProperty( hotspotColour );
+				addProperty(fontSizeProp);
 				addProperty( showHotspots );
 				addProperty( imageSource );
 			}
@@ -78,6 +85,7 @@
 			override protected function componentInitComplete():void
 			{
 				resetButton.label = resetLabel.propValue;
+				fontSize = fontSizeProp.propValue;
 				
 				// apply data
 				var values:Array;
@@ -119,6 +127,9 @@
 					
 					updateImageSource();
 					
+				}else if( prop == fontSizeProp ){
+					fontSize = prop.propValue;
+					updateFontSizes();
 				}
 			}
 			
@@ -233,6 +244,33 @@
 					deleteImageButton.enabled = true;
 				}
 			}
+
+			
+			/**
+			 * Applies font size changes to hotspots and dragged items.
+			**/
+			protected function updateFontSizes():void
+			{
+				var child:DisplayObject;
+				var i:uint;
+				for(i=0;i<droppedItemContainer.numChildren;i++)
+				{
+					child = droppedItemContainer.getChildAt( i );
+					if( child is UIComponent )
+					{
+						UIComponent( child ).setStyle("fontSize", fontSize);
+					}
+				}
+				
+				for(i=0;i<hotspotContainer.numChildren;i++)
+				{
+					child = hotspotContainer.getChildAt( i );
+					if( child is Hotspot )
+					{
+						Hotspot( child ).fontSize = fontSize;
+					}
+				}
+			}
 			
 			/**
 			 * Sets the hotspot container visibility to match settings and editMode value.
@@ -300,6 +338,7 @@
 			{
 				var hotspot:Hotspot = new Hotspot();
 				hotspot.labelText = vo.text;
+				hotspot.fontSize = fontSize;
 				hotspot.x = vo.x;
 				hotspot.y = vo.y;
 				hotspot.width = vo.w;
@@ -489,6 +528,7 @@
 				draggedItem.alpha = 0.6;
 				draggedItem.width = sourceItem.width;
 				draggedItem.styleName = "draggedItem";
+				draggedItem.setStyle("fontSize", fontSize);
 				draggedItem.hotspotData = sourceItem.hotspotData;
 				
 				// sanity check
@@ -608,7 +648,6 @@
 			paddingTop: 8;
 			paddingLeft: 8;
 			paddingRight: 8;
-			fontSize: 16;
 			borderStyle: solid;
 			borderThickness: 2;
 			borderColor: #bfbfbf;
@@ -622,7 +661,6 @@
 			paddingTop: 8;
 			paddingLeft: 8;
 			paddingRight: 8;
-			fontSize: 16;
 			borderStyle: solid;
 			borderThickness: 2;
 			borderColor: #bfbfbf;
@@ -635,7 +673,6 @@
 			paddingTop: 8;
 			paddingLeft: 8;
 			paddingRight: 8;
-			fontSize: 16;
 			borderStyle: solid;
 			borderThickness: 2;
 			borderColor: #000000;
@@ -675,6 +712,7 @@
 			<mx:Repeater dataProvider="{listData}" id="dragRep">
 				<dragdrop:DraggableItem
 					hotspotData="{dragRep.currentItem}"
+					fontSize="{fontSize}"
 					styleName="listItem"
 					width="95"
 					alpha="{editMode?0.3:1.0}"
