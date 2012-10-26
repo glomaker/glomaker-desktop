@@ -101,6 +101,9 @@ package org.glomaker.app.view.popups.journey
 		 * the last used directory.
 		 */
 		protected var qrSaveDirectory:File = File.userDirectory;
+		
+		
+		protected var qrWarningWasShown:Boolean = false;
 
 		// ------------------------------------------------------------------
 		// CONSTRUCTOR
@@ -154,6 +157,7 @@ package org.glomaker.app.view.popups.journey
 			viewRef.qrSaveButton.addEventListener(MouseEvent.CLICK, qrSaveButton_clickHandler);
 			viewRef.okButton.addEventListener(MouseEvent.CLICK, onOKClick);
 			viewRef.cancelButton.addEventListener(MouseEvent.CLICK, onCancelClick);
+			viewRef.qrEnabledCheck.addEventListener(Event.CHANGE, onQREnabledChange);
 		}
 		
 		override public function onRemove():void
@@ -283,7 +287,8 @@ package org.glomaker.app.view.popups.journey
 			{
 				viewRef.qrImage.source = new Bitmap(createQrImage(QR_IMAGE_SIZE));
 				lastQrCode = qrCode;
-				if (warn)
+				qrWarningWasShown = warn;
+				if (warn && viewRef.qrEnabledCheck.selected)
 					viewRef.qrWarning.visible = true;
 			}
 		}
@@ -353,6 +358,11 @@ package org.glomaker.app.view.popups.journey
 		{
 			settings = null;
 			removePopup();
+		}
+		
+		protected function onQREnabledChange(e:Event):void
+		{
+			viewRef.qrWarning.visible = (viewRef.qrEnabledCheck.selected && qrWarningWasShown );
 		}
 		
 	}

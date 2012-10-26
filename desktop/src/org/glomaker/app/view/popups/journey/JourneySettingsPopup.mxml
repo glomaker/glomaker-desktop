@@ -132,7 +132,7 @@
 				<mx:Image id="qrImage" />
 				<mx:VBox width="100%" verticalGap="6">
 					<mx:Text width="100%" htmlText="{QR_INFO}" initialize="htmlText_initializeHandler(event)" />
-					<mx:Button id="qrSaveButton" label="Save as an image for printing" icon="@Embed('assets/picture_save.png')" />
+					<mx:Button id="qrSaveButton" label="Save as an image for printing" icon="@Embed('assets/picture_save.png')" enabled="{qrEnabledCheck.selected}"/>
 				</mx:VBox>
 			</mx:HBox>
 		</mx:VBox>
