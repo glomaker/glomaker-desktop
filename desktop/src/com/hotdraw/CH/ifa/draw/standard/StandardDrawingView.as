@@ -565,8 +565,12 @@ public  class StandardDrawingView extends Canvas implements MouseDragListener, D
 		 
         var code:int= e.keyCode;
         if ((code == Keyboard.BACKSPACE) || (code == Keyboard.DELETE)) {
+			
             var cmd:Command= new DeleteCommand("Delete", this);
-            cmd.execute();
+			if( cmd.isExecutable() )
+			{
+	        	cmd.execute();
+			}
         } else if (code == Keyboard.DOWN || code == Keyboard.UP ||
             code == Keyboard.RIGHT || code == Keyboard.LEFT) {
             handleCursorKey(code);
