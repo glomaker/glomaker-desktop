@@ -23,6 +23,7 @@
 		<![CDATA[
 			import mx.collections.ArrayCollection;
 			
+			import org.glomaker.shared.properties.BooleanProperty;
 			import org.glomaker.shared.properties.FilePathArrayProperty;
 			import org.glomaker.shared.properties.FilePathProperty;
 			import org.glomaker.shared.properties.IComponentProperty;
@@ -35,6 +36,7 @@
 			// component properties
 			protected var imageSource:FilePathProperty = new FilePathProperty("imageSource", "Choose an image:" ); // internal use only, not persisted
 			protected var images:FilePathArrayProperty = new FilePathArrayProperty("images");
+			protected var showDegrees:BooleanProperty = new BooleanProperty("showDegrees", "Web version shows degrees", true);
 			
 			// other
 			[Bindable]
@@ -45,12 +47,20 @@
 			
 			[Bindable]
 			protected var selectedImageSource:String;
+			
+			[Bindable]
+			protected var showDegreeTextField:Boolean;
 
 			/**
 			 * Index into imageListData of the image that the user has clicked on.
 			 * Holds the value -1 when no image is selected.
 			**/
 			protected var selectedIndex:int = -1;
+			
+			/**
+			 * Used to scroll the image list after an image has been added.
+			**/
+			protected var scrollAfterUpdate:Boolean = false;
 			
 			
 			//--------------------------------------------------
@@ -60,12 +70,16 @@
 			override protected function defineProperties():void
 			{
 				addSaveableProperty( images );
+				addSaveableProperty( showDegrees );
+				addEditableProperty( imageSource );
+				addEditableProperty( showDegrees );
 			}
 			
 			override protected function componentInitComplete():void
 			{
 				// data structures
 				imageListData = new ArrayCollection( images.propValue );
+				showDegreeTextField = showDegrees.propValue;
 			}
 			
 			override public function editablePropertyUpdated(prop:IComponentProperty):void
@@ -78,18 +92,22 @@
 					// we can determine which by checking if selectedIndex is pointing to a valid value
 					if( selectedIndex == -1 )
 					{
+						
+						// scroll list to the end to make sure new image is visible
+						scrollAfterUpdate = true;
+
 						// adding a new image
 						var newIndex:uint = imageListData.length;
 						imageListData.addItem( prop.propValue );
 						
-						// the 'add image' dialog is still open
-						closeImageAdd();
 					}else{
 						// currently viewing an existing image
 						// simply update the data model and the image shown
 						selectedImageSource = prop.propValue;
 						imageListData.setItemAt( prop.propValue, selectedIndex );
 					}
+				}else if( prop == showDegrees ){
+					showDegreeTextField = prop.propValue;
 				}
 			}
 			
@@ -119,11 +137,6 @@
 			// Protected functions
 			//--------------------------------------------------
 			
-			protected function add():void
-			{
-				showAddImage();
-			}
-			
 			protected function select( e:MouseEvent ):void
 			{
 				showImagePanel( Thumbnail( e.currentTarget ).listIndex );
@@ -140,8 +153,6 @@
 				
 				// triggered from a button on the image panel
 				closeImagePanel();
-				
-				// todo - update the 'north' pointer
 			}
 			
 			protected function setNorth():void
@@ -158,20 +169,9 @@
 				closeImagePanel();
 			}
 			
-			protected function showAddImage():void
-			{
-				selectedIndex = -1;
-				updateEditableProperties([imageSource]);
-
-				imagePanel.visible = false;
-				modalOverlay.visible = true;
-				addImageDialog.visible = true;
-			}
-			
 			protected function showImagePanel( index:int ):void
 			{
 				selectedIndex = index;
-				updateEditableProperties([imageSource]);
 
 				if( selectedIndex != -1 )
 				{
@@ -180,7 +180,6 @@
 
 				setNorthButton.enabled = (selectedIndex > 0); // because image 0 is already north
 				
-				addImageDialog.visible = false;
 				imagePanel.visible = true;
 				modalOverlay.visible = true;
 			}
@@ -190,17 +189,17 @@
 				modalOverlay.visible = false;
 				imagePanel.visible = false;
 				selectedIndex = -1;
-				updateEditableProperties([]);
 			}
 			
-			protected function closeImageAdd():void
+			protected function repeatEnd():void
 			{
-				modalOverlay.visible = false;
-				addImageDialog.visible = false;
-				selectedIndex = -1;
-				updateEditableProperties([]);
+				if( scrollAfterUpdate )
+				{
+					scrollAfterUpdate = false;
+					imageContainer.validateNow(); // force measure
+					imageContainer.horizontalScrollPosition = imageContainer.maxHorizontalScrollPosition;
+				}
 			}
-			
 			
 		]]>
 	</mx:Script>
@@ -230,10 +229,9 @@
 		.modalOverlay {
 			backgroundColor: #000000;
 		}
-		.addButton {
+		.addButtonLabel {
 			font-size: 9;
 			font-weight: normal;
-			icon: Embed("assets/add.png");
 		}
 		.thumbnail
 		{
@@ -264,12 +262,13 @@
 		verticalScrollPolicy="off"
 	>
 		<mx:HBox height="100%" styleName="thumbnailBox">
-			<mx:Repeater dataProvider="{imageListData}" id="imgRp">
+			<mx:Repeater dataProvider="{imageListData}" id="imgRp" repeatEnd="repeatEnd()">
 				<panorama:Thumbnail
 					source="{imgRp.currentItem}"
 					styleName="thumbnail"
 					listIndex="{imgRp.currentIndex}"
-					degrees="{Math.round(imgRp.currentIndex*360/imageListData.length) + '°'}"
+					degrees="{(imgRp.currentIndex + 1) + ': ' + Math.round(imgRp.currentIndex*360/imageListData.length) + '°'}"
+					showText="{showDegreeTextField}"
 					height="100%"
 					width="100"
 					buttonMode="true"
@@ -281,7 +280,7 @@
 		</mx:HBox>
 	</mx:Canvas>
 	
-	<mx:Button id="addButton" click="add()" showEffect="{fadeIn}" visible="{editMode}" label="Add Panorama Image" styleName="addButton" bottom="10" horizontalCenter="0" />
+	<mx:Label id="addButtonLabel" showEffect="{fadeIn}" visible="{editMode}" text="Click 'Browse' below to add an image" styleName="addButtonLabel" bottom="10" horizontalCenter="0" />
 	
 	<mx:Canvas
 		visible="false"
@@ -318,22 +317,6 @@
 			<mx:Button click="closeImagePanel()" label="Close" />
 		</mx:HBox>
 		<mx:Label fontWeight="bold" text="Use the properties panel to change the image" visible="{editMode}" includeInLayout="{editMode}"/>
-	</mx:VBox>
-
-	<mx:VBox
-		visible="false"
-		id="addImageDialog"
-		styleName="popup"
-		verticalScrollPolicy="off"
-		horizontalScrollPolicy="off"
-		verticalCenter="0"
-		horizontalCenter="0"
-		horizontalAlign="center"
-		showEffect="{fadeIn}"
-	>
-		<mx:Label text="Add an image" fontWeight="bold"/>
-		<mx:Label text="Use the Browse button in the properties panel below to choose an image"/>
-		<mx:Button label="Cancel" click="closeImageAdd()"/>
 	</mx:VBox>
 	
 </BaseComponent>
