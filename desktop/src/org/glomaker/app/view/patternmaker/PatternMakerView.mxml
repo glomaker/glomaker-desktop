@@ -115,8 +115,8 @@
 		width="250" minHeight="100" maxHeight="{height*0.8}" right="10" top="65"/>
 
 	<mx:Label
-		text="Click and drag this area to edit larger projects"
-		y="{pm.y + 16}"
+		text="Click and drag below to edit larger projects"
+		y="10"
 		x="226"
 		styleName="dragText"
 	/>
