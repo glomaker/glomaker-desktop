@@ -15,6 +15,7 @@ import com.hotdraw.mouse.MouseDrag;
 import com.hotdraw.mouse.MouseDragListener;
 
 import flash.display.Graphics;
+import flash.display.InteractiveObject;
 import flash.events.KeyboardEvent;
 import flash.events.MouseEvent;
 import flash.geom.Point;
@@ -22,6 +23,8 @@ import flash.ui.Keyboard;
 
 import mx.containers.Canvas;
 import mx.core.UIComponent;
+import mx.managers.FocusManager;
+import mx.managers.PopUpManager;
 
 /**
  * The standard implementation of DrawingView.
@@ -550,8 +553,16 @@ public  class StandardDrawingView extends Canvas implements MouseDragListener, D
      * currently active tool.
      * @return whether the event was handled.
      */
-     public function keyPressed(e:KeyboardEvent):void {
-     	
+     public function keyPressed(e:KeyboardEvent):void
+	 {
+		// if the focus is currently in a text field or other UI component
+		// OR if a modal popup is open
+		// then the key press should be ignored
+		if( ( focusManager && focusManager.findFocusManagerComponent( e.target as InteractiveObject ) ) || ( systemManager && systemManager.numModalWindows > 0 ) )
+		{
+			return;
+		}
+		 
         var code:int= e.keyCode;
         if ((code == Keyboard.BACKSPACE) || (code == Keyboard.DELETE)) {
             var cmd:Command= new DeleteCommand("Delete", this);

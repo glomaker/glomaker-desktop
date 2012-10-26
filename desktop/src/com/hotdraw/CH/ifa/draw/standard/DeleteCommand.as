@@ -25,7 +25,9 @@ public class DeleteCommand extends FigureTransferCommand {
         super(name, view);
     }
 
-    override public function execute():void {
+    override public function execute():void
+	{
+		super.execute();
     	Alert.yesLabel = "Yes";
     	Alert.noLabel = "No";
     	Alert.show("Do you want to delete all selected Components?", "Warning!",Alert.YES | Alert.NO,null,alertListener, null, Alert.YES);
