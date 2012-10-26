@@ -43,7 +43,7 @@
 			protected var encodedRawData:ArrayProperty = new ArrayProperty( "encodedRawData", "", [] ); // stores comma-separate string with x,y,w,h,text properties for each hotspot
 			protected var resetLabel:StringProperty = new StringProperty("resetLabel", "", "Reset");
 			protected var hotspotColour:ColourProperty = new ColourProperty("hotspotColour", "Hotspot Colour", 0x82a6e8);
-			protected var fontSizeProp:NumericStepperProperty = new NumericStepperProperty("fontSizeProp", "Font Size", 16);
+			protected var fontSizeProp:NumericStepperProperty = new NumericStepperProperty("fontSizeProp", "Font Size", 12);
 			protected var showHotspots:BooleanProperty = new BooleanProperty("showHotspots", "Show Hotspots?", true);
 			protected var imageSource:FilePathProperty = new FilePathProperty("imageSource", "Background Image (optional)" );
 			
@@ -55,7 +55,7 @@
 			protected var listData:ArrayCollection;
 			
 			[Bindable]
-			protected var fontSize:int = 16;
+			protected var fontSize:int = 12;
 			
 			// Array of HotspotVO instances describing hotspot data
 			protected var hotspotData:Array;
@@ -186,6 +186,12 @@
 			//--------------------------------------------------
 			// Protected functions
 			//--------------------------------------------------
+			
+			protected function getListOffset():Number
+			{
+				trace("getListOffset");
+				return ( editMode ? 16 : 20 );
+			}
 			
 			protected function displayHotspots():void
 			{
@@ -711,7 +717,7 @@
 		height="100%"
 		styleName="listRegion"
 		horizontalScrollPolicy="off">
-		<mx:VBox id="dragItemList" verticalGap="11" width="163" x="0" y="0" styleName="itemList" horizontalScrollPolicy="off">
+		<mx:VBox id="dragItemList" height="{editMode ? editorButtonGroup.y - 16 : resetButton.y - 16}" verticalGap="11" width="163" x="0" y="0" styleName="itemList" horizontalScrollPolicy="off">
 			<mx:Repeater dataProvider="{listData}" id="dragRep">
 				<dragdrop:DraggableItem
 					hotspotData="{dragRep.currentItem}"
@@ -724,7 +730,7 @@
 					mouseDown="startItemDrag(event)"
 				/>
 			</mx:Repeater>
-		</mx:VBox>		
+		</mx:VBox>
 	</mx:Canvas>
 	<mx:Canvas
 		id="activeRegion"

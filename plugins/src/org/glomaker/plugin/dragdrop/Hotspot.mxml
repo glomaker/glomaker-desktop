@@ -28,7 +28,7 @@
 			public var bgColour:uint = 0x82a6e8;
 			
 			[Bindable]
-			public var fontSize:int = 16;
+			public var fontSize:int = 12;
 			
 			/**
 			 * Helper variable used during dragging/resize operations.
@@ -118,7 +118,7 @@
 				// resize - not smaller than the corner elements
 				// NB: this is still not ideal as the user can make the element smaller than the enclosed text area and effectively hide the control corners
 				// this isn't really something that should happen in normal use though, as the visual feedback makes it obvious that this will occur
-				width = Math.max( 2*resizeCorner.width, coords.x + dragOffset.x );
+				width = Math.max( textLabelComponent.width + 2*resizeCorner.width, coords.x + dragOffset.x );
 				height = Math.max( 2*resizeCorner.height, coords.y + dragOffset.y);
 			}
 			
