@@ -5,7 +5,7 @@
 	<author>Martin</author>
 	<version>1.0</version>
 	<glomaker>2.0</glomaker>	
-	<name>Image Loader</name>
+	<name>Image Loader [mobile enabled]</name>
 	<description>Import Image</description>
 	<swf>ImageLoaderPlugin.swf</swf>
 </plugin>

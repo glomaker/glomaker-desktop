@@ -695,7 +695,6 @@
 		.removeImageButton {
 			font-size: 9;
 			font-weight: normal;
-			icon: Embed("assets/delete.png");
 		}
 	</mx:Style>
 	

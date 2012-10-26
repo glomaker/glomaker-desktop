@@ -5,7 +5,7 @@
 	<author>DN Digital</author>
 	<version>1.0</version>
 	<glomaker>2.0</glomaker>	
-	<name>Compass Panorama</name>
+	<name>Compass Panorama [mobile enabled]</name>
 	<description>Creates a 360 degree, compass controlled panorama for mobile devices.</description>
 	<swf>Panorama.swf</swf>
 </plugin>
