@@ -5,7 +5,7 @@
 	<author>Martin</author>
 	<version>1.0</version>
 	<glomaker>2.0</glomaker>	
-	<name>Text Area [mobile enabled]</name>
+	<name>Text Area [+mobile]</name>
 	<description>Text area component</description>
 	<swf>TextAreaPlugin.swf</swf>
 </plugin>
