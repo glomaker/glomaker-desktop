@@ -17,9 +17,13 @@
 			[Bindable]
 			public var showText:Boolean = true;
 			
+			[Bindable]
+			public var showName:Boolean = true;
+			
 		]]>
 	</mx:Script>
 
-	<mx:Image source="{source}" width="100%" height="100%"/>
-	<mx:Label text="{degrees}" width="100%" textAlign="center" visible="{showText}"/>
+	<mx:Image source="{source}" width="100%" height="100%" horizontalAlign="center"/>
+	<mx:Label text="{source.substring( source.lastIndexOf('/') + 1, source.lastIndexOf('.') )}" width="100%" textAlign="center" visible="{showName}" includeInLayout="{showName}"/>
+	<mx:Label text="{degrees}" width="100%" textAlign="center" visible="{showText}" includeInLayout="{showText}"/>
 </mx:VBox>

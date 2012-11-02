@@ -24,6 +24,7 @@
 			import mx.collections.ArrayCollection;
 			
 			import org.glomaker.shared.properties.BooleanProperty;
+			import org.glomaker.shared.properties.ColourProperty;
 			import org.glomaker.shared.properties.FilePathArrayProperty;
 			import org.glomaker.shared.properties.FilePathProperty;
 			import org.glomaker.shared.properties.IComponentProperty;
@@ -36,7 +37,9 @@
 			// component properties
 			protected var imageSource:FilePathProperty = new FilePathProperty("imageSource", "Choose an image:" ); // internal use only, not persisted
 			protected var images:FilePathArrayProperty = new FilePathArrayProperty("images");
+			protected var bgColour:ColourProperty = new ColourProperty("bgColour", "Background Colour", 0x004890);
 			protected var showDegrees:BooleanProperty = new BooleanProperty("showDegrees", "Web version shows degrees", true);
+			protected var showThumbNames:BooleanProperty = new BooleanProperty("showThumbNames", "Web version shows filename", true);
 			
 			// other
 			[Bindable]
@@ -50,6 +53,9 @@
 			
 			[Bindable]
 			protected var showDegreeTextField:Boolean;
+			
+			[Bindable]
+			protected var showNameTextField:Boolean;
 
 			/**
 			 * Index into imageListData of the image that the user has clicked on.
@@ -71,8 +77,12 @@
 			{
 				addSaveableProperty( images );
 				addSaveableProperty( showDegrees );
+				addSaveableProperty( showThumbNames );
+				addSaveableProperty( bgColour );
 				addEditableProperty( imageSource );
 				addEditableProperty( showDegrees );
+				addEditableProperty( showThumbNames );
+				addEditableProperty( bgColour );
 			}
 			
 			override protected function componentInitComplete():void
@@ -80,6 +90,8 @@
 				// data structures
 				imageListData = new ArrayCollection( images.propValue );
 				showDegreeTextField = showDegrees.propValue;
+				showNameTextField = showThumbNames.propValue;
+				imageContainer.setStyle("backgroundColor", bgColour.propValue );
 			}
 			
 			override public function editablePropertyUpdated(prop:IComponentProperty):void
@@ -108,6 +120,10 @@
 					}
 				}else if( prop == showDegrees ){
 					showDegreeTextField = prop.propValue;
+				}else if( prop == showThumbNames ){
+					showNameTextField = prop.propValue;
+				}else if( prop == bgColour ){
+					imageContainer.setStyle("backgroundColor", bgColour.propValue );
 				}
 			}
 			
@@ -206,7 +222,6 @@
 	
 	<mx:Style>
 		.imageContainer{
-			backgroundColor: #004890;
 		}
 		
 		.thumbnailBox
@@ -231,7 +246,7 @@
 		}
 		.addButtonLabel {
 			font-size: 9;
-			font-weight: normal;
+			font-weight: bold;
 		}
 		.thumbnail
 		{
@@ -256,7 +271,7 @@
 	<mx:Canvas
 		id="imageContainer"
 		styleName="imageContainer"
-		height="50%"
+		height="80%"
 		width="100%"
 		verticalCenter="0"
 		verticalScrollPolicy="off"
@@ -269,8 +284,9 @@
 					listIndex="{imgRp.currentIndex}"
 					degrees="{(imgRp.currentIndex + 1) + ': ' + Math.round(imgRp.currentIndex*360/imageListData.length) + '°'}"
 					showText="{showDegreeTextField}"
+					showName="{showNameTextField}"
 					height="100%"
-					width="100"
+					width="150"
 					buttonMode="true"
 					click="select(event)"
 					rollOverEffect="{glowThumb}"
@@ -280,7 +296,7 @@
 		</mx:HBox>
 	</mx:Canvas>
 	
-	<mx:Label id="addButtonLabel" showEffect="{fadeIn}" visible="{editMode}" text="Click 'Browse' below to add an image" styleName="addButtonLabel" bottom="10" horizontalCenter="0" />
+	<mx:Label id="addButtonLabel" showEffect="{fadeIn}" visible="{editMode}" text="Click 'Browse' below to add an image" styleName="addButtonLabel" bottom="6" horizontalCenter="0" />
 	
 	<mx:Canvas
 		visible="false"
