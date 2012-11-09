@@ -20,6 +20,10 @@
 	
 	<mx:Script>
 		<![CDATA[
+			import org.glomaker.shared.properties.BooleanProperty;
+			import org.glomaker.shared.properties.ColourProperty;
+			import org.glomaker.shared.properties.IComponentProperty;
+			import org.glomaker.shared.properties.NumericStepperProperty;
 			import org.glomaker.shared.properties.RichTextProperty;
 			import org.glomaker.shared.properties.StringProperty;
 			
@@ -27,9 +31,18 @@
 			// Protected vars
 			//--------------------------------------------------
 			
+			// state names (must match state names in MXML)
+			protected static const ACTIVE_STATE:String = "activated";
+			protected static const CLOSED_STATE:String = "default";
+			
+			
 			// component properties
 			protected var buttonLabel:StringProperty = new StringProperty("label", "Label", "Pop-up Info");
 			protected var text:RichTextProperty = new RichTextProperty("text", "Text", "Enter your Popup text. You can style your text using the main text toolbar.");
+			
+			protected var showTextBGProp:BooleanProperty = new BooleanProperty("showTextBG", "Show Text BG", true);
+			protected var textBGColourProp:ColourProperty = new ColourProperty("textBGColour", "Text BG Colour", 0x006600);
+			protected var textBGAlphaProp:NumericStepperProperty = new NumericStepperProperty("textBGAlpha", "Text BG Transparency", 50);
 			
 			//other
 			[Bindable]
@@ -38,15 +51,25 @@
 			//--------------------------------------------------
 			// Overrides
 			//--------------------------------------------------
-			
+
 			override protected function defineProperties():void
 			{
 				super.defineProperties();
+				
+				textBGAlphaProp.minimum = 0;
+				textBGAlphaProp.maximum = 100;
 				
 				text.textArea = textArea;
 				
 				addSaveableProperty(buttonLabel);
 				addSaveableProperty(text);
+				addSaveableProperty(showTextBGProp);
+				addSaveableProperty(textBGColourProp);
+				addSaveableProperty(textBGAlphaProp);
+				
+				addEditableProperty(showTextBGProp);
+				addEditableProperty(textBGColourProp);
+				addEditableProperty(textBGAlphaProp);
 			}
 			
 			override protected function componentInitComplete():void
@@ -55,6 +78,7 @@
 				
 				button.label = buttonLabel.propValue;
 				textArea.htmlText = text.propValue;
+				updateWrapper();
 			}
 			
 			override public function prepareValuesForSave():void
@@ -75,6 +99,35 @@
 				// deselect text if switching out of edit mode
 				if (!value)
 					textArea.selectionBeginIndex = textArea.selectionEndIndex = 0;
+			}
+			
+			override public function editablePropertyUpdated(prop:IComponentProperty):void
+			{
+				updateWrapper();
+			}
+			
+
+			/**
+			 * Updates background / transparency of background wrapper canvas to match component settings.
+			**/
+			protected function updateWrapper():void
+			{
+				if( showTextBGProp.propValue == true && (inEditor || currentState == ACTIVE_STATE ))
+				{
+					bgWrapper.setStyle( "backgroundAlpha", textBGAlphaProp.propValue/100 );
+					bgWrapper.setStyle( "backgroundColor", textBGColourProp.propValue );
+				}else{
+					bgWrapper.setStyle( "backgroundAlpha", 0 );
+				}
+				
+				// and update the editing panel accordingly
+				// colour and alpha only required if the bg is visible
+				if( showTextBGProp.propValue )
+				{
+					updateEditableProperties( [showTextBGProp, textBGColourProp, textBGAlphaProp] );
+				}else{
+					updateEditableProperties( [showTextBGProp] );
+				}
 			}
 			
 			//--------------------------------------------------
@@ -108,12 +161,15 @@
 				// toggle state
 				// note that initially, currentState is probably null, rather than "default"
 				// this case is handled correctly by writing the if-statement as below
-				if( currentState == "activated")
+				if( currentState == ACTIVE_STATE)
 				{
-					currentState = "default";	
+					currentState = CLOSED_STATE;	
 				}else{
-					currentState = "activated";
+					currentState = ACTIVE_STATE;
 				}
+				
+				// make sure background behaves
+				updateWrapper();
 				
 			}
 		]]>
@@ -127,12 +183,16 @@
 		</mx:State>
 	</states>
 	
-	<mx:VBox width="100%" height="100%" horizontalAlign="center">
-		<editbutton:EditableButton id="button" fontSize="15" icon="@Embed('assets/default.png')" click="button_clickHandler(event)" />
-		<!-- Use a canvas for drawing the border around the text area because changing its border discards the html formatting -->
-		<mx:Canvas id="textWrapper" width="100%" height="100%" visible="{inEditor}" borderStyle="{inEditor ? 'solid' : 'none'}" horizontalScrollPolicy="off" verticalScrollPolicy="off">
-			<mx:TextArea id="textArea" width="100%" height="100%" fontSize="15" editable="false" backgroundAlpha="0" borderStyle="none" horizontalScrollPolicy="off" verticalScrollPolicy="off" />
-		</mx:Canvas>
-	</mx:VBox>
+	<mx:Canvas id="bgWrapper" width="100%" height="100%">
+	
+		<mx:VBox width="100%" height="100%" horizontalAlign="center" paddingTop="5" paddingLeft="5" paddingRight="5" paddingBottom="5">
+			<editbutton:EditableButton id="button" buttonMode="true" fontSize="15" icon="@Embed('assets/default.png')" click="button_clickHandler(event)" />
+			<!-- Use a canvas for drawing the border around the text area because changing its border discards the html formatting -->
+			<mx:Canvas id="textWrapper" width="100%" height="100%" visible="{inEditor}" borderStyle="{inEditor ? 'solid' : 'none'}" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+				<mx:TextArea id="textArea" width="100%" height="100%" fontSize="15" editable="false" backgroundAlpha="0" borderStyle="none" horizontalScrollPolicy="off" verticalScrollPolicy="off" />
+			</mx:Canvas>
+		</mx:VBox>
+		
+	</mx:Canvas>
 	
 </BaseComponent>
