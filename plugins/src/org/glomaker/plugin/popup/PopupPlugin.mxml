@@ -105,7 +105,16 @@
 				if (inEditor)
 					return;
 				
-				currentState = 'activated';
+				// toggle state
+				// note that initially, currentState is probably null, rather than "default"
+				// this case is handled correctly by writing the if-statement as below
+				if( currentState == "activated")
+				{
+					currentState = "default";	
+				}else{
+					currentState = "activated";
+				}
+				
 			}
 		]]>
 	</mx:Script>
