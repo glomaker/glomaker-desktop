@@ -11,6 +11,8 @@ package org.glomaker.app.controller.open
 	import flash.filesystem.FileMode;
 	import flash.filesystem.FileStream;
 	
+	import mx.core.Repeater;
+	
 	import org.glomaker.app.controller.BaseCommand;
 	import org.glomaker.app.core.Notifications;
 	import org.glomaker.app.model.StateProxy;
@@ -29,6 +31,7 @@ package org.glomaker.app.controller.open
 	import org.glomaker.common.vo.PageVO;
 	import org.glomaker.common.vo.PatternVO;
 	import org.glomaker.interfaces.pattern.IPatternNode;
+	import org.glomaker.shared.properties.FilePathArrayProperty;
 	import org.glomaker.shared.properties.FilePathProperty;
 	import org.puremvc.as3.multicore.interfaces.INotification;
 
@@ -40,6 +43,9 @@ package org.glomaker.app.controller.open
 	public class LoadNewFileCommand extends BaseCommand
 	{
 
+		protected static const SLASH_FIX_REGEXP:RegExp = /(\/)/g;
+		
+		
 		/**
 		 * @inheritDoc
 		 * @param notification Body should contain the File object of the file to open.
@@ -179,8 +185,7 @@ package org.glomaker.app.controller.open
 		 * MARTIN: Problem with packaging and saving where file paths have not been set. Resolved here, issue 233.
 		 * @param content
 		 * @param file
-		 */		
-	
+		 */
 		protected function convertToFullPaths( content:XML, file:File ):void
 		{
 			// see DoProjectExportCommand for naming conventions and logical structure
@@ -189,26 +194,54 @@ package org.glomaker.app.controller.open
 			var pathProperties:XMLList = components..*.(hasOwnProperty("@isPath") && @isPath == "true");
 			
 			var folderPath:String = file.parent.url + "/"; //File.separator;
-			var path:String;
-			
-			// Replace '/' with '\' in  folderPath (if any)
-			var pattern:RegExp = /(\/)/g; 
+			var decoded:*;
 			
 			for each(var prop:XML in pathProperties)
 			{
-				path = PropertySerialiser.deserialise( prop );
-				// Dont process empty paths
-				// Or where file paths have not been set: MARTIN
-
-				if(path>"" && path != FilePathProperty.NO_URL_VALUE){
-					path = folderPath + path;
-					delete prop.children()[0];
-					// Apply the regexp
-					path = path.replace(pattern,"/");
+				// FilePathArrayProperty stores an array of filepaths
+				// other properties might store a filepath as a single string
+				// we need to handle each case correctly 
+				decoded = PropertySerialiser.deserialise( prop );
+				
+				if( decoded is String )
+				{
 					// Store changes
-					PropertySerialiser.serialise( path, prop );
+					delete prop.children()[0];
+					PropertySerialiser.serialise( fixRelativePath( String(decoded), folderPath ), prop );
+					
+				}else if( decoded is Array ){
+					
+					var paths:Array = [];
+					var path:String;
+					for each(path in decoded)
+					{
+						paths.push( fixRelativePath( path, folderPath ) );
+					}
+					
+					// Store changes
+					delete prop.children()[0];
+					PropertySerialiser.serialise( paths, prop );
 				}
 			}
+		}
+		
+		/**
+		 * Converts a relative path into an absolute path for the current GLO. 
+		 * @param relPath
+		 * @param absPathRoot
+		 * @return 
+		 */		
+		protected function fixRelativePath( relPath:String, absPathRoot:String ):String
+		{
+			// slashes need fixing
+			if( relPath && relPath != "" && relPath != FilePathProperty.NO_URL_VALUE )
+			{
+				// convert to absolute path and fix slashes
+				relPath = absPathRoot + relPath;
+				relPath = relPath.replace( SLASH_FIX_REGEXP , "/" );
+			}
+			
+			return relPath;
 		}
 		
 		
