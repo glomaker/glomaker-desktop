@@ -95,6 +95,7 @@
 				
 				button.isEditable = value;
 				textArea.editable = value;
+				textArea.selectable = value;
 				
 				// deselect text if switching out of edit mode
 				if (!value)
@@ -112,12 +113,22 @@
 			**/
 			protected function updateWrapper():void
 			{
+				// reset (certain scenarios disable mouse events)
+				bgWrapper.mouseEnabled = true;
+				
+				// show/hide the background colour itself
 				if( showTextBGProp.propValue == true && (inEditor || currentState == ACTIVE_STATE ))
 				{
 					bgWrapper.setStyle( "backgroundAlpha", textBGAlphaProp.propValue/100 );
 					bgWrapper.setStyle( "backgroundColor", textBGColourProp.propValue );
 				}else{
 					bgWrapper.setStyle( "backgroundAlpha", 0 );
+					
+					if( !inEditor )
+					{
+						// make sure an invisible background doesn't mask other active elements
+						bgWrapper.mouseEnabled = false;
+					}
 				}
 				
 				// and update the editing panel accordingly
@@ -189,7 +200,7 @@
 			<editbutton:EditableButton id="button" buttonMode="true" fontSize="15" icon="@Embed('assets/default.png')" click="button_clickHandler(event)" />
 			<!-- Use a canvas for drawing the border around the text area because changing its border discards the html formatting -->
 			<mx:Canvas id="textWrapper" width="100%" height="100%" visible="{inEditor}" borderStyle="{inEditor ? 'solid' : 'none'}" horizontalScrollPolicy="off" verticalScrollPolicy="off">
-				<mx:TextArea id="textArea" width="100%" height="100%" fontSize="15" editable="false" backgroundAlpha="0" borderStyle="none" horizontalScrollPolicy="off" verticalScrollPolicy="off" />
+				<mx:TextArea id="textArea" width="100%" height="100%" fontSize="15" editable="false" selectable="false" backgroundAlpha="0" borderStyle="none" horizontalScrollPolicy="off" verticalScrollPolicy="off" />
 			</mx:Canvas>
 		</mx:VBox>
 		
