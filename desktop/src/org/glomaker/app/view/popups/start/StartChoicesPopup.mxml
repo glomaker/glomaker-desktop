@@ -13,7 +13,7 @@
 	xmlns:mx="http://www.adobe.com/2006/mxml"
 	layout="vertical"
 	styleName="modalPopup"
-	title="Welcome to GLOMaker v2"
+	title="Welcome to GLOMaker"
 	width="400" height="300">
 	
 	

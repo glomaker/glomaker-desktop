@@ -220,7 +220,7 @@ package org.glomaker.app.view.nav
 			child = createItem("About");
 			menuData.appendChild(child);
 			
-			child.appendChild(createItem("About GLOMaker 2", Notifications.CONTROLS_ABOUT_GLOMAKER));
+			child.appendChild(createItem("About GLOMaker", Notifications.CONTROLS_ABOUT_GLOMAKER));
 			child.appendChild(createItem("License, Copyright and Credits", Notifications.CONTROLS_ABOUT_LICENSE));
 			child.appendChild(createSeparator());
 			child.appendChild(createItem("Visit GLOMaker website", Notifications.CONTROLS_ABOUT_WEB));

@@ -18,19 +18,19 @@
 	<id>GLOMaker2</id>
 
 	<!-- Used as the filename for the application. Required. -->
-	<filename>GLOMaker2</filename>
+	<filename>GLOMaker3</filename>
 
 	<!-- The name that is displayed in the AIR application installer. Optional. -->
-	<name>GLOMaker v2.3</name>
+	<name>GLOMaker v3.0</name>
 
 	<!-- An application version designator (such as "v1", "2.5", or "Alpha 1"). Required. -->
-	<version>v2.3</version>
+	<version>v3.0</version>
 
 	<!-- Description, displayed in the AIR application installer. Optional. -->
 	<description>GLOMaker - Generative Learning Object Maker</description>
 
 	<!-- Copyright information. Optional -->
-	<copyright>Copyright (c) 2007-10 LTRI, London Metropolitan Uni. All rights reserved. An Open Source Release under the GPL v3 licence  (see http://www.gnu.org/licenses/).</copyright>
+	<copyright>Copyright (c) 2007-13 LTRI, London Metropolitan Uni. All rights reserved. An Open Source Release under the GPL v3 licence  (see http://www.gnu.org/licenses/).</copyright>
 
 	<!-- Settings for the application's initial window. Required. -->
 	<initialWindow>
@@ -39,7 +39,7 @@
 		<content>[This value will be overwritten by Flex Builder in the output app.xml]</content>
 		
 		<!-- The title of the main window. Optional. -->
-		<title>GLOMaker v2.3</title>
+		<title>GLOMaker v3.0</title>
 
 		<!-- The type of system chrome to use (either "standard" or "none"). Optional. Default standard. -->
 		<!-- <systemChrome></systemChrome> -->
